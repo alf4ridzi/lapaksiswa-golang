@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 13, 2024 at 12:02 PM
+-- Generation Time: Dec 15, 2024 at 10:48 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -213,7 +213,7 @@ CREATE TABLE `produk` (
   `nama` varchar(100) NOT NULL,
   `username` varchar(255) NOT NULL,
   `nama_toko` varchar(100) NOT NULL,
-  `produk_slug` varchar(100) NOT NULL,
+  `slug` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `terjual` int DEFAULT '0',
   `kategori` varchar(100) DEFAULT NULL,
   `rating` float DEFAULT NULL,
@@ -234,7 +234,7 @@ CREATE TABLE `produk` (
 -- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `nama_toko`, `produk_slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status_produk`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `nama_toko`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status_produk`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
 (1, 'P001', 'Buku Tulis Spiral', 'tokobuku', 'Toko Buku Maju', 'buku-tulis-spiral', 50, 'Alat Tulis', 5, 15000, 100, 'Buku tulis spiral ukuran A5, cocok untuk pelajar.', 'Merah,Biru,Hijau', 10.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c', 'baru', '2024-11-24 07:39:08', '2024-11-24 14:52:08'),
 (2, 'P002', 'Kaos Polos Putih', 'lapakkaos', 'Toko Pakaian Modern', 'kaos-polos-putih', 120, 'pakaian', 5, 45000, 200, 'Kaos polos putih berbahan katun yang nyaman.', 'M,L,XL', 15.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f', 'baru', '2024-11-24 07:39:08', '2024-12-01 18:28:46'),
 (3, 'P003', 'Mouse Wireless', '', 'Tech Store', 'mouse-wireless', 80, 'Elektronik', 4, 75000, 50, 'Mouse wireless dengan desain ergonomis.', 'Hitam,Abu-abu', 5.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1517433456452-f9633a875f6f', 'baru', '2024-11-24 07:39:08', NULL),
@@ -350,7 +350,6 @@ CREATE TABLE `toko` (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL,
-  `user_id` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `nama` varchar(100) DEFAULT NULL,
   `tanggal_lahir` date DEFAULT NULL,
@@ -364,7 +363,7 @@ CREATE TABLE `user` (
   `token_reset_password` varchar(255) DEFAULT NULL,
   `jenis_kelamin` enum('pria','wanita') NOT NULL DEFAULT 'pria',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `last_online` datetime DEFAULT NULL,
+  `last_online` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -372,9 +371,10 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `user_id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`, `role`, `foto`, `alamat`, `kelas`, `password`, `token_reset_password`, `jenis_kelamin`, `created_at`, `last_online`, `updated_at`) VALUES
-(1, '', 'adminmarket', NULL, NULL, 'aalalfaridzi9@gmail.com', NULL, 'user', NULL, NULL, NULL, 'alfaridzi123', NULL, 'pria', '2024-11-26 07:31:59', NULL, '2024-11-26 07:37:04'),
-(2, '', 'alfaridzi', 'Muhammad Alfaridzi', NULL, 'nfex.ghost@gmail.com', 85894110892, 'user', 'test123.png', NULL, NULL, '$2y$10$H59yqjbAvLOo1QDKWsAgXuS8K1EOGByhEo.2fJPorJ0Qn52.CTWMa', NULL, 'pria', '2024-11-26 08:02:48', NULL, '2024-12-12 11:51:12');
+INSERT INTO `user` (`id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`, `role`, `foto`, `alamat`, `kelas`, `password`, `token_reset_password`, `jenis_kelamin`, `created_at`, `last_online`, `updated_at`) VALUES
+(1, 'adminmarket', NULL, NULL, 'aalalfaridzi9@gmail.com', NULL, 'user', NULL, NULL, NULL, 'alfaridzi123', NULL, 'pria', '2024-11-26 07:31:59', NULL, '2024-11-26 07:37:04'),
+(2, 'alfaridzi', 'Muhammad Alfaridzi', NULL, 'nfex.ghost@gmail.com', 85894110892, 'user', 'test123.png', NULL, NULL, '123', NULL, 'pria', '2024-11-26 08:02:48', NULL, '2024-12-15 16:50:06'),
+(3, 'admin', 'admin market', NULL, 'admin@gmail.com', 1234, 'user', NULL, NULL, NULL, '202cb962ac59075b964b07152d234b70', NULL, 'pria', '2024-12-15 16:50:51', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -577,7 +577,7 @@ ALTER TABLE `toko`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user_login`
