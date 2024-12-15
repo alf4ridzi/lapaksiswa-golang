@@ -41,7 +41,7 @@ func NewProdukModel() *ProdukModel {
 		"nama",
 		"username",
 		"nama_toko",
-		"produk_slug",
+		"slug",
 		"terjual",
 		"kategori",
 		"rating",
@@ -66,6 +66,42 @@ func NewProdukModel() *ProdukModel {
 		table:   "produk",
 		columns: columns,
 	}
+}
+
+func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE slug = ?", p.columns, p.table)
+	row := p.DB.QueryRow(query, Slug)
+
+	var produk Produk
+	err := row.Scan(
+		&produk.ProdukID,
+		&produk.Nama,
+		&produk.Username,
+		&produk.Toko,
+		&produk.Slug,
+		&produk.Terjual,
+		&produk.Kategori,
+		&produk.Rating,
+		&produk.Harga,
+		&produk.Stok,
+		&produk.Deskripsi,
+		&produk.Varian,
+		&produk.Diskon,
+		&produk.Status,
+		&produk.Unit,
+		&produk.Foto,
+		&produk.Kondisi,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &produk, nil
 }
 
 func (p *ProdukModel) GetTerlaris() ([]Produk, error) {

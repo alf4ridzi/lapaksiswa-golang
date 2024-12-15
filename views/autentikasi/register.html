@@ -45,13 +45,13 @@
 <div class="register-container">
     <div class="register-box">
         <h2 class="text-xl font-bold mb-6 text-center">Register Ke LAPAK SISWA</h2>
-        {{ if .Cookie.error }}
+        {{ if .Cookies.error }}
             <div id="alert" class="alert error">
-                {{ .Cookie.error }}
+                {{ .Cookies.error }}
             </div>
-        {{ else if .Cookie.sukses }}
+        {{ else if .Cookies.sukses }}
             <div id="alert" class="alert sukses">
-                {{  .Cookie.sukses }}
+                {{  .Cookies.sukses }}
             </div>
         {{ end }}
         <form method="POST" action="register">

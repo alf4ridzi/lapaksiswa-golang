@@ -19,39 +19,22 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		isLogin, err := r.Cookie("isLogin")
-		if err != nil {
+		if err != nil || isLogin.Value != "true" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
-		if isLogin.Value != "true" {
+		role, err := r.Cookie("role")
+		if err != nil || role.Value != "user" {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+
+		username, err := r.Cookie("username")
+		if err != nil || username.Value == "" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
-			return
-		}
-
-		Role, err := r.Cookie("role")
-		if err != nil {
-			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
-			return
-		}
-
-		if Role.Value != "user" {
-			http.Redirect(w, r, "/", http.StatusPermanentRedirect)
-			return
-		}
-
-		UserName, err := r.Cookie("username")
-		if err != nil {
-			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
-			return
-		}
-
-		if UserName.Value == "" {
-			http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
@@ -62,54 +45,36 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		tmpl, err := template.ParseFiles(templates...)
 		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		data := make(map[string]any)
-
 		websiteModel := model.NewWebsiteModel()
 		settings, err := websiteModel.GetSettings()
-
 		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		userModel := model.NewUserModel()
-		User, err := userModel.GetUser(UserName.Value)
-
+		user, err := userModel.GetUser(username.Value)
 		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		data["Website"] = settings
-		data["Cookies"] = cookie.GetAllCookies(r)
-		data["User"] = User
-
-		err = tmpl.ExecuteTemplate(w, "header", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+		data := map[string]any{
+			"Website": settings,
+			"Cookies": cookie.GetAllCookies(r),
+			"User":    user,
 		}
 
-		err = tmpl.ExecuteTemplate(w, "dashboard", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		err = tmpl.ExecuteTemplate(w, "footer", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+		for _, section := range []string{"header", "dashboard", "footer"} {
+			err = tmpl.ExecuteTemplate(w, section, data)
+			if err != nil {
+				http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 }

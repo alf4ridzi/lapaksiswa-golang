@@ -31,7 +31,20 @@ func SetFlashCookie(w http.ResponseWriter, name string, value string) {
 		Path:     "/",
 		HttpOnly: false,
 		Secure:   false,
-		MaxAge:   2,
+		MaxAge:   5,
+	}
+
+	http.SetCookie(w, Cookie)
+}
+
+func DeleteCookie(w http.ResponseWriter, name string) {
+	Cookie := &http.Cookie{
+		Name:     name,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: false,
+		Secure:   false,
+		MaxAge:   -1,
 	}
 
 	http.SetCookie(w, Cookie)

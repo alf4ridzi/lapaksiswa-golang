@@ -154,12 +154,12 @@ func (p *UserModel) GetUser(username string) (*User, error) {
 
 	var user User
 	var noHP sql.NullInt64
-	var foto, alamat, kelas, tokenReset, jenisKelamin, createdAt, lastOnline, updatedAt sql.NullString
+	var foto, alamat, TanggalLahir, kelas, tokenReset, jenisKelamin, createdAt, lastOnline, updatedAt sql.NullString
 
 	err := row.Scan(
 		&user.Username,
 		&user.Nama,
-		&user.TanggalLahir,
+		&TanggalLahir,
 		&user.Email,
 		&noHP,
 		&user.Role,
@@ -180,6 +180,7 @@ func (p *UserModel) GetUser(username string) (*User, error) {
 		return nil, err
 	}
 
+	user.TanggalLahir = TanggalLahir.String
 	user.NoHP = noHP.Int64
 	user.Foto = foto.String
 	user.Alamat = alamat.String

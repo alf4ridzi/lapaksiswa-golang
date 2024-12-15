@@ -94,9 +94,9 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				filepath.Join("views", "autentikasi", "login.html"),
 			}
 
-			data := map[string]interface{}{
+			data := map[string]any{
 				"Website": settings,
-				"Cookie":  cookie.GetAllCookies(r),
+				"Cookies": cookie.GetAllCookies(r),
 			}
 
 			tmpl, err := template.ParseFiles(templates...)
@@ -196,7 +196,7 @@ func Register(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			data["Website"] = settings
-			data["Cookie"] = cookie.GetAllCookies(r)
+			data["Cookies"] = cookie.GetAllCookies(r)
 
 			err = tmpl.ExecuteTemplate(w, "header", data)
 			if err != nil {
