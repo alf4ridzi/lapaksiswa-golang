@@ -3,10 +3,9 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/config"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 type DBConfig struct {
@@ -17,26 +16,10 @@ type DBConfig struct {
 	Port     string
 }
 
-var dbConfig DBConfig
-
-func GetEnvDatabase() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(err)
-	}
-
-	dbConfig = DBConfig{
-		Host:     os.Getenv("DB_HOST"),
-		Username: os.Getenv("DB_USERNAME"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_DATABASE"),
-		Port:     "3306",
-	}
-}
-
 func InitDatabase() *sql.DB {
-	GetEnvDatabase()
-	dsn := fmt.Sprintf("%s@tcp(%s:%s)/%s", dbConfig.Username, dbConfig.Host, dbConfig.Port, dbConfig.Database)
+	database := config.GetEnvDatabase()
+
+	dsn := fmt.Sprintf("%s@tcp(%s:%s)/%s", database.Username, database.Host, database.Port, database.Database)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		panic(err)
