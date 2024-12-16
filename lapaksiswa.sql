@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 15, 2024 at 10:48 AM
--- Server version: 8.0.30
+-- Generation Time: Dec 16, 2024 at 02:36 PM
+-- Server version: 8.0.31
 -- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -222,7 +222,7 @@ CREATE TABLE `produk` (
   `deskripsi` text,
   `varian` varchar(255) DEFAULT NULL,
   `diskon` decimal(5,2) DEFAULT NULL,
-  `status_produk` enum('tersedia','habis','tidak_dijual') DEFAULT 'tersedia',
+  `status` enum('tersedia','habis','tidak_dijual') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'tersedia',
   `unit` enum('pcs','kg','liter') DEFAULT NULL,
   `foto` varchar(255) NOT NULL,
   `kondisi` enum('baru','bekas') NOT NULL DEFAULT 'baru',
@@ -234,7 +234,7 @@ CREATE TABLE `produk` (
 -- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `nama_toko`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status_produk`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `nama_toko`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
 (1, 'P001', 'Buku Tulis Spiral', 'tokobuku', 'Toko Buku Maju', 'buku-tulis-spiral', 50, 'Alat Tulis', 5, 15000, 100, 'Buku tulis spiral ukuran A5, cocok untuk pelajar.', 'Merah,Biru,Hijau', 10.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c', 'baru', '2024-11-24 07:39:08', '2024-11-24 14:52:08'),
 (2, 'P002', 'Kaos Polos Putih', 'lapakkaos', 'Toko Pakaian Modern', 'kaos-polos-putih', 120, 'pakaian', 5, 45000, 200, 'Kaos polos putih berbahan katun yang nyaman.', 'M,L,XL', 15.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f', 'baru', '2024-11-24 07:39:08', '2024-12-01 18:28:46'),
 (3, 'P003', 'Mouse Wireless', '', 'Tech Store', 'mouse-wireless', 80, 'Elektronik', 4, 75000, 50, 'Mouse wireless dengan desain ergonomis.', 'Hitam,Abu-abu', 5.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1517433456452-f9633a875f6f', 'baru', '2024-11-24 07:39:08', NULL),
