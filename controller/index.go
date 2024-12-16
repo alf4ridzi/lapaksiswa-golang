@@ -54,25 +54,19 @@ func Index(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = tmpl.ExecuteTemplate(w, "header", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+		t := []string{
+			"header",
+			"content",
+			"footer",
 		}
 
-		err = tmpl.ExecuteTemplate(w, "content", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		err = tmpl.ExecuteTemplate(w, "footer", data)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+		for _, val := range t {
+			err = tmpl.ExecuteTemplate(w, val, data)
+			if err != nil {
+				w.Write([]byte(err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 		}
 
 	}
