@@ -52,7 +52,7 @@ func NewProdukModel() *ProdukModel {
 		"deskripsi",
 		"varian",
 		"diskon",
-		"status_produk",
+		"status",
 		"unit",
 		"foto",
 		"kondisi",
@@ -71,18 +71,74 @@ func NewProdukModel() *ProdukModel {
 }
 
 func FormatToIDR(price int64) string {
-	str := fmt.Sprintf("%d", price)
-	n := len(str)
+	idr := fmt.Sprintf("%d", price)
+	n := len(idr)
+
+	if n <= 3 {
+		return idr
+	}
 
 	var result strings.Builder
-	for i, digit := range str {
-		if i > 0 && (n-1)%3 == 0 {
-			result.WriteRune('.')
+	r := n % 3
+
+	if r != 0 {
+		result.WriteString(idr[:r])
+		result.WriteString(".")
+	}
+
+	for i := r; i < n; i += 3 {
+		result.WriteString(idr[i : i+3])
+		if i+3 < n {
+			result.WriteString(".")
 		}
-		result.WriteRune(digit)
 	}
 
 	return result.String()
+}
+
+func (p *ProdukModel) GetRelated(produk *Produk) ([]Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE kategori LIKE ? AND nama != ? AND nama LIKE ? AND stok > 0 AND status = 'tersedia' ORDER BY rating DESC, terjual DESC LIMIT 10", p.columns, p.table)
+	rows, err := p.DB.Query(query, produk.Kategori, produk.Nama, produk.Nama)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	var related []Produk
+	for rows.Next() {
+		var prod Produk
+		if err := rows.Scan(
+			&prod.ProdukID,
+			&prod.Nama,
+			&prod.Username,
+			&prod.Toko,
+			&prod.Slug,
+			&prod.Terjual,
+			&prod.Kategori,
+			&prod.Rating,
+			&prod.Harga,
+			&prod.Stok,
+			&prod.Deskripsi,
+			&prod.Varian,
+			&prod.Diskon,
+			&prod.Unit,
+			&prod.Foto,
+			&prod.Kondisi,
+		); err != nil {
+			return nil, err
+		}
+
+		related = append(related, prod)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return related, nil
 }
 
 func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
@@ -164,6 +220,7 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 			return nil, err
 		}
 
+		produk.HargaFormat = FormatToIDR(produk.Harga)
 		produkS = append(produkS, produk)
 	}
 

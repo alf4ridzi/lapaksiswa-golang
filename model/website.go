@@ -18,6 +18,7 @@ type Website struct {
 	Canonical   string
 	Pembayaran  []Pembayaran
 	Kategori    []Kategori
+	BaseUrl     string
 }
 
 type WebsiteModel struct {
@@ -86,6 +87,7 @@ func (w *WebsiteModel) GetSettings() (*Website, error) {
 
 	website.Kategori = kategori
 	website.Pembayaran = pembayaran
+	website.BaseUrl = config.GetUrl()
 	website.Canonical = config.GetUrl()
 	return &website, nil
 }

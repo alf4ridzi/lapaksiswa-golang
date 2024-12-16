@@ -126,27 +126,27 @@
             <!-- Related Products Section -->
             <div class="mt-10">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Produk Terkait</h3>
-                <?php if (!empty($related)): ?>
+                {{ if .Related }}
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                        <?php foreach ($related as $r): ?>
-                            <a href="/produk/<?= $r['produk_slug'] ?>"
+                        {{ range $i, $p := .Related }}
+                            <a href="/produk/{{ $p.Slug }}"
                                 class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
-                                <img src="<?= $r['foto'] ?>" alt="<?= htmlspecialchars($r['nama']); ?>"
+                                <img src="{{ $p.Foto }}" alt="{{ $p.Nama }} Foto"
                                     class="w-full h-40 object-cover">
                                 <div class="p-4">
                                     <h4 class="text-lg font-medium text-gray-800 truncate">
-                                        <?= htmlspecialchars($r['nama']); ?>
+                                        {{ $p.Nama }}
                                     </h4>
                                     <p class="text-red-500 font-semibold">
-                                        Rp <?= number_format($r['harga'], 0, ',', '.'); ?>
+                                        Rp {{ $p.Harga }}
                                     </p>
                                 </div>
                             </a>
-                        <?php endforeach; ?>
+                        {{ end }}
                     </div>
-                <?php else: ?>
+                {{ else }}
                     <p class="text-red-500">Maaf, belum ada produk terkait.</p>
-                <?php endif; ?>
+                {{ end }}
             </div>
 
         {{ else }}
@@ -157,7 +157,7 @@
 
 <script>
     document.getElementById('quantity').addEventListener('input', function () {
-        // let stok = <?= $produk['stok']; ?>;
+        let stok = "{{ .Produk.Stok }}";
         let quantityInput = parseInt(this.value, 10);
 
         if (quantityInput > stok) {
@@ -174,27 +174,27 @@
     document.getElementById('minus_stok').addEventListener('click', function () {
         let quantityInput = document.getElementById('quantity');
         let subtotal = document.getElementById('subtotal');
-        const price = "{{ .Produk.Harga }}";
+        const price = parseInt("{{ .Produk.Harga }}");
 
         let currentQuantity = parseInt(quantityInput.value);
         if (currentQuantity > 1) {
             quantityInput.value = currentQuantity - 1;
             let subtotalNew = price * (currentQuantity - 1);
-            subtotal.innerText = "Rp " + subtotalNew.toLocaleString();
+            subtotal.innerText = "Rp " + subtotalNew.toLocaleString('id-ID');
         }
     });
 
     document.getElementById('tambah_stok').addEventListener('click', function () {
         let quantityInput = document.getElementById('quantity');
         let subtotal = document.getElementById('subtotal');
-        const price = "{{ .Produk.Harga }}";
-        const maxStock = "{{ .Produk.Stok }}";
+        const price = parseInt("{{ .Produk.Harga }}");
+        const maxStock = parseInt("{{ .Produk.Stok }}");
 
         let currentQuantity = parseInt(quantityInput.value);
         if (currentQuantity < maxStock) {
             quantityInput.value = currentQuantity + 1;
             let subtotalNew = price * (currentQuantity + 1);
-            subtotal.innerText = "Rp " + subtotalNew.toLocaleString();
+            subtotal.innerText = "Rp " + subtotalNew.toLocaleString('id-ID');
         }
     });
 </script>

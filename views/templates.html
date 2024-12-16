@@ -464,11 +464,11 @@
         var input = document.getElementById("searchInput").value;
 
         if (input.length <= 0) {
-          window.location.href = "<?= base_url() ?>";
+          window.location.href = "/";
           return;
         }
 
-        localStorage.setItem("searchValue", input);
+        // localStorage.setItem("searchValue", input);
         window.location.href = '/search?keyword=' + encodeURIComponent(input)
       }
 

@@ -67,9 +67,9 @@
 <div class="main">
     <div class="product container mx-auto mt-8 px-4">
         <h2 class="text-xl font-semibold mb-4">🔥 Produk Terlaris</h2>
-        {{ if .Produk }}
+        {{ if .Terlaris }}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {{ range $index, $p := .Produk}}
+                {{ range $index, $p := .Terlaris}}
                     <a href="produk/{{ $p.Slug }}"
                         class="block bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                         <div>
@@ -79,7 +79,7 @@
                                 <h3 class="text-md font-bold text-gray-700 truncate">{{ $p.Nama }}</h3>
                                 <p class="text-sm text-gray-500">Kategori: {{ $p.Kategori }}</p>
                                 <p class="text-lg font-semibold text-blue-500">Rp
-                                    {{ $p.Harga }}
+                                    {{ $p.HargaFormat }}
                                 </p>
                                 <p class="text-sm font-semibold">{{ $p.Toko }}</p>
                                 <p class="text-sm">⭐ {{ $p.Rating | printf "%.1f"}} |

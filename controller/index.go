@@ -18,7 +18,6 @@ func Index(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		websiteModel := model.NewWebsiteModel()
-
 		settings, err := websiteModel.GetSettings()
 
 		if err != nil {
@@ -42,9 +41,9 @@ func Index(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		// ambil cookies
 		data := map[string]interface{}{
-			"Produk":  terlaris,
-			"Website": settings,
-			"Cookies": cookie.GetAllCookies(r),
+			"Terlaris": terlaris,
+			"Website":  settings,
+			"Cookies":  cookie.GetAllCookies(r),
 		}
 
 		tmpl, err := template.ParseFiles(templates...)
