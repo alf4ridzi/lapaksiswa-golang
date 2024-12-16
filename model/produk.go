@@ -3,29 +3,31 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
 
 type Produk struct {
-	Id        int64
-	ProdukID  string
-	Nama      string
-	Username  string
-	Toko      string
-	Slug      string
-	Terjual   int64
-	Kategori  string
-	Rating    float32
-	Harga     int64
-	Stok      int64
-	Deskripsi string
-	Varian    string
-	Diskon    float32
-	Status    string
-	Unit      string
-	Foto      string
-	Kondisi   string
+	Id          int64
+	ProdukID    string
+	Nama        string
+	Username    string
+	Toko        string
+	Slug        string
+	Terjual     int64
+	Kategori    string
+	Rating      float32
+	Harga       int64
+	Stok        int64
+	Deskripsi   string
+	Varian      string
+	Diskon      float32
+	Status      string
+	Unit        string
+	Foto        string
+	Kondisi     string
+	HargaFormat string
 }
 
 type ProdukModel struct {
@@ -68,11 +70,27 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
+func FormatToIDR(price int64) string {
+	str := fmt.Sprintf("%d", price)
+	n := len(str)
+
+	var result strings.Builder
+	for i, digit := range str {
+		if i > 0 && (n-1)%3 == 0 {
+			result.WriteRune('.')
+		}
+		result.WriteRune(digit)
+	}
+
+	return result.String()
+}
+
 func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE slug = ?", p.columns, p.table)
 	row := p.DB.QueryRow(query, Slug)
 
 	var produk Produk
+
 	err := row.Scan(
 		&produk.ProdukID,
 		&produk.Nama,
@@ -100,6 +118,8 @@ func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
 
 		return nil, err
 	}
+
+	produk.HargaFormat = FormatToIDR(produk.Harga)
 
 	return &produk, nil
 }

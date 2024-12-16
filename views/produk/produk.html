@@ -14,14 +14,14 @@
 
 <div class="container mx-auto mt-4 px-4 sm:px-6 lg:px-20 flex flex-col">
     <div class="flex-grow">
-        <?php if (!empty($produk)): ?>
+        {{ if .Produk}}
             <nav class="text-gray-600 mb-4 text-sm sm:text-base">
                 <a href="/" class="hover:text-blue-500">Beranda</a>
                 <span>&gt;</span>
-                <a href="<?= $produk['username'] ?>" class="hover:text-blue-500"><?= $produk['nama_toko'] ?></a>
+                <a href="<?= $produk['username'] ?>" class="hover:text-blue-500">{{ .Produk.Toko }}</a>
                 <span>&gt;</span>
                 <span class="text-blue-500 font-semibold">
-                    <?= htmlspecialchars($produk['nama']); ?>
+                    {{ .Produk.Nama }}
                 </span>
             </nav>
 
@@ -33,42 +33,42 @@
 
                     <div class="flex flex-col md:flex-row gap-6">
                         <div class="flex-shrink-0">
-                            <img src="<?= $produk['foto'] ?>" alt="<?= htmlspecialchars($produk['nama']); ?>"
+                            <img src="{{ .Produk.Foto }}" alt="{{ .Produl.Foto }}"
                                 class="w-full max-w-sm h-auto object-cover rounded-lg border">
                         </div>
 
                         <div class="flex-grow">
                             <h2 class="text-3xl font-semibold text-gray-800 mb-2">
-                                <?= htmlspecialchars($produk['nama']); ?>
+                                {{ .Produk.Nama }}
                             </h2>
                             <p class="text-sm font-semibold mb-2">
                                 <span class="text-gray-500 font-bold">
                                     <i class="fa-solid fa-bag-shopping"></i> Terjual:
-                                    <?= htmlspecialchars($produk['terjual']); ?>
+                                    {{ .Produk.Terjual }}
                                 </span>
                                 <span class="text-yellow-400 ml-4">
-                                    <i class="fas fa-star"></i> Rating: <?= htmlspecialchars($produk['rating']); ?>
+                                    <i class="fas fa-star"></i> Rating: {{ .Produk.Rating }}
                                 </span>
                             </p>
 
                             <div class="text-2xl font-bold text-red-500 mb-4">
-                                Rp <?= number_format($produk['harga'], 0, ',', '.'); ?>
+                                Rp {{ .Produk.HargaFormat }}
                             </div>
 
                             <div class="mb-6">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Spesifikasi</h3>
                                 <ul class="list-disc pl-5 text-gray-600">
-                                    <li>Kondisi : <?= htmlspecialchars($produk['kondisi'])?></li>
-                                    <li>Unit: <?= htmlspecialchars($produk['unit']); ?></li>
-                                    <li>Varian: <?= htmlspecialchars($produk['varian']); ?></li>
-                                    <li>Kategori: <?= htmlspecialchars($produk['kategori']); ?></li>
+                                    <li>Kondisi : {{ .Produk.Kondisi }}</li>
+                                    <li>Unit: {{ .Produk.Unit }}</li>
+                                    <li>Varian: {{ .Produk.Varian }}</li>
+                                    <li>Kategori: {{ .Produk.Kategori }}</li>
                                 </ul>
                             </div>
 
                             <div class="mb-1">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Deskripsi Produk</h3>
                                 <p class="text-base font-semibold text-gray-400">
-                                    <?= htmlspecialchars($produk['deskripsi']); ?>
+                                    {{ .Produk.Deskripsi }}
                                 </p>
                             </div>
                         </div>
@@ -90,13 +90,13 @@
                                 class="bg-gray-200 text-gray-700 py-2 px-4 rounded-r-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <i class="fas fa-plus"></i>
                             </button>
-                            <span class="ml-4 text-gray-700">Stok Total: <?= $produk['stok'] ?></span>
+                            <span class="ml-4 text-gray-700">Stok Total: {{ .Produk.Stok }}</span>
                         </div>
                     </div>
 
                     <div class="mb-6 flex items-center">
                         <p class="text-lg font-bold text-gray-500 mr-2">Subtotal:</p>
-                        <p id="subtotal" class="text-lg font-bold text-black mr-2">Rp <?= number_format($produk['harga'], 0, ',', '.');  ?></p>
+                        <p id="subtotal" class="text-lg font-bold text-black mr-2">Rp {{ .Produk.HargaFormat }}</p>
                     </div>
 
 
@@ -149,9 +149,9 @@
                 <?php endif; ?>
             </div>
 
-        <?php else: ?>
+        {{ else }}
             <p class="text-center text-gray-500">Produk tidak Ditemukan</p>
-        <?php endif; ?>
+        {{ end }}
     </div>
 </div>
 
@@ -174,7 +174,7 @@
     document.getElementById('minus_stok').addEventListener('click', function () {
         let quantityInput = document.getElementById('quantity');
         let subtotal = document.getElementById('subtotal');
-        // const price = <?= $produk['harga']; ?>;
+        const price = "{{ .Produk.Harga }}";
 
         let currentQuantity = parseInt(quantityInput.value);
         if (currentQuantity > 1) {
@@ -187,8 +187,8 @@
     document.getElementById('tambah_stok').addEventListener('click', function () {
         let quantityInput = document.getElementById('quantity');
         let subtotal = document.getElementById('subtotal');
-        // const price = <?= $produk['harga']; ?>;
-        // const maxStock = <?= $produk['stok']; ?>;
+        const price = "{{ .Produk.Harga }}";
+        const maxStock = "{{ .Produk.Stok }}";
 
         let currentQuantity = parseInt(quantityInput.value);
         if (currentQuantity < maxStock) {

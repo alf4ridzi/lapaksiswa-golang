@@ -105,23 +105,18 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			err = tmpl.ExecuteTemplate(w, "header", data)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+			t := []string{
+				"header", "login", "footer",
 			}
 
-			err = tmpl.ExecuteTemplate(w, "login", data)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+			for _, tl := range t {
+				err = tmpl.ExecuteTemplate(w, tl, data)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}
 
-			err = tmpl.ExecuteTemplate(w, "footer", data)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 		}
 	}
 }

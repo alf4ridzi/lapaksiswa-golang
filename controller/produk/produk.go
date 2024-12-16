@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
+	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 	"github.com/gorilla/mux"
 )
@@ -21,6 +22,11 @@ func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if Produk == nil {
+			controller.NotFoundHandler(w, r)
 			return
 		}
 
