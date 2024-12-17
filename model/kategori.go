@@ -71,3 +71,36 @@ func (k *KategoriModel) GetKategori() ([]Kategori, error) {
 
 	return kategoriS, nil
 }
+
+func (p *ProdukModel) GetKategoriLike(kategori string) ([]Kategori, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE kategori LIKE ?", p.columns, p.table)
+	rows, err := p.DB.Query(query, kategori)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var kategoriS []Kategori
+
+	for rows.Next() {
+		var kat Kategori
+
+		if err = rows.Scan(
+			&kat.Nama,
+			&kat.Deskripsi,
+			&kat.Slug,
+		); err != nil {
+			return nil, err
+		}
+
+		kategoriS = append(kategoriS, kat)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return kategoriS, nil
+}
