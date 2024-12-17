@@ -45,12 +45,21 @@ func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		modelToko := model.NewTokoModel()
+		Toko, err := modelToko.GetToko(Produk.Username)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		data := make(map[string]any)
 
 		data["Produk"] = Produk
 		data["Website"] = Website
 		data["Cookies"] = cookie.GetAllCookies(r)
 		data["Related"] = Related
+		data["Toko"] = Toko
 
 		templates := []string{
 			filepath.Join("views", "templates.html"),

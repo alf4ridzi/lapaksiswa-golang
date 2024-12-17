@@ -42,7 +42,6 @@ func NewProdukModel() *ProdukModel {
 		"produk_id",
 		"nama",
 		"username",
-		"nama_toko",
 		"slug",
 		"terjual",
 		"kategori",
@@ -107,6 +106,8 @@ func (p *ProdukModel) GetRelated(produk *Produk) ([]Produk, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	var related []Produk
 	for rows.Next() {
 		var prod Produk
@@ -114,7 +115,6 @@ func (p *ProdukModel) GetRelated(produk *Produk) ([]Produk, error) {
 			&prod.ProdukID,
 			&prod.Nama,
 			&prod.Username,
-			&prod.Toko,
 			&prod.Slug,
 			&prod.Terjual,
 			&prod.Kategori,
@@ -151,7 +151,6 @@ func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
 		&produk.ProdukID,
 		&produk.Nama,
 		&produk.Username,
-		&produk.Toko,
 		&produk.Slug,
 		&produk.Terjual,
 		&produk.Kategori,
@@ -193,6 +192,8 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	var produkS []Produk
 	for rows.Next() {
 		var produk Produk
@@ -200,7 +201,6 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 			&produk.ProdukID,
 			&produk.Nama,
 			&produk.Username,
-			&produk.Toko,
 			&produk.Slug,
 			&produk.Terjual,
 			&produk.Kategori,

@@ -18,7 +18,7 @@
             <nav class="text-gray-600 mb-4 text-sm sm:text-base">
                 <a href="/" class="hover:text-blue-500">Beranda</a>
                 <span>&gt;</span>
-                <a href="<?= $produk['username'] ?>" class="hover:text-blue-500">{{ .Produk.Toko }}</a>
+                <a href="{{ .Toko.Username }}" class="hover:text-blue-500">{{ .Toko.Nama }}</a>
                 <span>&gt;</span>
                 <span class="text-blue-500 font-semibold">
                     {{ .Produk.Nama }}
@@ -123,21 +123,21 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow rounded-lg p-6 mt-6 flex flex-col md:flex-row items-center">
+            <div class="bg-white shadow rounded-lg p-6 mt-6 flex flex-col md:flex-row items-center border-2 border-blue-500">
                 <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                    <img src="https://i.pinimg.com/736x/a4/bd/96/a4bd96e98735b621e47da4ff2e4b03a1.jpg" alt="Foto Toko" class="w-24 h-24 object-cover rounded-full border-2 border-blue-500">
+                    <img src="{{ .Toko.Logo }}" alt="Logo {{ .Toko.Nama }}" class="w-24 h-24 object-cover rounded-full border-2 border-blue-500">
                 </div>
                 <div class="flex-grow text-center md:text-left">
-                    <h3 class="text-lg font-bold text-gray-800">Test Nama Toko</h3>
+                    <h3 class="text-lg font-bold text-gray-800">{{ .Toko.Nama }}</h3>
                     <p class="text-gray-600 mb-2">
-                        <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>Jln Musyawarah 123
+                        <i class="fas fa-map-marker-alt text-red-500 mr-1"></i>{{ .Toko.Alamat }}
                     </p>
                     <div class="flex items-center justify-center md:justify-start gap-4">
                         <p class="text-gray-600">
                             <i class="fas fa-box mr-1"></i>200 Produk Terjual
                         </p>
                         <p class="text-yellow-500">
-                            <i class="fas fa-star mr-1"></i>3.5 Rating
+                            <i class="fas fa-star mr-1"></i>{{ .Toko.Rating }} Rating
                         </p>
                     </div>
                 </div>
