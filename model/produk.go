@@ -131,6 +131,7 @@ func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int
 			return nil, err
 		}
 
+		p.HargaFormat = FormatToIDR(p.Harga)
 		produk = append(produk, p)
 	}
 
@@ -165,6 +166,54 @@ func FormatToIDR(price int64) string {
 	}
 
 	return result.String()
+}
+
+func (p *ProdukModel) GetProdukByKategori(kategori string) ([]Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE kategori LIKE ?", p.columns, p.table)
+	rows, err := p.DB.Query(query, kategori)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var produk []Produk
+	for rows.Next() {
+		var prod Produk
+		if err := rows.Scan(
+			&prod.ProdukID,
+			&prod.Nama,
+			&prod.Username,
+			&prod.Slug,
+			&prod.Terjual,
+			&prod.Kategori,
+			&prod.Rating,
+			&prod.Harga,
+			&prod.Stok,
+			&prod.Deskripsi,
+			&prod.Varian,
+			&prod.Diskon,
+			&prod.Unit,
+			&prod.Foto,
+			&prod.Kondisi,
+		); err != nil {
+			return nil, err
+		}
+
+		prod.HargaFormat = FormatToIDR(prod.Harga)
+		produk = append(produk, prod)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+
 }
 
 func (p *ProdukModel) GetRelated(produk *Produk) ([]Produk, error) {
