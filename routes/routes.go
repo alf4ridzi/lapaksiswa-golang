@@ -8,6 +8,7 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/autentikasi"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/produk"
+	"github.com/alf4ridzi/lapaksiswa-golang/controller/search"
 	"github.com/gorilla/mux"
 )
 
@@ -20,6 +21,9 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 
 	// dashboard
 	server.HandleFunc("/user", dashboard.User(db)).Methods("GET")
+
+	// search
+	server.HandleFunc("/search", search.Search(db)).Methods("GET")
 
 	// autentikasi
 	server.HandleFunc("/login", autentikasi.Login(db)).Methods("GET", "POST")
