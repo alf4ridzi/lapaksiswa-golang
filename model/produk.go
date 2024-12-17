@@ -9,7 +9,6 @@ import (
 )
 
 type Produk struct {
-	Id          int64
 	ProdukID    string
 	Nama        string
 	Username    string
@@ -67,6 +66,79 @@ func NewProdukModel() *ProdukModel {
 		table:   "produk",
 		columns: columns,
 	}
+}
+
+func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int, MaxPrice int, KondisiFilter string, Urutan string) ([]Produk, error) {
+	query := []string{fmt.Sprintf("SELECT %s FROM produk WHERE 1=1", p.columns)}
+	args := []interface{}{}
+
+	if Keyword != "" {
+		query = append(query, "(nama LIKE ? OR kategori LIKE ?)")
+		args = append(args, "%"+Keyword+"%", "%"+Keyword+"%")
+	}
+
+	if KategoriFilter != "" {
+		query = append(query, "kategori LIKE ?")
+		args = append(args, "%"+KategoriFilter+"%")
+	}
+
+	if MinPrice > 0 && MaxPrice > MinPrice {
+		query = append(query, "harga BETWEEN ? AND ?")
+		args = append(args, MinPrice, MaxPrice)
+	}
+
+	if KondisiFilter == "baru" || KondisiFilter == "bekas" {
+		query = append(query, "kondisi = ?")
+		args = append(args, KondisiFilter)
+	}
+
+	orderBy := ""
+	if Urutan == "terlama" {
+		orderBy = "ORDER BY created_at ASC"
+	} else if Urutan == "terbaru" {
+		orderBy = "ORDER BY created_at DESC"
+	}
+
+	finalQuery := strings.Join(query, " AND ") + " " + orderBy
+	rows, err := p.DB.Query(finalQuery, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var produk []Produk
+	for rows.Next() {
+		var p Produk
+		if err := rows.Scan(
+			&p.ProdukID,
+			&p.Nama,
+			&p.Username,
+			&p.Slug,
+			&p.Terjual,
+			&p.Kategori,
+			&p.Rating,
+			&p.Harga,
+			&p.Stok,
+			&p.Deskripsi,
+			&p.Varian,
+			&p.Diskon,
+			&p.Status,
+			&p.Unit,
+			&p.Foto,
+			&p.Kondisi); err != nil {
+			return nil, err
+		}
+
+		produk = append(produk, p)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return produk, nil
 }
 
 func FormatToIDR(price int64) string {
