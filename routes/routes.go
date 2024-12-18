@@ -22,7 +22,7 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 
 	// dashboard
 	server.HandleFunc("/user", dashboard.User(db)).Methods("GET")
-
+	server.HandleFunc("/user/edit", dashboard.Edit(db)).Methods("GET", "POST")
 	// kategori
 	server.HandleFunc("/kategori/{kategori}", kategori.Kategori(db)).Methods("GET")
 

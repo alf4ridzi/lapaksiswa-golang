@@ -13,9 +13,9 @@
                     <select name="kategori" id="kategori"
                         class="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
                         <option value="">Semua Kategori</option>
-                        <?php foreach ($kategoriLike as $k): ?>
-                            <option value="<?= esc($k['slug']) ?>"><?= esc($k['kategori']) ?></option>
-                        <?php endforeach; ?>
+                        {{ range $i, $k := .KategoriLike}}
+                            <option value="{{ $k.Slug }}">{{ $k.Nama }}</option>
+                        {{ end }}
                     </select>
                 </div>
 

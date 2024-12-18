@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"text/template"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
@@ -38,10 +39,20 @@ func Search(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		kategoriModel := model.NewKategoriModel()
+		kategoriLike, err := kategoriModel.GetKategoriLike(Keyword)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		data := make(map[string]any)
 		data["Website"] = settings
 		data["Produk"] = Produk
 		data["Keyword"] = Keyword
+		data["KategoriLike"] = kategoriLike
+		data["Cookies"] = cookie.GetAllCookies(r)
 
 		templates := []string{
 			filepath.Join("views", "templates.html"),

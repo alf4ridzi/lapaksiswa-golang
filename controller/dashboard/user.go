@@ -78,3 +78,68 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/user/edit" {
+			controller.NotFoundHandler(w, r)
+			return
+		}
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if r.Method == "POST" {
+
+		} else if r.Method == "GET" || r.Method == "" {
+			templates := []string{
+				filepath.Join("views", "templates.html"),
+				filepath.Join("views", "dashboard", "edit.html"),
+			}
+
+			tmpl, err := template.ParseFiles(templates...)
+			if err != nil {
+				w.Write([]byte(err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			modelWebsite := model.NewWebsiteModel()
+			settings, err := modelWebsite.GetSettings()
+			if err != nil {
+				w.Write([]byte(err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			data := make(map[string]any)
+
+			data["Website"] = settings
+			data["Cookies"] = cookie.GetAllCookies(r)
+
+			tName := []string{
+				"header",
+				"edit",
+				"footer",
+			}
+
+			for _, t := range tName {
+				if err = tmpl.ExecuteTemplate(w, t, data); err != nil {
+					w.Write([]byte(err.Error()))
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
+		}
+	}
+}

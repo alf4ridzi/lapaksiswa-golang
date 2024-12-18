@@ -197,6 +197,7 @@ func (p *ProdukModel) GetProdukByKategori(kategori string) ([]Produk, error) {
 			&prod.Deskripsi,
 			&prod.Varian,
 			&prod.Diskon,
+			&prod.Status,
 			&prod.Unit,
 			&prod.Foto,
 			&prod.Kondisi,
@@ -212,7 +213,7 @@ func (p *ProdukModel) GetProdukByKategori(kategori string) ([]Produk, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return produk, nil
 
 }
 
