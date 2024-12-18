@@ -113,7 +113,40 @@
 
 <script>
   document.getElementById('submit_btn').addEventListener("click", async() => {
+    const nama = document.getElementById("nama").value;
+    const tanggalLahir = document.getElementById("tanggal_lahir").value;
+    const jenisKelamin = document.getElementById("jenis_kelamin").value;
+    const email = document.getElementById("email").value;
+    const noHP = document.getElementById("no_hp").value;
 
+    const formData = {
+      nama: nama,
+      tanggalLahir: tanggalLahir,
+      jenisKelamin: jenisKelamin,
+      email: email,
+      noHP: noHP,
+    }
+
+    try {
+      const response = await fetch("/api/update-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const result = await response.json()  
+
+      if (response.ok) {
+
+      } else {
+        
+      }
+    } catch (error) {
+      console.log("error : ", error)
+      alert("Kesalahan saat memperbarui data : ", error)
+    }
   })
   
 </script>
