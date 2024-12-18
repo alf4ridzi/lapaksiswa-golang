@@ -87,15 +87,22 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		isLogin, err := r.Cookie("isLogin")
-		if err != nil {
+		if err != nil || isLogin.Value != "true" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
-		if isLogin.Value != "true" {
+		role, err := r.Cookie("role")
+		if err != nil || role.Value != "user" {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+
+		username, err := r.Cookie("username")
+		if err != nil || username.Value == "" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
-			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
@@ -122,10 +129,20 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			modelUser := model.NewUserModel()
+			User, err := modelUser.GetUser(username.Value)
+
+			if err != nil {
+				w.Write([]byte(err.Error()))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
 			data := make(map[string]any)
 
 			data["Website"] = settings
 			data["Cookies"] = cookie.GetAllCookies(r)
+			data["User"] = User
 
 			tName := []string{
 				"header",

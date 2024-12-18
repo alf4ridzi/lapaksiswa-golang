@@ -43,6 +43,7 @@ func (p *PembayaranModel) GetPembayaran() ([]Pembayaran, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	var pembayaranS []Pembayaran

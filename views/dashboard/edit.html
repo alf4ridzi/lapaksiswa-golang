@@ -31,75 +31,81 @@
         >
           Pilih Foto
         </button>
-        <p class="text-xs text-gray-500 mt-2 text-center">
-          Besar file: maksimum 10MB. Ekstensi yang diperbolehkan: JPG, JPEG,
-          PNG.
-        </p>
-
-        <div class="mt-4 w-full space-y-2">
-          <button
-            class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-md hover:bg-gray-200 text-left"
-          >
-            <i class="fa-solid fa-pen-to-square"></i> Ubah Profil
-          </button>
-          <button
-            class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-md hover:bg-gray-200 text-left"
-          >
-            <i class="fa-solid fa-user-lock"></i> Ganti Password
-          </button>
-        </div>
       </div>
 
+      <!-- Form Container -->
       <div class="flex-1">
         <h2 class="text-xl font-semibold text-gray-700">Ubah Biodata Diri</h2>
         <div class="mt-4 space-y-4">
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-gray-700">Nama</p>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-800">{{ .User.Nama }}</span>
-              <button class="text-blue-500 text-sm hover:underline">
-                Ubah
-              </button>
-            </div>
+            <input
+              id="nama"
+              type="text"
+              placeholder="Masukkan Nama"
+              value="{{ .User.Nama }}"
+              class="border p-2 rounded-md text-gray-700"
+            />
           </div>
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-gray-700">Tanggal Lahir</p>
-            {{ if .User.TanggalLahir }}
-            <span class="text-gray-800">{{ .User.TanggalLahir }}</span>
-            {{ else }}
-            <button class="text-blue-500 text-sm hover:underline">
-              Tambah Tanggal Lahir
-            </button>
-            {{ end }}
+            <input
+              id="tanggal_lahir"
+              type="date"
+              value="{{ .User.TanggalLahir }}"
+              class="border p-2 rounded-md text-gray-700"
+            />
           </div>
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-gray-700">Jenis Kelamin</p>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-800"
-                >{{ .User.JenisKelamin }}</span
-              >
-              <button class="text-blue-500 text-sm hover:underline">
-                Ubah
-              </button>
-            </div>
+            <select
+              id="jenis_kelamin"
+              class="border p-2 rounded-md text-gray-700"
+            >
+              <option value="Laki-Laki" {{ if eq .User.JenisKelamin "Laki-Laki" }}selected{{ end }}>
+                Laki-Laki
+              </option>
+              <option value="Perempuan" {{ if eq .User.JenisKelamin "Perempuan" }}selected{{ end }}>
+                Perempuan
+              </option>
+            </select>
           </div>
         </div>
 
         <h2 class="text-xl font-semibold text-gray-700 mt-6">Ubah Kontak</h2>
         <div class="mt-4 space-y-4">
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-gray-700">Email</p>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-800">{{ .User.Email }}</span>
-            </div>
+            <input
+              id="email"
+              type="email"
+              value="{{ .User.Email }}"
+              class="border p-2 rounded-md text-gray-700"
+            />
           </div>
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <p class="text-gray-700">Nomor HP</p>
-            <div class="flex items-center gap-2">
-              <span class="text-gray-800">{{ .User.NoHP }}</span>
-            </div>
+            <input
+              id="no_hp"
+              type="text"
+              value="{{ .User.NoHP }}"
+              class="border p-2 rounded-md text-gray-700"
+            />
           </div>
         </div>
+
+        <!-- Submit Button -->
+        <button
+          id="submit_btn"
+          class="mt-6 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+        >
+          Simpan Perubahan
+        </button>
+
+        <!-- Success Message -->
+        <p id="success_message" class="hidden text-green-500 mt-4">
+          Data berhasil diperbarui!
+        </p>
       </div>
     </div>
   </div>
