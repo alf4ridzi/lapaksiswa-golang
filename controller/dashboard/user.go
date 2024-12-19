@@ -13,11 +13,11 @@ import (
 )
 
 type Profile struct {
-	Nama         string
-	tanggalLahir string
-	jenisKelamin string
-	Email        string
-	noHP         int64
+	Nama         string `json:"nama"`
+	TanggalLahir string `json:"tanggalLahir"`
+	JenisKelamin string `json:"jenisKelamin"`
+	Email        string `json:"email"`
+	NoHP         string `json:"noHP"`
 }
 
 func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -172,10 +172,10 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// if r.URL.Path != "/api/update-profile" || r.Method != "POST" {
-		// 	controller.NotFoundHandler(w, r)
-		// 	return
-		// }
+		if r.URL.Path != "/api/update-user" || r.Method != "POST" {
+			controller.NotFoundHandler(w, r)
+			return
+		}
 
 		isLogin, err := r.Cookie("isLogin")
 		if err != nil {
@@ -217,18 +217,18 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 		userModel := model.NewUserModel()
 		w.Header().Set("Content-Type", "application/json")
 		// update profile
-		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.tanggalLahir, profile.jenisKelamin, profile.Email, profile.noHP); err != nil {
+		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP); err != nil {
 			data["success"] = false
-			data["msg"] = "Error"
+			data["msg"] = "Error " + err.Error()
 
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(data)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		data["success"] = true
 		data["msg"] = "Berhasil update profile"
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(data)
 	}
 }
