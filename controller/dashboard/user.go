@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"database/sql"
+	"encoding/json"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -10,6 +11,14 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
+
+type Profile struct {
+	Nama         string
+	tanggalLahir string
+	jenisKelamin string
+	Email        string
+	noHP         int64
+}
 
 func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -158,5 +167,68 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+}
+
+func UpdateData() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// if r.URL.Path != "/api/update-profile" || r.Method != "POST" {
+		// 	controller.NotFoundHandler(w, r)
+		// 	return
+		// }
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if Username.Value == "" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		var profile Profile
+
+		data := make(map[string]any)
+
+		err = json.NewDecoder(r.Body).Decode(&profile)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		userModel := model.NewUserModel()
+		w.Header().Set("Content-Type", "application/json")
+		// update profile
+		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.tanggalLahir, profile.jenisKelamin, profile.Email, profile.noHP); err != nil {
+			data["success"] = false
+			data["msg"] = "Error"
+
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(data)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		data["success"] = true
+		data["msg"] = "Berhasil update profile"
+		json.NewEncoder(w).Encode(data)
 	}
 }

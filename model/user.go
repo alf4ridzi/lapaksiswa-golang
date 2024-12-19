@@ -193,3 +193,13 @@ func (p *UserModel) GetUser(username string) (*User, error) {
 
 	return &user, nil
 }
+
+func (p *UserModel) UpdateProfileUser(username string, nama string, tanggalLahir string, jenisKelamin string, email string, noHP int64) error {
+
+	query := fmt.Sprintf("UPDATE %s SET nama = ?, tanggal_lahir = ?, jenis_kelamin = ?, email = ?, no_hp ? WHERE username = ?", p.table)
+	if _, err := p.DB.Exec(query, nama, tanggalLahir, jenisKelamin, email, noHP, username); err != nil {
+		return err
+	}
+
+	return nil
+}

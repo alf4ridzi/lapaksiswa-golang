@@ -29,6 +29,9 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 	// search
 	server.HandleFunc("/search", search.Search(db)).Methods("GET")
 
+	// update profile
+	server.HandleFunc("/api/update-user", dashboard.UpdateData()).Methods("POST")
+
 	// autentikasi
 	server.HandleFunc("/login", autentikasi.Login(db)).Methods("GET", "POST")
 	server.HandleFunc("/register", autentikasi.Register(db)).Methods("GET", "POST")
