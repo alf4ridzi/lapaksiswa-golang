@@ -3,9 +3,14 @@ package dashboard
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
 	"net/http"
+	"os"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
@@ -230,5 +235,101 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 		data["msg"] = "Berhasil update profile"
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(data)
+	}
+}
+
+func GenerateRandomStr() string {
+	rand.Seed(time.Now().UnixNano())
+	length := 10
+
+	ran_str := make([]byte, length)
+
+	for i := 0; i < length; i++ {
+		ran_str[i] = byte(65 + rand.Intn(26))
+	}
+
+	str := string(ran_str)
+	return str
+}
+
+func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/update-profile" || r.Method != "POST" {
+			controller.NotFoundHandler(w, r)
+			return
+		}
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if Username.Value == "" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if err := r.ParseMultipartForm(1024); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		file, handler, err := r.FormFile("profile_picture")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		defer file.Close()
+
+		dir, err := os.Getwd()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// get filename
+		filename := handler.Filename
+		ext := filepath.Ext(filename)
+		fileName := GenerateRandomStr()
+		filename = fmt.Sprintf("%s%s", fileName, ext)
+
+		fileLocation := filepath.Join(dir, "public/assets/picture/user", filename)
+		targetFile, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		defer targetFile.Close()
+
+		if _, err := io.Copy(targetFile, file); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		modelUser := model.NewUserModel()
+		if err = modelUser.UpdatePicture(Username.Value, filename); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }

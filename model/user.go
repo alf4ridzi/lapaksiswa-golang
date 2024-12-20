@@ -202,3 +202,12 @@ func (p *UserModel) UpdateProfileUser(username string, nama string, tanggalLahir
 
 	return nil
 }
+
+func (p *UserModel) UpdatePicture(username string, fileName string) error {
+	query := fmt.Sprintf("UPDATE %s SET foto = ? WHERE username = ?", p.table)
+	if _, err := p.DB.Exec(query, fileName, username); err != nil {
+		return err
+	}
+
+	return nil
+}
