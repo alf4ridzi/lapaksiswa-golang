@@ -59,7 +59,7 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		templates := []string{
-			filepath.Join("views", "seller", "index.html"),
+			filepath.Join("views", "dashboard", "seller", "index.html"),
 		}
 
 		tmpl, err := template.ParseFiles(templates...)
