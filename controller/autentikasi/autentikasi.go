@@ -104,7 +104,9 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 			data := map[string]any{
 				"Website": settings,
-				"Cookies": cookie.GetAllCookies(r),
+				"Cookies": cookie.GetAllCookies(w, r),
+				"Error":   cookie.GetFlashCookies(w, r, "error"),
+				"Sukses":  cookie.GetFlashCookies(w, r, "sukses"),
 			}
 
 			tmpl, err := template.ParseFiles(templates...)
@@ -199,7 +201,7 @@ func Register(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			data["Website"] = settings
-			data["Cookies"] = cookie.GetAllCookies(r)
+			data["Cookies"] = cookie.GetAllCookies(w, r)
 
 			err = tmpl.ExecuteTemplate(w, "header", data)
 			if err != nil {
@@ -316,7 +318,7 @@ func ResetPassword() func(w http.ResponseWriter, r *http.Request) {
 
 			data := make(map[string]any)
 			data["Website"] = settings
-			data["Cookies"] = cookie.GetAllCookies(r)
+			data["Cookies"] = cookie.GetAllCookies(w, r)
 
 			t := []string{
 				"header", "reset", "footer",

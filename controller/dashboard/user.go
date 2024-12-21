@@ -80,8 +80,10 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		data := map[string]any{
 			"Website": settings,
-			"Cookies": cookie.GetAllCookies(r),
+			"Cookies": cookie.GetAllCookies(w, r),
 			"User":    user,
+			"Error":   cookie.GetFlashCookies(w, r, "error"),
+			"Sukses":  cookie.GetFlashCookies(w, r, "sukses"),
 		}
 
 		for _, section := range []string{"header", "dashboard", "footer"} {
@@ -156,7 +158,7 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			data := make(map[string]any)
 
 			data["Website"] = settings
-			data["Cookies"] = cookie.GetAllCookies(r)
+			data["Cookies"] = cookie.GetAllCookies(w, r)
 			data["User"] = User
 
 			tName := []string{

@@ -43,7 +43,7 @@ func Index(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]interface{}{
 			"Terlaris": terlaris,
 			"Website":  settings,
-			"Cookies":  cookie.GetAllCookies(r),
+			"Cookies":  cookie.GetAllCookies(w, r),
 		}
 
 		tmpl, err := template.ParseFiles(templates...)

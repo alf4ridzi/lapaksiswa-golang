@@ -25,16 +25,43 @@ func SetCookie(w http.ResponseWriter, data map[string]string) {
 }
 
 func SetFlashCookie(w http.ResponseWriter, name string, value string) {
+
 	Cookie := &http.Cookie{
 		Name:     name,
 		Value:    value,
 		Path:     "/",
 		HttpOnly: false,
 		Secure:   false,
-		MaxAge:   5,
+		MaxAge:   3,
 	}
 
 	http.SetCookie(w, Cookie)
+}
+
+func GetAllAndClearFlashCookie(w http.ResponseWriter, r *http.Request, names []string) map[string]string {
+	cookies := map[string]string{}
+
+	for _, name := range names {
+		cookie, err := r.Cookie(name)
+		if err == nil {
+			cookies[name] = cookie.Value
+			DeleteCookie(w, name)
+		}
+	}
+
+	return cookies
+}
+
+func GetFlashCookies(w http.ResponseWriter, r *http.Request, name string) string {
+	cookie, err := r.Cookie(name)
+	if err != nil {
+		return ""
+	}
+
+	cookieVal := cookie.Value
+	DeleteCookie(w, name)
+
+	return cookieVal
 }
 
 func DeleteCookie(w http.ResponseWriter, name string) {
@@ -50,7 +77,7 @@ func DeleteCookie(w http.ResponseWriter, name string) {
 	http.SetCookie(w, Cookie)
 }
 
-func GetAllCookies(r *http.Request) map[string]string {
+func GetAllCookies(w http.ResponseWriter, r *http.Request) map[string]string {
 	cookies := make(map[string]string)
 	for _, c := range r.Cookies() {
 		cookies[c.Name] = c.Value

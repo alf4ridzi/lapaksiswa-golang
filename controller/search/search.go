@@ -52,7 +52,7 @@ func Search(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		data["Produk"] = Produk
 		data["Keyword"] = Keyword
 		data["KategoriLike"] = kategoriLike
-		data["Cookies"] = cookie.GetAllCookies(r)
+		data["Cookies"] = cookie.GetAllCookies(w, r)
 
 		templates := []string{
 			filepath.Join("views", "templates.html"),

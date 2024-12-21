@@ -36,7 +36,7 @@ func Kategori(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]any)
 		data["Website"] = settings
 		data["Produk"] = Produk
-		data["Cookies"] = cookie.GetAllCookies(r)
+		data["Cookies"] = cookie.GetAllCookies(w, r)
 		data["Kategori"] = kategori
 
 		templates := []string{

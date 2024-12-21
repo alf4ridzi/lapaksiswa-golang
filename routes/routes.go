@@ -20,9 +20,12 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 	// produk
 	server.HandleFunc("/produk/{slug}", produk.Produk(db)).Methods("GET")
 
-	// dashboard
+	// dashboard user
 	server.HandleFunc("/user", dashboard.User(db)).Methods("GET")
 	server.HandleFunc("/user/edit", dashboard.Edit(db)).Methods("GET", "POST")
+	// dashboard seller
+	server.HandleFunc("/seller", dashboard.Seller()).Methods("GET")
+
 	// kategori
 	server.HandleFunc("/kategori/{kategori}", kategori.Kategori(db)).Methods("GET")
 
@@ -32,6 +35,7 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 	// update profile
 	server.HandleFunc("/api/update-user", dashboard.UpdateData()).Methods("POST")
 	server.HandleFunc("/api/update-profile", dashboard.UpdateProfile()).Methods("POST")
+
 	// autentikasi
 	server.HandleFunc("/login", autentikasi.Login(db)).Methods("GET", "POST")
 	server.HandleFunc("/register", autentikasi.Register(db)).Methods("GET", "POST")

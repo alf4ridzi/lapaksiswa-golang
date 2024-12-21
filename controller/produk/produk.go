@@ -57,7 +57,7 @@ func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		data["Produk"] = Produk
 		data["Website"] = Website
-		data["Cookies"] = cookie.GetAllCookies(r)
+		data["Cookies"] = cookie.GetAllCookies(w, r)
 		data["Related"] = Related
 		data["Toko"] = Toko
 

@@ -233,3 +233,16 @@ func (p *UserModel) UpdatePicture(username string, fileName string) error {
 
 	return nil
 }
+
+func (p *UserModel) IsRole(username string, roleExpected string) (bool, error) {
+	query := fmt.Sprintf("SELECT role FROM %s WHERE username = ?", p.table)
+	row := p.DB.QueryRow(query, username)
+
+	var role string
+
+	if err := row.Scan(&role); err != nil {
+		return false, err
+	}
+
+	return role == roleExpected, nil
+}
