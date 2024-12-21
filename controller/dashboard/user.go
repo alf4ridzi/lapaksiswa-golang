@@ -12,6 +12,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/config"
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
@@ -54,7 +55,7 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		templates := []string{
 			filepath.Join("views", "templates.html"),
-			filepath.Join("views", "dashboard", "user.html"),
+			filepath.Join("views", "dashboard", "user", "user.html"),
 		}
 
 		tmpl, err := template.ParseFiles(templates...)
@@ -125,7 +126,7 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		} else if r.Method == "GET" || r.Method == "" {
 			templates := []string{
 				filepath.Join("views", "templates.html"),
-				filepath.Join("views", "dashboard", "edit.html"),
+				filepath.Join("views", "dashboard", "user", "edit.html"),
 			}
 
 			tmpl, err := template.ParseFiles(templates...)
@@ -210,12 +211,10 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 
 		var profile Profile
 
-		data := make(map[string]any)
-
 		err = json.NewDecoder(r.Body).Decode(&profile)
 		if err != nil {
-			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -223,18 +222,13 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		// update profile
 		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP); err != nil {
-			data["success"] = false
-			data["msg"] = "Error " + err.Error()
-
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(data)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
-		data["success"] = true
-		data["msg"] = "Berhasil update profile"
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(data)
+		w.Write([]byte("Update Profile Berhasil!."))
 	}
 }
 
@@ -286,13 +280,15 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := r.ParseMultipartForm(1024); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Gambar terlalu besar!"))
 			return
 		}
 
 		file, handler, err := r.FormFile("profile_picture")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
@@ -300,36 +296,83 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 
 		dir, err := os.Getwd()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
 		// get filename
 		filename := handler.Filename
 		ext := filepath.Ext(filename)
+
+		extAllowed := []string{
+			".jpg", ".png", ".jpeg", ".webp",
+		}
+
+		Allowed := false
+
+		for _, extAl := range extAllowed {
+			if ext == extAl {
+				Allowed = true
+			}
+		}
+
+		if !Allowed {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Ext bukan gambar!"))
+			return
+		}
+
 		fileName := GenerateRandomStr()
 		filename = fmt.Sprintf("%s%s", fileName, ext)
 
 		fileLocation := filepath.Join(dir, "public/assets/picture/user", filename)
 		targetFile, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
 		defer targetFile.Close()
 
 		if _, err := io.Copy(targetFile, file); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
+			return
+		}
+		modelUser := model.NewUserModel()
+
+		// hapus piccture lama
+		query := "SELECT foto FROM user WHERE username = ?"
+		oldPicture := modelUser.DB.QueryRow(query, Username.Value)
+		var old string
+
+		if err = oldPicture.Scan(
+			&old,
+		); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
-		modelUser := model.NewUserModel()
+		if old != "default.png" {
+			fileLama := filepath.Join(dir, "public/assets/picture/user", old)
+			if err = os.Remove(fileLama); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("Server Error"))
+				return
+			}
+		}
+
+		// update picture baru
 		if err = modelUser.UpdatePicture(Username.Value, filename); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Server Error"))
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(config.GetUrl() + "/public/assets/picture/user/" + filename))
 	}
 }

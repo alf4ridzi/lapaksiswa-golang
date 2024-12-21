@@ -92,6 +92,18 @@ func (p *UserModel) CheckDataExist(key, value string) (bool, error) {
 	return true, nil
 }
 
+func (p *UserModel) IsValidPassword(email string, password string) (bool, error) {
+	query := fmt.Sprintf("SELECT password FROM %s WHERE email = ?", p.table)
+	row := p.DB.QueryRow(query, email)
+
+	var pwd string
+	if err := row.Scan(&pwd); err != nil {
+		return false, err
+	}
+
+	return pwd == password, nil
+}
+
 func (p *UserModel) ValidasiLogin(w http.ResponseWriter, email, password string) (bool, error) {
 	password = Md5(password)
 	query := fmt.Sprintf("SELECT username, role FROM %s WHERE email = ? AND password = ?", p.table)
@@ -114,6 +126,16 @@ func (p *UserModel) ValidasiLogin(w http.ResponseWriter, email, password string)
 	}
 	cookie.SetCookie(w, cookieData)
 	return true, nil
+}
+
+func (p *UserModel) ChangePassword(email string, newpwd string) error {
+	query := fmt.Sprintf("UPDATE %s SET password = ? WHERE email = ?", p.table)
+	if _, err := p.DB.Exec(query, newpwd, email); err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (p *UserModel) ValidasiRegister(username, nama, email, nohp, password string) (bool, string) {

@@ -36,6 +36,7 @@ func MapRoutes(server *mux.Router, db *sql.DB) {
 	server.HandleFunc("/login", autentikasi.Login(db)).Methods("GET", "POST")
 	server.HandleFunc("/register", autentikasi.Register(db)).Methods("GET", "POST")
 	server.HandleFunc("/keluar", autentikasi.Logout()).Methods("GET")
+	server.HandleFunc("/reset-password", autentikasi.ResetPassword()).Methods("GET", "POST")
 
 	server.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 

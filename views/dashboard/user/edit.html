@@ -129,10 +129,24 @@
         body: JSON.stringify(formData),
       });
 
+      const result = await response.text()
+
       if (response.ok) {
-        document.getElementById("alertBerhasil").classList.remove("hidden");
+        var alert = document.getElementById("alertBerhasil");
+        alert.innerText = "Berhasil edit profile!";
+        alert.classList.remove("hidden")
+        setTimeout(() => {
+          alert.innerText = null;
+          alert.classList.add("hidden")
+        }, 5000);
       } else {
-        document.getElementById("alertGagal").classList.remove("hidden");
+        var alert = document.getElementById("alertGagal");
+        alert.innerText = result;
+        alert.classList.remove("hidden")
+        setTimeout(() => {
+          alert.innerText = null;
+          alert.classList.add("hidden")
+        }, 5000);
       }
     } catch (error) {
       console.error("Kesalahan saat memperbarui data:", error);
@@ -157,23 +171,35 @@
         body: formData,
       });
 
-      // const result = await response.json();
+      const result = await response.text();
 
       if (response.ok) {
-        document.getElementById("alertBerhasil").classList.remove("hidden");
-        document.getElementById("alertGagal").classList.add("hidden");
+        var alert = document.getElementById("alertBerhasil");
 
-        // const reader = new FileReader();
-        // reader.onload = () => {
-        //   const profileImage = fileInput.previousElementSibling.querySelector("img");
-        //   if (profileImage) {
-        //     profileImage.src = reader.result;
-        //   }
-        // };
-        // reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          const profileImage = fileInput.previousElementSibling.querySelector("img");
+          if (profileImage) {
+            profileImage.src = reader.result;
+          }
+        };
+
+        reader.readAsDataURL(file);
+
+        alert.innerText = "Berhasil edit profile!";
+        alert.classList.remove("hidden")
+        setTimeout(() => {
+          alert.innerText = null;
+          alert.classList.add("hidden")
+        }, 5000);
       } else {
-        document.getElementById("alertGagal").classList.remove("hidden");
-        document.getElementById("alertBerhasil").classList.add("hidden");
+        var alert = document.getElementById("alertGagal");
+        alert.classList.remove("hidden");
+        alert.innerText = result
+        setTimeout(() => {
+          alert.innerText = null;
+          alert.classList.add("hidden")
+        }, 5000);
       }
     } catch (error) {
       console.error("Error:", error);

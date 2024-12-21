@@ -1,0 +1,165 @@
+{{ define "reset" }}
+<style>
+  .reset-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url("assets/background/page.png");
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .reset-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .input-field {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #2563eb;
+  }
+</style>
+
+<div class="reset-container">
+  <div class="reset-box">
+    <h2 class="text-xl font-bold mb-6 text-center">Reset Password</h2>
+    <div id="alert" class="hidden alert error">Gagal Reset Password</div>
+
+    <div class="mb-4">
+      <label for="email" class="block text-sm font-semibold">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="input-field px-4 py-2 border border-gray-300 rounded-md w-full"
+        placeholder="Masukkan Email"
+        required
+      />
+    </div>
+    <div class="mb-4">
+      <label for="password" class="block text-sm font-semibold"
+        >Password Lama</label
+      >
+      <div class="relative">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="input-field px-4 py-2 border border-gray-300 rounded-md w-full pr-10"
+          placeholder="Masukkan Password"
+          required
+        />
+        <i
+          class="fa-solid fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          id="togglePassword"
+        ></i>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label for="passwordbaru" class="block text-sm font-semibold"
+        >Password Baru</label
+      >
+      <div class="relative">
+        <input
+          type="password"
+          id="passwordbaru"
+          name="passwordbaru"
+          class="input-field px-4 py-2 border border-gray-300 rounded-md w-full pr-10"
+          placeholder="Masukkan Password Baru"
+          required
+        />
+        <i
+          class="fa-solid fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          id="togglePasswordBaru"
+        ></i>
+      </div>
+    </div>
+    <button type="submit" id="submit" class="btn">Reset Password</button>
+    <div class="text-center mt-4">
+      <a href="user" class="text-blue-500 hover:underline text-sm">Kembali</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+      const passwordField = document.getElementById("password");
+      const type =
+        passwordField.getAttribute("type") === "password" ? "text" : "password";
+      passwordField.setAttribute("type", type);
+
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    });
+
+  document
+    .getElementById("togglePasswordBaru")
+    .addEventListener("click", function () {
+      const passwordField = document.getElementById("passwordbaru");
+      const type =
+        passwordField.getAttribute("type") === "password" ? "text" : "password";
+      passwordField.setAttribute("type", type);
+
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    });
+
+  document.getElementById("submit").addEventListener("click", async () => {
+    const formData = {
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      passwordbaru: document.getElementById("passwordbaru").value,
+    };
+
+    try {
+      const response = await fetch("/reset-password", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.text();
+
+      if (response.status !== 200) {
+        var alert = document.getElementById("alert");
+        alert.classList.remove("hidden");
+        alert.innerText = result;
+        setTimeout(() => {
+            alert.innerText = null;
+            alert.classList.add("hidden");
+        }, 3000)
+      } else if (response.ok) {
+        window.location.href = "/login";
+      }
+
+    } catch (error) {
+      console.log("error : ", error);
+    }
+  });
+</script>
+{{ end }}

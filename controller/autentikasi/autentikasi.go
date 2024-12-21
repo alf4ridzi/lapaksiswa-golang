@@ -2,6 +2,7 @@ package autentikasi
 
 import (
 	"database/sql"
+	"encoding/json"
 	"net/http"
 	"path/filepath"
 	"regexp"
@@ -9,8 +10,15 @@ import (
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
+	"github.com/alf4ridzi/lapaksiswa-golang/enc"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
+
+type Reset struct {
+	Email        string
+	Password     string
+	PasswordBaru string
+}
 
 func isValidEmail(email string) bool {
 	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
@@ -229,5 +237,97 @@ func Logout() func(w http.ResponseWriter, r *http.Request) {
 		cookie.DeleteBulkCookies(w, CookiesName)
 
 		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}
+
+func ResetPassword() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/reset-password" {
+			controller.NotFoundHandler(w, r)
+			return
+		}
+
+		if r.Method == "POST" {
+			// Email := r.FormValue("email")
+			// Password := r.FormValue("password")
+			// PasswordBaru := r.FormValue("passwordbaru")
+
+			var reset Reset
+
+			if err := json.NewDecoder(r.Body).Decode(&reset); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Server Error : " + err.Error()))
+				return
+			}
+
+			if reset.Password == reset.PasswordBaru {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("Password tidak boleh sama!"))
+				return
+			}
+
+			pwdEnc := enc.TextToMd5(reset.Password)
+
+			userModel := model.NewUserModel()
+			isValid, err := userModel.IsValidPassword(reset.Email, pwdEnc)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Kesalahan server : " + err.Error()))
+				return
+			}
+
+			if !isValid {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("Email/Password tidak benar!."))
+				return
+			}
+
+			pwdEncNew := enc.TextToMd5(reset.PasswordBaru)
+
+			if pwdEnc == pwdEncNew {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("Password baru dengan lama tidak boleh sama!"))
+				return
+			}
+
+			if err = userModel.ChangePassword(reset.Email, pwdEncNew); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			cookie.SetFlashCookie(w, "sukses", "Berhasil! Reset Password Silahkan Login Kembali.")
+			w.WriteHeader(http.StatusOK)
+
+		} else if r.Method == "GET" || r.Method == "" {
+			templates := []string{
+				filepath.Join("views", "templates.html"),
+				filepath.Join("views", "autentikasi", "reset.html"),
+			}
+
+			tmpl, err := template.ParseFiles(templates...)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			websiteModel := model.NewWebsiteModel()
+			settings, err := websiteModel.GetSettings()
+
+			data := make(map[string]any)
+			data["Website"] = settings
+			data["Cookies"] = cookie.GetAllCookies(r)
+
+			t := []string{
+				"header", "reset", "footer",
+			}
+
+			for _, tl := range t {
+				if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+			}
+		}
 	}
 }
