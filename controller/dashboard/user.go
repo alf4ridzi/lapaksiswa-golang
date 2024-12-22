@@ -40,12 +40,6 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		role, err := r.Cookie("role")
-		if err != nil || role.Value != "user" {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-
 		username, err := r.Cookie("username")
 		if err != nil || username.Value == "" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
@@ -107,12 +101,6 @@ func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil || isLogin.Value != "true" {
 			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
 			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-
-		role, err := r.Cookie("role")
-		if err != nil || role.Value != "user" {
-			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 

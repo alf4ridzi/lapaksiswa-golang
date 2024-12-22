@@ -59,6 +59,7 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		templates := []string{
+			filepath.Join("views", "dashboard", "seller", "templates.html"),
 			filepath.Join("views", "dashboard", "seller", "index.html"),
 		}
 
@@ -81,10 +82,16 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 
 		data["Website"] = settings
 
-		if err = tmpl.Execute(w, data); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-			return
+		t := []string{
+			"header", "navbar", "content", "end",
+		}
+
+		for _, tl := range t {
+			if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+				return
+			}
 		}
 	}
 }
