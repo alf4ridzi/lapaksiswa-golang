@@ -88,6 +88,47 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		orderModel := model.NewOrderModel()
+		TrxHariIni, err := orderModel.GetTransaksiHariIni(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		TrxKemarin, err := orderModel.GetTransaksiKemarin(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		Omset, err := orderModel.GetTotalOmset(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		OmsetBulanan, err := orderModel.GetOmsetBulanan(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		TotalTrx, err := orderModel.GetTotalTransaksi(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		data["TotalTrx"] = TotalTrx
+		data["OmsetBulanan"] = OmsetBulanan
+		data["Omset"] = Omset
+		data["Kemarin"] = TrxKemarin
+		data["HariIni"] = TrxHariIni
 		data["Website"] = settings
 		data["Toko"] = Toko
 
