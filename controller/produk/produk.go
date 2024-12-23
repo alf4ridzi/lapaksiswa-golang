@@ -46,7 +46,7 @@ func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		modelToko := model.NewTokoModel()
-		Toko, err := modelToko.GetToko(Produk.Username)
+		Toko, err := modelToko.GetToko(Produk.Domain)
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
@@ -78,8 +78,7 @@ func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, tl := range t {
-			err = tmpl.ExecuteTemplate(w, tl, data)
-			if err != nil {
+			if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
 				w.Write([]byte(err.Error()))
 				w.WriteHeader(http.StatusInternalServerError)
 				return

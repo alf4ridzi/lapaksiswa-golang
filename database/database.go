@@ -25,8 +25,7 @@ func InitDatabase() *sql.DB {
 		panic(err)
 	}
 
-	err = db.Ping()
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		panic(err)
 	}
 

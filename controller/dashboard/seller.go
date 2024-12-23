@@ -80,7 +80,16 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		tokoModel := model.NewTokoModel()
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
 		data["Website"] = settings
+		data["Toko"] = Toko
 
 		t := []string{
 			"header", "navbar", "content", "end",

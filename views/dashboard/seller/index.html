@@ -1,24 +1,67 @@
 {{ define "content" }}
-<main class="ml-64 w-full p-8">
+<main class="ml-64 mr-8 p-8">
   <div id="dashboard" class="content">
-    <h2 class="text-3xl font-semibold text-gray-800">Dashboard</h2>
-    <p class="mt-4 text-gray-600">
-      Welcome to the dashboard! Here you can manage your overall account and
-      activities.
-    </p>
+    <h2 class="text-lg font-semibold text-gray-800">Transaksi Hari Ini</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+      <div class="bg-green-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Total Penjualan</h3>
+        <p class="mt-1 text-xl font-bold text-white">$5,320</p>
+      </div>
+      <div class="bg-blue-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Proses</h3>
+        <p class="mt-1 text-xl font-bold text-white">15 Orders</p>
+      </div>
+      <div class="bg-yellow-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Pending</h3>
+        <p class="mt-1 text-xl font-bold text-white">120 Products</p>
+      </div>
+      <div class="bg-red-600 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Gagal</h3>
+        <p class="mt-1 text-xl font-bold text-white">120 Products</p>
+      </div>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800">Total Sales</h3>
-        <p class="mt-2 text-2xl font-bold text-gray-600">$5,320</p>
+    <h2 class="text-lg font-semibold text-gray-800 mt-4">Transaksi Kemarin</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+      <div class="bg-green-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Total Penjualan</h3>
+        <p class="mt-1 text-xl font-bold text-white">$5,320</p>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800">Pending Orders</h3>
-        <p class="mt-2 text-2xl font-bold text-gray-600">15 Orders</p>
+      <div class="bg-blue-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Proses</h3>
+        <p class="mt-1 text-xl font-bold text-white">15 Orders</p>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800">Products Listed</h3>
-        <p class="mt-2 text-2xl font-bold text-gray-600">120 Products</p>
+      <div class="bg-yellow-500 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Pending</h3>
+        <p class="mt-1 text-xl font-bold text-white">120 Products</p>
+      </div>
+      <div class="bg-red-600 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Gagal</h3>
+        <p class="mt-1 text-xl font-bold text-white">120 Products</p>
+      </div>
+    </div>
+
+    <h2 class="text-lg font-semibold text-gray-800 mt-4">Keuntungan</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+      <div class="bg-slate-800 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Total Omset</h3>
+        <p class="mt-1 text-xl font-bold text-white">$5,320</p>
+      </div>
+      <div class="bg-slate-800 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Omset Bulan Ini</h3>
+        <p class="mt-1 text-xl font-bold text-white">Rp 500,000</p>
+      </div>
+    </div>
+
+    <h2 class="text-lg font-semibold text-gray-800 mt-4">Data Lain</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+      <div class="bg-slate-800 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Saldo</h3>
+        <p class="mt-1 text-xl font-bold text-white">$5,320</p>
+      </div>
+      <div class="bg-slate-800 p-4 rounded-md shadow-md">
+        <h3 class="text-lg font-semibold text-white">Total Transaksi</h3>
+        <p class="mt-1 text-xl font-bold text-white">50x</p>
       </div>
     </div>
   </div>
@@ -51,10 +94,18 @@
             <td class="py-3 px-6 text-gray-600">Product A</td>
             <td class="py-3 px-6 text-gray-600">$50</td>
             <td class="py-3 px-6 text-gray-600">30</td>
-            <td class="py-3 px-6 text-blue-600 hover:underline cursor-pointer">
-                <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600">Edit</button>
-                <button class="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 ml-2">Delete</button>
-              </td>
+            <td class="py-3 px-6">
+              <button
+                class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600"
+              >
+                Edit
+              </button>
+              <button
+                class="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 ml-2"
+              >
+                Delete
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -121,9 +172,7 @@
             />
           </div>
           <div>
-            <label for="email" class="block text-gray-800"
-              >Email Address</label
-            >
+            <label for="email" class="block text-gray-800">Email Address</label>
             <input
               type="email"
               id="email"

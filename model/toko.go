@@ -9,6 +9,7 @@ import (
 
 type Toko struct {
 	Username  string
+	Domain    string
 	Nama      string
 	Kategori  string
 	Logo      string
@@ -30,6 +31,7 @@ func NewTokoModel() *TokoModel {
 	// allowed columns
 	var columnsAllowed = []string{
 		"username",
+		"domain",
 		"nama",
 		"kategori",
 		"logo",
@@ -53,13 +55,38 @@ func NewTokoModel() *TokoModel {
 	}
 }
 
-func (t *TokoModel) GetToko(username string) (*Toko, error) {
+func (t *TokoModel) GetToko(domain string) (*Toko, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE domain = ?", t.columns, t.table)
+	row := t.DB.QueryRow(query, domain)
+
+	var toko Toko
+	if err := row.Scan(
+		&toko.Username,
+		&toko.Domain,
+		&toko.Nama,
+		&toko.Kategori,
+		&toko.Logo,
+		&toko.Deskripsi,
+		&toko.Email,
+		&toko.NoHP,
+		&toko.Alamat,
+		&toko.Rating,
+		&toko.Status,
+	); err != nil {
+		return nil, err
+	}
+
+	return &toko, nil
+}
+
+func (t *TokoModel) GetTokoByUsername(username string) (*Toko, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE username = ?", t.columns, t.table)
 	row := t.DB.QueryRow(query, username)
 
 	var toko Toko
 	if err := row.Scan(
 		&toko.Username,
+		&toko.Domain,
 		&toko.Nama,
 		&toko.Kategori,
 		&toko.Logo,

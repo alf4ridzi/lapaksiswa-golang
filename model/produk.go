@@ -11,7 +11,7 @@ import (
 type Produk struct {
 	ProdukID    string
 	Nama        string
-	Username    string
+	Domain      string
 	Toko        string
 	Slug        string
 	Terjual     int64
@@ -40,7 +40,7 @@ func NewProdukModel() *ProdukModel {
 	var columnsAllowed = []string{
 		"produk_id",
 		"nama",
-		"username",
+		"domain",
 		"slug",
 		"terjual",
 		"kategori",
@@ -114,7 +114,7 @@ func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int
 		if err := rows.Scan(
 			&p.ProdukID,
 			&p.Nama,
-			&p.Username,
+			&p.Domain,
 			&p.Slug,
 			&p.Terjual,
 			&p.Kategori,
@@ -187,7 +187,7 @@ func (p *ProdukModel) GetProdukByKategori(kategori string) ([]Produk, error) {
 		if err := rows.Scan(
 			&prod.ProdukID,
 			&prod.Nama,
-			&prod.Username,
+			&prod.Domain,
 			&prod.Slug,
 			&prod.Terjual,
 			&prod.Kategori,
@@ -236,7 +236,7 @@ func (p *ProdukModel) GetRelated(produk *Produk) ([]Produk, error) {
 		if err := rows.Scan(
 			&prod.ProdukID,
 			&prod.Nama,
-			&prod.Username,
+			&prod.Domain,
 			&prod.Slug,
 			&prod.Terjual,
 			&prod.Kategori,
@@ -272,7 +272,7 @@ func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
 	err := row.Scan(
 		&produk.ProdukID,
 		&produk.Nama,
-		&produk.Username,
+		&produk.Domain,
 		&produk.Slug,
 		&produk.Terjual,
 		&produk.Kategori,
@@ -322,7 +322,7 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 		err = rows.Scan(
 			&produk.ProdukID,
 			&produk.Nama,
-			&produk.Username,
+			&produk.Domain,
 			&produk.Slug,
 			&produk.Terjual,
 			&produk.Kategori,

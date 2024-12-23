@@ -278,7 +278,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 		file, handler, err := r.FormFile("profile_picture")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 
@@ -287,7 +287,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 		dir, err := os.Getwd()
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 
@@ -320,7 +320,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 		targetFile, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 
@@ -328,7 +328,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 
 		if _, err := io.Copy(targetFile, file); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 		modelUser := model.NewUserModel()
@@ -342,7 +342,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 			&old,
 		); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 
@@ -350,7 +350,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 			fileLama := filepath.Join(dir, "public/assets/picture/user", old)
 			if err = os.Remove(fileLama); err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte("Server Error"))
+				w.Write([]byte("Server Error : " + err.Error()))
 				return
 			}
 		}
@@ -358,7 +358,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 		// update picture baru
 		if err = modelUser.UpdatePicture(Username.Value, filename); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error : " + err.Error()))
 			return
 		}
 
