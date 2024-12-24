@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 17, 2024 at 02:57 PM
--- Server version: 8.0.31
+-- Generation Time: Dec 23, 2024 at 01:53 PM
+-- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `lapaksiswa`
 --
-CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `lapaksiswa`;
 
 -- --------------------------------------------------------
 
@@ -29,7 +27,6 @@ USE `lapaksiswa`;
 -- Table structure for table `ci_sessions`
 --
 
-DROP TABLE IF EXISTS `ci_sessions`;
 CREATE TABLE `ci_sessions` (
   `id` varchar(128) NOT NULL,
   `ip_address` varchar(45) NOT NULL,
@@ -92,7 +89,6 @@ INSERT INTO `ci_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 -- Table structure for table `foto_komentar`
 --
 
-DROP TABLE IF EXISTS `foto_komentar`;
 CREATE TABLE `foto_komentar` (
   `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
@@ -105,7 +101,6 @@ CREATE TABLE `foto_komentar` (
 -- Table structure for table `foto_produk`
 --
 
-DROP TABLE IF EXISTS `foto_produk`;
 CREATE TABLE `foto_produk` (
   `id` int NOT NULL,
   `foto` varchar(255) NOT NULL,
@@ -118,7 +113,6 @@ CREATE TABLE `foto_produk` (
 -- Table structure for table `kategori`
 --
 
-DROP TABLE IF EXISTS `kategori`;
 CREATE TABLE `kategori` (
   `id` int NOT NULL,
   `kategori` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
@@ -141,7 +135,6 @@ INSERT INTO `kategori` (`id`, `kategori`, `deskripsi`, `slug`) VALUES
 -- Table structure for table `komentar`
 --
 
-DROP TABLE IF EXISTS `komentar`;
 CREATE TABLE `komentar` (
   `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
@@ -159,31 +152,9 @@ CREATE TABLE `komentar` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order`
---
-
-DROP TABLE IF EXISTS `order`;
-CREATE TABLE `order` (
-  `id` int NOT NULL,
-  `order_id` varchar(50) NOT NULL,
-  `alamat_pengiriman` text,
-  `produk` varchar(100) DEFAULT NULL,
-  `status` enum('waiting','proses','sukses') DEFAULT 'waiting',
-  `harga` decimal(10,2) DEFAULT NULL,
-  `metode_pembayaran` varchar(50) DEFAULT NULL,
-  `note` text,
-  `no_hp` varchar(15) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `pembayaran`
 --
 
-DROP TABLE IF EXISTS `pembayaran`;
 CREATE TABLE `pembayaran` (
   `id` int NOT NULL,
   `nama` varchar(50) NOT NULL,
@@ -206,12 +177,11 @@ INSERT INTO `pembayaran` (`id`, `nama`, `logo`) VALUES
 -- Table structure for table `produk`
 --
 
-DROP TABLE IF EXISTS `produk`;
 CREATE TABLE `produk` (
   `id` int NOT NULL,
   `produk_id` varchar(50) NOT NULL,
   `nama` varchar(100) NOT NULL,
-  `username` varchar(255) NOT NULL,
+  `domain` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `slug` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `terjual` int DEFAULT '0',
   `kategori` varchar(100) DEFAULT NULL,
@@ -233,7 +203,7 @@ CREATE TABLE `produk` (
 -- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `produk` (`id`, `produk_id`, `nama`, `domain`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
 (1, 'P001', 'Buku Tulis Spiral', 'tokobuku', 'buku-tulis-spiral', 50, 'Alat Tulis', 5, 15000, 100, 'Buku tulis spiral ukuran A5, cocok untuk pelajar.', 'Merah,Biru,Hijau', 10.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c', 'baru', '2024-11-24 07:39:08', '2024-11-24 14:52:08'),
 (2, 'P002', 'Kaos Polos Putih', 'lapakkaos', 'kaos-polos-putih', 120, 'pakaian', 5, 45000, 200, 'Kaos polos putih berbahan katun yang nyaman.', 'M,L,XL', 15.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f', 'baru', '2024-11-24 07:39:08', '2024-12-01 18:28:46'),
 (3, 'P003', 'Mouse Wireless', '', 'mouse-wireless', 80, 'Elektronik', 4, 75000, 50, 'Mouse wireless dengan desain ergonomis.', 'Hitam,Abu-abu', 5.00, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1517433456452-f9633a875f6f', 'baru', '2024-11-24 07:39:08', NULL),
@@ -261,7 +231,6 @@ INSERT INTO `produk` (`id`, `produk_id`, `nama`, `username`, `slug`, `terjual`, 
 -- Table structure for table `produk_statistik`
 --
 
-DROP TABLE IF EXISTS `produk_statistik`;
 CREATE TABLE `produk_statistik` (
   `id` int NOT NULL,
   `produk_id` varchar(50) NOT NULL,
@@ -276,7 +245,6 @@ CREATE TABLE `produk_statistik` (
 -- Table structure for table `replies`
 --
 
-DROP TABLE IF EXISTS `replies`;
 CREATE TABLE `replies` (
   `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
@@ -296,7 +264,6 @@ CREATE TABLE `replies` (
 -- Table structure for table `settings_web`
 --
 
-DROP TABLE IF EXISTS `settings_web`;
 CREATE TABLE `settings_web` (
   `id` int NOT NULL,
   `web_title` varchar(255) NOT NULL,
@@ -320,9 +287,9 @@ INSERT INTO `settings_web` (`id`, `web_title`, `web_icon`, `web_logo`, `web_auth
 -- Table structure for table `toko`
 --
 
-DROP TABLE IF EXISTS `toko`;
 CREATE TABLE `toko` (
   `id` int NOT NULL,
+  `domain` varchar(100) NOT NULL,
   `username` varchar(50) NOT NULL,
   `nama` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `kategori` varchar(100) DEFAULT NULL,
@@ -341,8 +308,38 @@ CREATE TABLE `toko` (
 -- Dumping data for table `toko`
 --
 
-INSERT INTO `toko` (`id`, `username`, `nama`, `kategori`, `logo`, `deskripsi`, `email`, `no_hp`, `alamat`, `rating`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'tokobuku', 'Toko Buku Butun', 'Alat Tulis', 'https://i.pinimg.com/736x/80/c0/f6/80c0f658ab849ed80a74b3539ed72d58.jpg', 'Toko Buku Terpecaya', 'tokobuku@gmail.com', '08589411', 'Jln Butun, Kota Bekasi', 3, 'aktif', '2024-12-17 13:13:37', NULL);
+INSERT INTO `toko` (`id`, `domain`, `username`, `nama`, `kategori`, `logo`, `deskripsi`, `email`, `no_hp`, `alamat`, `rating`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'tokobuku', 'admin', 'Toko Buku Butun', 'Alat Tulis', 'https://i.pinimg.com/736x/80/c0/f6/80c0f658ab849ed80a74b3539ed72d58.jpg', 'Toko Buku Terpecaya', 'tokobuku@gmail.com', '08589411', 'Jln Butun, Kota Bekasi', 3, 'aktif', '2024-12-17 13:13:37', '2024-12-22 17:34:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaksi`
+--
+
+CREATE TABLE `transaksi` (
+  `id` int NOT NULL,
+  `order_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `produk_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `domain` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `alamat` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `qty` bigint NOT NULL,
+  `status` enum('waiting','proses','sukses') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'waiting',
+  `harga` bigint DEFAULT NULL,
+  `metode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `no_hp` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `transaksi`
+--
+
+INSERT INTO `transaksi` (`id`, `order_id`, `produk_id`, `domain`, `username`, `alamat`, `qty`, `status`, `harga`, `metode`, `note`, `no_hp`, `created_at`, `updated_at`) VALUES
+(1, 'M123', 'P001', 'tokobuku', 'adminmarket', 'Jln Rawa Bango', 10, 'sukses', 12000, 'DANA', 'Ga tau', '085894110892', '2024-12-23 17:02:46', '2024-12-23 17:08:16');
 
 -- --------------------------------------------------------
 
@@ -350,7 +347,6 @@ INSERT INTO `toko` (`id`, `username`, `nama`, `kategori`, `logo`, `deskripsi`, `
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL,
   `username` varchar(50) NOT NULL,
@@ -359,7 +355,7 @@ CREATE TABLE `user` (
   `email` varchar(100) NOT NULL,
   `no_hp` bigint DEFAULT NULL,
   `role` enum('admin','user','seller') DEFAULT 'user',
-  `foto` varchar(255) DEFAULT NULL,
+  `foto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'default.png',
   `alamat` text,
   `kelas` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
@@ -377,7 +373,7 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`, `role`, `foto`, `alamat`, `kelas`, `password`, `token_reset_password`, `jenis_kelamin`, `created_at`, `last_online`, `updated_at`) VALUES
 (1, 'adminmarket', NULL, NULL, 'aalalfaridzi9@gmail.com', NULL, 'user', NULL, NULL, NULL, 'alfaridzi123', NULL, 'pria', '2024-11-26 07:31:59', NULL, '2024-11-26 07:37:04'),
 (2, 'alfaridzi', 'Muhammad Alfaridzi', NULL, 'nfex.ghost@gmail.com', 85894110892, 'user', 'test123.png', NULL, NULL, '123', NULL, 'pria', '2024-11-26 08:02:48', NULL, '2024-12-15 16:50:06'),
-(3, 'admin', 'admin market', NULL, 'admin@gmail.com', 1234, 'user', NULL, NULL, NULL, '202cb962ac59075b964b07152d234b70', NULL, 'pria', '2024-12-15 16:50:51', NULL, NULL);
+(3, 'admin', 'admin market 123', '2024-12-05', 'admin@gmail.com', 85894110982, 'seller', 'NFFHQMDWOJ.jpg', '', '', '202cb962ac59075b964b07152d234b70', '', 'pria', '2024-12-15 16:50:51', '2024-12-06 17:42:12', '2024-12-22 17:42:56');
 
 -- --------------------------------------------------------
 
@@ -385,7 +381,6 @@ INSERT INTO `user` (`id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`,
 -- Table structure for table `user_login`
 --
 
-DROP TABLE IF EXISTS `user_login`;
 CREATE TABLE `user_login` (
   `id` int NOT NULL,
   `user_id` varchar(50) NOT NULL,
@@ -400,7 +395,6 @@ CREATE TABLE `user_login` (
 -- Table structure for table `voucher`
 --
 
-DROP TABLE IF EXISTS `voucher`;
 CREATE TABLE `voucher` (
   `id` int NOT NULL,
   `toko_id` varchar(50) NOT NULL,
@@ -447,12 +441,6 @@ ALTER TABLE `komentar`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `order`
---
-ALTER TABLE `order`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
@@ -486,6 +474,12 @@ ALTER TABLE `settings_web`
 -- Indexes for table `toko`
 --
 ALTER TABLE `toko`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `transaksi`
+--
+ALTER TABLE `transaksi`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -535,12 +529,6 @@ ALTER TABLE `komentar`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `order`
---
-ALTER TABLE `order`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
@@ -574,6 +562,12 @@ ALTER TABLE `settings_web`
 -- AUTO_INCREMENT for table `toko`
 --
 ALTER TABLE `toko`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `transaksi`
+--
+ALTER TABLE `transaksi`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
