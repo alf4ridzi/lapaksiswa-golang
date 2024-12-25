@@ -8,6 +8,16 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
 
+type Tambah struct {
+	Nama      string `json:"nama"`
+	Deskripsi string `json:"deskripsi"`
+	Kategori  string `json:"kategori"`
+	Varian    string `json:"varian"`
+	Unit      string `json:"unit"`
+	Kondisi   string `json:"kondisi"`
+	Harga     int64  `json:"harga"`
+}
+
 type Produk struct {
 	ProdukID    string
 	Nama        string
@@ -69,6 +79,40 @@ func NewProdukModel() *ProdukModel {
 		table:   "produk",
 		columns: columns,
 	}
+}
+
+func (p *ProdukModel) TambahProduk(ProdukID string, Domain string, Slug string, Produk Tambah) (bool, error) {
+	query := fmt.Sprintf("INSERT INTO %s (produk_id, nama, domain, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
+	if _, err := p.DB.Exec(query, ProdukID, Produk.Nama, Domain, Slug, Produk.Deskripsi, Produk.Kategori, Produk.Varian, Produk.Unit, Produk.Kondisi, Produk.Harga); err != nil {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (p *ProdukModel) IsProdukID(ProdukID string) (bool, error) {
+	query := fmt.Sprintf("SELECT id FROM %s WHERE produk_id = ?", p.table)
+	row := p.DB.QueryRow(query, ProdukID)
+
+	var id int64
+
+	if err := row.Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (p *ProdukModel) UpdateFotoProduk(ProdukID string, Foto string) error {
+	query := fmt.Sprintf("UPDATE %s SET foto = ? WHERE produk_id = ?", p.table)
+	if _, err := p.DB.Exec(query, Foto, ProdukID); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *ProdukModel) GetProductToko(domain string) ([]Produk, error) {

@@ -2,8 +2,16 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
@@ -123,6 +131,242 @@ func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
 
 		data["status"] = true
 		data["result"] = Produk
+		responseJson, err := ConvertMapToJson(data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(responseJson)
+	}
+}
+
+func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) error {
+	uploadedFile, handler, err := r.FormFile("gambar")
+
+	if err != nil {
+		return err
+	}
+
+	defer uploadedFile.Close()
+
+	dir, err := os.Getwd()
+
+	if err != nil {
+		return err
+	}
+
+	filename := handler.Filename
+	ext := filepath.Ext(filename)
+
+	extAllowed := []string{
+		".jpg", ".png", ".jpeg", ".webp",
+	}
+
+	Allowed := false
+
+	for _, extAl := range extAllowed {
+		if ext == extAl {
+			Allowed = true
+		}
+	}
+
+	if !Allowed {
+		return fmt.Errorf("Ext yang di perbolehkan hanya gambar")
+	}
+
+	fileName := dashboard.GenerateRandomStr()
+	filename = fmt.Sprintf("%s%s", fileName, ext)
+
+	fileLocation := filepath.Join(dir, "public/img/product", filename)
+	targetFile, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return err
+	}
+
+	defer targetFile.Close()
+
+	if _, err := io.Copy(targetFile, uploadedFile); err != nil {
+		return err
+	}
+
+	produkModel := model.NewProdukModel()
+	if err = produkModel.UpdateFotoProduk(ProdukID, fileName); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GenerateProdukID() string {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randomNumber := rng.Intn(1000000)
+	return fmt.Sprintf("P%06d", randomNumber)
+}
+
+func GenerateSlug(ProductName string, ProductID string) string {
+	lower := strings.ToLower(ProductName)
+	slug := strings.ReplaceAll(lower, " ", "-")
+	return fmt.Sprintf("%s-%s", slug, ProductID)
+}
+
+func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("Post doang oi"))
+			return
+		}
+
+		data := map[string]any{
+			"status": false,
+			"result": nil,
+		}
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := r.ParseMultipartForm(1024); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			data["result"] = "Login dlu woilah"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Username.Value == "" {
+			data["result"] = "Login dlu woilah"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		userModel := model.NewUserModel()
+		isRole, err := userModel.IsRole(Username.Value, "seller")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !isRole {
+			data["result"] = "Khusus seller dek2"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		tokoModel := model.NewTokoModel()
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Toko.Domain == "" {
+			data["result"] = "Toko Tidak Ditemukan"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(responseJson)
+			return
+		}
+
+		var produk model.Tambah
+
+		if err = json.NewDecoder(r.Body).Decode(&produk); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var ProdukID string
+		produkModel := model.NewProdukModel()
+
+		for {
+			ProdukID := GenerateProdukID()
+			isProdukID, err := produkModel.IsProdukID(ProdukID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !isProdukID {
+				break
+			}
+		}
+
+		Slug := GenerateSlug(produk.Nama, ProdukID)
+		tambah, err := produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, produk)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !tambah {
+			data["result"] = "Gagal tambah gambar"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		if err := HandleImageUpload(ProdukID, w, r); err != nil {
+			data["result"] = "Gagal upload gambar"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		data["status"] = true
 		responseJson, err := ConvertMapToJson(data)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
