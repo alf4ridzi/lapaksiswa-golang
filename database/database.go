@@ -16,18 +16,18 @@ type DBConfig struct {
 	Port     string
 }
 
-func InitDatabase() *sql.DB {
+func InitDatabase() (*sql.DB, error) {
 	database := config.GetEnvDatabase()
 
 	dsn := fmt.Sprintf("%s@tcp(%s:%s)/%s", database.Username, database.Host, database.Port, database.Database)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if err = db.Ping(); err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }

@@ -27,6 +27,7 @@ type Produk struct {
 	Foto        string
 	Kondisi     string
 	HargaFormat string
+	CreatedAt   string
 }
 
 type ProdukModel struct {
@@ -56,16 +57,68 @@ func NewProdukModel() *ProdukModel {
 		"kondisi",
 	}
 
-	columns := fmt.Sprintf("%s", columnsAllowed[0])
-	for _, col := range columnsAllowed[1:] {
-		columns = fmt.Sprintf("%s, %s", columns, col)
+	db, err := database.InitDatabase()
+	if err != nil {
+		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
 
+	columns := strings.Join(columnsAllowed, ", ")
+
 	return &ProdukModel{
-		DB:      database.InitDatabase(),
+		DB:      db,
 		table:   "produk",
 		columns: columns,
 	}
+}
+
+func (p *ProdukModel) GetProductToko(domain string) ([]Produk, error) {
+	query := fmt.Sprintf("SELECT %s, created_at FROM %s WHERE domain = ?", p.columns, p.table)
+	rows, err := p.DB.Query(query, domain)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var produk []Produk
+
+	for rows.Next() {
+		var prod Produk
+		if err = rows.Scan(
+			&prod.ProdukID,
+			&prod.Nama,
+			&prod.Domain,
+			&prod.Slug,
+			&prod.Terjual,
+			&prod.Kategori,
+			&prod.Rating,
+			&prod.Harga,
+			&prod.Stok,
+			&prod.Deskripsi,
+			&prod.Varian,
+			&prod.Diskon,
+			&prod.Status,
+			&prod.Unit,
+			&prod.Foto,
+			&prod.Kondisi,
+			&prod.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		produk = append(produk, prod)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return produk, nil
 }
 
 func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int, MaxPrice int, KondisiFilter string, Urutan string) ([]Produk, error) {

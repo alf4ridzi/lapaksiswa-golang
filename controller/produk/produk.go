@@ -1,7 +1,6 @@
 package produk
 
 import (
-	"database/sql"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -12,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Produk(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Produk() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		slug := vars["slug"]

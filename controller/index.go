@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -10,7 +9,7 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
-func Index(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Index() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			ErrorHandler(w, r, http.StatusNotFound)

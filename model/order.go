@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
@@ -43,13 +44,15 @@ func NewOrderModel() *OrderModel {
 		"no_hp",
 	}
 
-	columns := fmt.Sprintf("%s", columnsAllowed[0])
-	for _, col := range columnsAllowed[1:] {
-		columns = fmt.Sprintf("%s, %s", columns, col)
+	db, err := database.InitDatabase()
+	if err != nil {
+		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
 
+	columns := strings.Join(columnsAllowed, ", ")
+
 	return &OrderModel{
-		DB:      database.InitDatabase(),
+		DB:      db,
 		table:   "transaksi",
 		columns: columns,
 	}

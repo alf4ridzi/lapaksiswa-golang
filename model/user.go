@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
@@ -56,14 +57,11 @@ func NewUserModel() *UserModel {
 		"updated_at",
 	}
 
-	columns := columnsAllowed[0]
-	for _, col := range columnsAllowed[1:] {
-		columns = fmt.Sprintf("%s, %s", columns, col)
-	}
+	columns := strings.Join(columnsAllowed, ", ")
 
-	db := database.InitDatabase()
-	if db == nil {
-		panic("Failed to initialize database")
+	db, err := database.InitDatabase()
+	if err != nil {
+		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
 
 	return &UserModel{

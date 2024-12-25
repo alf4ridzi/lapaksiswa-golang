@@ -1,7 +1,6 @@
 package search
 
 import (
-	"database/sql"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -11,7 +10,7 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
-func Search(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Search() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		Keyword := r.URL.Query().Get("keyword")
 		KategoriFilter := r.URL.Query().Get("kategori")

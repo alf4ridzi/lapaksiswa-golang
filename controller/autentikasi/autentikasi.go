@@ -1,7 +1,6 @@
 package autentikasi
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"path/filepath"
@@ -25,7 +24,7 @@ func isValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
 }
 
-func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Login() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/login" {
 			controller.ErrorHandler(w, r, http.StatusNotFound)
@@ -131,7 +130,7 @@ func Login(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Register(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Register() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/register" {
 			controller.ErrorHandler(w, r, http.StatusNotFound)

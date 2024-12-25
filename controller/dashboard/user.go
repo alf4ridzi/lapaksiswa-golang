@@ -1,7 +1,6 @@
 package dashboard
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,7 +25,7 @@ type Profile struct {
 	NoHP         string `json:"noHP"`
 }
 
-func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func User() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/user" {
 			controller.ErrorHandler(w, r, http.StatusPermanentRedirect)
@@ -90,7 +89,7 @@ func User(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Edit(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Edit() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/user/edit" {
 			controller.NotFoundHandler(w, r)

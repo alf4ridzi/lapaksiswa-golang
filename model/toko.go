@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
@@ -43,13 +44,15 @@ func NewTokoModel() *TokoModel {
 		"status",
 	}
 
-	columns := fmt.Sprintf("%s", columnsAllowed[0])
-	for _, col := range columnsAllowed[1:] {
-		columns = fmt.Sprintf("%s, %s", columns, col)
+	db, err := database.InitDatabase()
+	if err != nil {
+		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
 
+	columns := strings.Join(columnsAllowed, ", ")
+
 	return &TokoModel{
-		DB:      database.InitDatabase(),
+		DB:      db,
 		table:   "toko",
 		columns: columns,
 	}
@@ -77,6 +80,24 @@ func (t *TokoModel) GetToko(domain string) (*Toko, error) {
 	}
 
 	return &toko, nil
+}
+
+func (t *TokoModel) GetSaldoToko(domain string) (string, error) {
+	query := fmt.Sprintf("SELECT saldo FROM %s WHERE domain = ?", t.table)
+	row := t.DB.QueryRow(query, domain)
+
+	var saldo int64
+
+	if err := row.Scan(&saldo); err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+
+		return "", err
+	}
+
+	TotalSaldo := FormatToIDR(saldo)
+	return TotalSaldo, nil
 }
 
 func (t *TokoModel) GetTokoByUsername(username string) (*Toko, error) {

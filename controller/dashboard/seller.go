@@ -88,6 +88,13 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		Saldo, err := tokoModel.GetSaldoToko(Toko.Domain)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
 		orderModel := model.NewOrderModel()
 		TrxHariIni, err := orderModel.GetTransaksiHariIni(Toko.Domain)
 		if err != nil {
@@ -124,6 +131,7 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		data["Saldo"] = Saldo
 		data["TotalTrx"] = TotalTrx
 		data["OmsetBulanan"] = OmsetBulanan
 		data["Omset"] = Omset

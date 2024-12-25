@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config"
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
@@ -38,12 +39,15 @@ func NewWebsiteModel() *WebsiteModel {
 		"web_description",
 	}
 
-	columns := fmt.Sprintf("%s", columnsAllowed[0])
-	for _, col := range columnsAllowed[1:] {
-		columns = fmt.Sprintf("%s, %s", columns, col)
+	columns := strings.Join(columnsAllowed, ", ")
+
+	db, err := database.InitDatabase()
+	if err != nil {
+		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
+
 	return &WebsiteModel{
-		DB:      database.InitDatabase(),
+		DB:      db,
 		table:   "settings_web",
 		columns: columns,
 	}

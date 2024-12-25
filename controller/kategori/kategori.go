@@ -1,7 +1,6 @@
 package kategori
 
 import (
-	"database/sql"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -11,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Kategori(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func Kategori() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		kategori := vars["kategori"]
