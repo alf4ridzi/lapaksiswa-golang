@@ -8,12 +8,23 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
+
+type Tambah struct {
+	Nama      string `json:"nama"`
+	Deskripsi string `json:"deskripsi"`
+	Kategori  string `json:"kategori"`
+	Varian    string `json:"varian"`
+	Unit      string `json:"unit"`
+	Kondisi   string `json:"kondisi"`
+	Harga     int64  `json:"harga"`
+}
 
 func ConvertMapToJson(data map[string]any) ([]byte, error) {
 	Json, err := json.Marshal(data)
@@ -22,6 +33,18 @@ func ConvertMapToJson(data map[string]any) ([]byte, error) {
 	}
 
 	return Json, nil
+}
+
+func GenerateProdukID() string {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randomNumber := rng.Intn(1000000)
+	return fmt.Sprintf("P%06d", randomNumber)
+}
+
+func GenerateSlug(ProductName string, ProductID string) string {
+	lower := strings.ToLower(ProductName)
+	slug := strings.ReplaceAll(lower, " ", "-")
+	return fmt.Sprintf("%s-%s", slug, ProductID)
 }
 
 func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
@@ -199,18 +222,6 @@ func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) 
 	return nil
 }
 
-func GenerateProdukID() string {
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randomNumber := rng.Intn(1000000)
-	return fmt.Sprintf("P%06d", randomNumber)
-}
-
-func GenerateSlug(ProductName string, ProductID string) string {
-	lower := strings.ToLower(ProductName)
-	slug := strings.ReplaceAll(lower, " ", "-")
-	return fmt.Sprintf("%s-%s", slug, ProductID)
-}
-
 func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
@@ -310,11 +321,26 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var produk model.Tambah
-
-		if err = json.NewDecoder(r.Body).Decode(&produk); err != nil {
+		Harga, err := strconv.ParseInt(r.FormValue("harga"), 10, 64)
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		var produk Tambah
+		Product := Tambah{
+			Nama:      r.FormValue("nama"),
+			Deskripsi: r.FormValue("deskripsi"),
+			Kategori:  r.FormValue("kategori"),
+			Varian:    r.FormValue("varian"),
+			Unit:      r.FormValue("unit"),
+			Kondisi:   r.FormValue("kondisi"),
+			Harga:     Harga,
+		}
+
+		produkJson, err := json.Marshal(Product)
+		if err != nil {
+
 		}
 
 		var ProdukID string
@@ -333,7 +359,7 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		Slug := GenerateSlug(produk.Nama, ProdukID)
+		Slug := GenerateSlug(produk, ProdukID)
 		tambah, err := produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, produk)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -8,16 +8,6 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
 
-type Tambah struct {
-	Nama      string `json:"nama"`
-	Deskripsi string `json:"deskripsi"`
-	Kategori  string `json:"kategori"`
-	Varian    string `json:"varian"`
-	Unit      string `json:"unit"`
-	Kondisi   string `json:"kondisi"`
-	Harga     int64  `json:"harga"`
-}
-
 type Produk struct {
 	ProdukID    string
 	Nama        string
