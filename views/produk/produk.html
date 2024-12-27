@@ -33,7 +33,7 @@
 
                     <div class="flex flex-col md:flex-row gap-6">
                         <div class="flex-shrink-0">
-                            <img src="{{ .Produk.Foto }}" alt="{{ .Produl.Foto }}"
+                            <img src="img/product/{{ .Produk.Foto }}" alt="img/product/{{ .Produl.Foto }}"
                                 class="w-full max-w-sm h-auto object-cover rounded-lg border">
                         </div>
 
@@ -147,7 +147,6 @@
                     </a>
                 </div>
             </div>
-            <!-- Related Products Section -->
             <div class="mt-10">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Produk Terkait</h3>
                 {{ if .Related }}
@@ -155,7 +154,7 @@
                         {{ range $i, $p := .Related }}
                             <a href="/produk/{{ $p.Slug }}"
                                 class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
-                                <img src="{{ $p.Foto }}" alt="{{ $p.Nama }} Foto"
+                                <img src="img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto"
                                     class="w-full h-40 object-cover">
                                 <div class="p-4">
                                     <h4 class="text-lg font-medium text-gray-800 truncate">

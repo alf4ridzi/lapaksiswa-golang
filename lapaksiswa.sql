@@ -190,7 +190,7 @@ CREATE TABLE `produk` (
   `rating` float DEFAULT NULL,
   `harga` bigint NOT NULL,
   `stok` int DEFAULT '0',
-  `deskripsi` text,
+  `deskripsi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `varian` varchar(255) DEFAULT NULL,
   `diskon` decimal(5,2) DEFAULT NULL,
   `status` enum('tersedia','habis','tidak_dijual') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'tersedia',
@@ -474,4 +474,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-25 23:10:39
+-- Dump completed on 2024-12-27  8:23:11

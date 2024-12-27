@@ -8,6 +8,16 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
 )
 
+type Tambah struct {
+	Nama      string
+	Deskripsi string
+	Kategori  string
+	Varian    string
+	Unit      string
+	Kondisi   string
+	Harga     int64
+}
+
 type Produk struct {
 	ProdukID    string
 	Nama        string
@@ -72,9 +82,9 @@ func NewProdukModel() *ProdukModel {
 }
 
 func (p *ProdukModel) TambahProduk(ProdukID string, Domain string, Slug string, Produk Tambah) (bool, error) {
-	query := fmt.Sprintf("INSERT INTO %s (produk_id, nama, domain, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
+	query := fmt.Sprintf("INSERT INTO %s (produk_id, nama, domain, slug, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
 	if _, err := p.DB.Exec(query, ProdukID, Produk.Nama, Domain, Slug, Produk.Deskripsi, Produk.Kategori, Produk.Varian, Produk.Unit, Produk.Kondisi, Produk.Harga); err != nil {
-		return false, nil
+		return false, err
 	}
 
 	return true, nil

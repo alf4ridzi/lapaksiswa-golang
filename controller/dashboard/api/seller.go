@@ -16,16 +16,6 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
-type Tambah struct {
-	Nama      string `json:"nama"`
-	Deskripsi string `json:"deskripsi"`
-	Kategori  string `json:"kategori"`
-	Varian    string `json:"varian"`
-	Unit      string `json:"unit"`
-	Kondisi   string `json:"kondisi"`
-	Harga     int64  `json:"harga"`
-}
-
 func ConvertMapToJson(data map[string]any) ([]byte, error) {
 	Json, err := json.Marshal(data)
 	if err != nil {
@@ -215,7 +205,7 @@ func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) 
 	}
 
 	produkModel := model.NewProdukModel()
-	if err = produkModel.UpdateFotoProduk(ProdukID, fileName); err != nil {
+	if err = produkModel.UpdateFotoProduk(ProdukID, filename); err != nil {
 		return err
 	}
 
@@ -327,8 +317,7 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var produk Tambah
-		Product := Tambah{
+		Product := model.Tambah{
 			Nama:      r.FormValue("nama"),
 			Deskripsi: r.FormValue("deskripsi"),
 			Kategori:  r.FormValue("kategori"),
@@ -338,16 +327,11 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			Harga:     Harga,
 		}
 
-		produkJson, err := json.Marshal(Product)
-		if err != nil {
-
-		}
-
 		var ProdukID string
 		produkModel := model.NewProdukModel()
 
 		for {
-			ProdukID := GenerateProdukID()
+			ProdukID = GenerateProdukID()
 			isProdukID, err := produkModel.IsProdukID(ProdukID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -359,8 +343,8 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		Slug := GenerateSlug(produk, ProdukID)
-		tambah, err := produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, produk)
+		Slug := GenerateSlug(Product.Nama, ProdukID)
+		tambah, err := produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, Product)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
