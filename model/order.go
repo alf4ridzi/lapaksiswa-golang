@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
@@ -187,13 +188,25 @@ func (o *OrderModel) GetTransaksiKemarin(domain string) (map[string]any, error) 
 func (o *OrderModel) GetTotalOmset(domain string) (string, error) {
 	query := fmt.Sprintf("SELECT SUM(harga) FROM %s WHERE domain = ? AND status = 'sukses'", o.table)
 	var omset int64
+	var harga sql.NullString
 
-	if err := o.DB.QueryRow(query, domain).Scan(&omset); err != nil {
+	if err := o.DB.QueryRow(query, domain).Scan(&harga); err != nil {
 		if err == sql.ErrNoRows {
-			return "", nil
+			return "0", nil
 		}
 
 		return "", err
+	}
+
+	if harga.Valid {
+		parseOmset, err := strconv.ParseInt(harga.String, 10, 64)
+		if err != nil {
+			return "", err
+		}
+
+		omset = parseOmset
+	} else {
+		omset = 0
 	}
 
 	TotalOmset := FormatToIDR(omset)
@@ -204,13 +217,25 @@ func (o *OrderModel) GetTotalOmset(domain string) (string, error) {
 func (o *OrderModel) GetOmsetBulanan(domain string) (string, error) {
 	query := fmt.Sprintf("SELECT SUM(harga) FROM %s WHERE domain = ? AND status = 'sukses' AND created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND NOW()", o.table)
 	var omset int64
+	var tmp sql.NullString
 
-	if err := o.DB.QueryRow(query, domain).Scan(&omset); err != nil {
+	if err := o.DB.QueryRow(query, domain).Scan(&tmp); err != nil {
 		if err == sql.ErrNoRows {
-			return "", nil
+			return "0", nil
 		}
 
 		return "", err
+	}
+
+	if tmp.Valid {
+		parseOmset, err := strconv.ParseInt(tmp.String, 10, 64)
+		if err != nil {
+			return "", err
+		}
+
+		omset = parseOmset
+	} else {
+		omset = 0
 	}
 
 	TotalOmset := FormatToIDR(omset)

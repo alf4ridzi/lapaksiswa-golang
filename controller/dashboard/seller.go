@@ -44,15 +44,22 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// check role
-		userModel := model.NewUserModel()
-		isRole, err := userModel.IsRole(Username.Value, "seller")
+		// userModel := model.NewUserModel()
+		// isRole, err := userModel.IsRole(Username.Value, "seller")
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusInternalServerError)
+		// 	w.Write([]byte(err.Error()))
+		// 	return
+		// }
+		tokoModel := model.NewTokoModel()
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
-		if !isRole {
+		if Toko.Domain == "" {
 			cookie.SetFlashCookie(w, "error", "Area khusus seller. Silahkan login sebagai seller")
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
@@ -74,14 +81,6 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 
 		websiteModel := model.NewWebsiteModel()
 		settings, err := websiteModel.GetSettings()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-			return
-		}
-
-		tokoModel := model.NewTokoModel()
-		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))

@@ -114,6 +114,11 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookieNew := map[string]string{
+		"role": "seller",
+	}
+
+	cookie.SetCookie(w, cookieNew)
 	w.WriteHeader(http.StatusOK)
 	w.Write(responseJson)
 }

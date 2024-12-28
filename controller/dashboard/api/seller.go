@@ -107,14 +107,14 @@ func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userModel := model.NewUserModel()
-		isSeller, err := userModel.IsRole(Username.Value, "seller")
+		tokoModel := model.NewTokoModel()
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if !isSeller {
+		if Toko.Domain == "" {
 			data["result"] = "Khusus seller"
 			w.WriteHeader(http.StatusBadRequest)
 
@@ -125,13 +125,6 @@ func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			w.Write(responseJson)
-			return
-		}
-
-		tokoModel := model.NewTokoModel()
-		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -270,29 +263,8 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		userModel := model.NewUserModel()
-		isRole, err := userModel.IsRole(Username.Value, "seller")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if !isRole {
-			data["result"] = "Khusus seller dek2"
-			responseJson, err := ConvertMapToJson(data)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(responseJson)
-			return
-		}
-
 		tokoModel := model.NewTokoModel()
 		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
