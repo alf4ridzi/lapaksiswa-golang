@@ -138,25 +138,25 @@ func (p *UserModel) ChangePassword(email string, newpwd string) error {
 
 func (p *UserModel) ValidasiRegister(username, nama, email, nohp, password string) (bool, string) {
 	if username == "" || nama == "" || email == "" || nohp == "" || password == "" {
-		return false, "All fields are required."
+		return false, "Mohon isi semua"
 	}
 
 	if isUser, err := p.CheckDataExist("username", username); err != nil {
 		return false, err.Error()
 	} else if isUser {
-		return false, "Username is already registered."
+		return false, "Username sudah ada, Coba yang lain."
 	}
 
 	if isEmail, err := p.CheckDataExist("email", email); err != nil {
 		return false, err.Error()
 	} else if isEmail {
-		return false, "Email is already registered."
+		return false, "Email sudah terdaftar"
 	}
 
 	if isNoHp, err := p.CheckDataExist("no_hp", nohp); err != nil {
 		return false, err.Error()
 	} else if isNoHp {
-		return false, "Phone number is already registered."
+		return false, "Nomor Handphone sudah terdaftar"
 	}
 
 	password = Md5(password)
@@ -241,6 +241,5 @@ func (p *UserModel) IsRole(username string, roleExpected string) (bool, error) {
 	if err := row.Scan(&role); err != nil {
 		return false, err
 	}
-
 	return role == roleExpected, nil
 }

@@ -28,6 +28,15 @@ type TokoModel struct {
 	columns string
 }
 
+type Seller struct {
+	Nama      string `json:"nama"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Alamat    string `json:"alamat"`
+	Deskripsi string `json:"deskripsi"`
+	NoHP      string `json:"nohp"`
+}
+
 func NewTokoModel() *TokoModel {
 	// allowed columns
 	var columnsAllowed = []string{
@@ -122,4 +131,58 @@ func (t *TokoModel) GetTokoByUsername(username string) (*Toko, error) {
 	}
 
 	return &toko, nil
+}
+
+func (t *TokoModel) isExist(column string, value string) (bool, error) {
+	query := fmt.Sprintf("SELECT 1 FROM %s WHERE %s = ? LIMIT 1", t.table, column)
+	row := t.DB.QueryRow(query, value)
+
+	var exist int
+	if err := row.Scan(&exist); err != nil {
+		return false, err
+	}
+
+	return exist == 1, nil
+}
+
+func (t *TokoModel) DaftarToko(Username string, seller Seller) error {
+	// cek apakah username sudah ada
+	if isExist, err := t.isExist("username", Username); err != nil {
+		if err == sql.ErrNoRows {
+
+		} else {
+			return err
+		}
+
+	} else if isExist {
+		return fmt.Errorf("username sudah memiliki toko")
+	}
+
+	// cek apakah domain sudah ada
+	if isExist, err := t.isExist("domain", seller.Username); err != nil {
+		if err == sql.ErrNoRows {
+
+		} else {
+			return err
+		}
+	} else if isExist {
+		return fmt.Errorf("username toko sudah digunakan")
+	}
+
+	// cek apakah email sudah ada
+	if isExist, err := t.isExist("email", seller.Email); err != nil {
+		if err == sql.ErrNoRows {
+
+		} else {
+			return err
+		}
+	} else if isExist {
+		return fmt.Errorf("email sudah digunakan")
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s (domain, username, nama, deskripsi, email, no_hp, alamat) VALUES (?, ?, ?, ?, ?, ?, ?)", t.table)
+	if _, err := t.DB.Exec(query, seller.Username, Username, seller.Nama, seller.Deskripsi, seller.Email, seller.NoHP, seller.Alamat); err != nil {
+		return err
+	}
+	return nil
 }

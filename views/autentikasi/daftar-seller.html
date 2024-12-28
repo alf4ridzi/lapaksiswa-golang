@@ -1,0 +1,169 @@
+{{ define "content" }}
+<style>
+  .daftar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url("assets/background/page.png");
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .daftar-box {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+    background-color: #ffffff;
+    min-height: 150px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .input-field {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #2563eb;
+  }
+</style>
+
+<div class="daftar-container">
+  <div class="daftar-box">
+    <h2 class="text-xl font-bold mb-6 text-center">Daftar Jadi Seller<br>Di <span class="text-blue-500">Lapak
+        Siswa</span></h2>
+    <div id="alert" class="hidden alert error">Gagal Reset Password</div>
+
+    <div class="mb-4">
+      <label for="nama" class="block text-sm font-semibold">Nama Toko</label>
+      <input type="text" id="nama" name="nama" class="input-field px-4 py-2 border border-gray-300 rounded-md w-full"
+        placeholder="Contoh : Toko Buku Alfa" required />
+    </div>
+    <div class="mb-4">
+      <label for="username" class="block text-sm font-semibold">Username Toko</label>
+      <input type="text" id="username" name="username"
+        class="input-field px-4 py-2 border border-gray-300 rounded-md w-full" placeholder="Contoh : tokoalfa"
+        required />
+    </div>
+    <div class="mb-4">
+      <label for="email" class="block text-sm font-semibold">Email Toko</label>
+      <input type="email" id="email" name="email" class="input-field px-4 py-2 border border-gray-300 rounded-md w-full"
+        placeholder="Contoh : tokoalfa@gmail.com" required />
+    </div>
+    <div class="mb-4">
+      <label for="alamat" class="block text-sm font-semibold">Alamat Toko</label>
+      <div class="relative">
+        <input type="text" id="alamat" name="alamat"
+          class="input-field px-4 py-2 border border-gray-300 rounded-md w-full pr-10"
+          placeholder="Masukkan Alamat Toko" required />
+      </div>
+    </div>
+    <div class="mb-4">
+      <label for="deskripsi" class="block text-sm font-semibold">Deskripsi Toko</label>
+      <div class="relative">
+        <textarea id="deskripsi" name="deskripsi" class="input-field px-4 py-2 border border-gray-300 rounded-md w-full"
+          placeholder="Deskripsi Toko" maxlength="100" rows="4" cols="20" required></textarea>
+        <p class="text-sm text-gray-600">Max : 100 Kata</p>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label for="nohp" class="block text-sm font-semibold">Masukkan Nomor Handphone Toko</label>
+      <div class="relative">
+        <input type="number" id="nohp" name="nohp"
+          class="input-field px-4 py-2 border border-gray-300 rounded-md w-full pr-10"
+          placeholder="Masukkan Nomor Handphone" required />
+      </div>
+    </div>
+    <button type="submit" id="submit" class="btn">Daftar Jadi Seller</button>
+    <div class="text-center mt-4">
+      <a href="/" class="text-blue-500 hover:underline text-sm">Kembali</a>
+    </div>
+  </div>
+</div>
+<script src="/js/sweetalert.js"></script>
+<script>
+  document.getElementById("submit").addEventListener("click", async () => {
+    const nama = document.getElementById("nama");
+    const username = document.getElementById("username");
+    const email = document.getElementById("email");
+    const alamat = document.getElementById("alamat");
+    const deskripsi = document.getElementById("deskripsi");
+    const nohp = document.getElementById("nohp");
+    const formData = {
+      nama: nama.value,
+      username: username.value,
+      email: email.value,
+      alamat: alamat.value,
+      deskripsi: deskripsi.value,
+      nohp: nohp.value
+    };
+
+    try {
+      const response = await fetch("/daftar-seller", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.status) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'Berhasil Buat Akun Seller',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+          timerProgressBar: true,
+        });
+
+        setTimeout(() => {
+          window.location.href = "/seller";
+        }, 3000);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Pembuatan Gagal!',
+          text: result.message || 'Terjadi kesalahan, coba lagi.',
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+          timerProgressBar: true,
+        });
+      }
+    } catch (error) {
+      console.log("error : ", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Terjadi Kesalahan',
+        text: 'Internal Server Error',
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        timerProgressBar: true,
+      });
+    }
+  });
+</script>
+{{ end }}

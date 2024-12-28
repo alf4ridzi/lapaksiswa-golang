@@ -42,7 +42,7 @@ func MapRoutes(server *mux.Router) {
 	server.HandleFunc("/register", autentikasi.Register()).Methods("GET", "POST")
 	server.HandleFunc("/keluar", autentikasi.Logout()).Methods("GET")
 	server.HandleFunc("/reset-password", autentikasi.ResetPassword()).Methods("GET", "POST")
-
+	server.HandleFunc("/daftar-seller", autentikasi.DaftarSeller()).Methods("GET", "POST")
 	// seller api
 	server.HandleFunc("/seller/get-product", api.GetProductToko()).Methods("GET")
 	server.HandleFunc("/seller/tambah", api.TambahProduct()).Methods("POST")
