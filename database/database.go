@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,5 +30,8 @@ func InitDatabase() (*sql.DB, error) {
 		return nil, err
 	}
 
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(time.Minute * 10)
 	return db, nil
 }
