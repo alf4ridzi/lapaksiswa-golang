@@ -111,6 +111,10 @@ func (o *OrderModel) GetTransaksiHariIni(domain string) (map[string]any, error) 
 
 	}
 
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	data := map[string]any{
 		"total":   FormatToIDR(Total),
 		"proses":  Proses,

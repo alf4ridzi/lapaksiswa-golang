@@ -34,20 +34,7 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			checkLogin, err := r.Cookie("isLogin")
 			if err == nil && checkLogin.Value == "true" {
-				role, err := r.Cookie("role")
-				if err != nil {
-					http.Redirect(w, r, "/", http.StatusUnauthorized)
-					return
-				}
-
-				switch role.Value {
-				case "admin":
-					http.Redirect(w, r, "/admin", http.StatusFound)
-				case "seller":
-					http.Redirect(w, r, "/seller", http.StatusFound)
-				default:
-					http.Redirect(w, r, "/", http.StatusFound)
-				}
+				http.Redirect(w, r, "/", http.StatusFound)
 				return
 			}
 
@@ -72,20 +59,7 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			role, err := r.Cookie("role")
-			if err != nil {
-				http.Redirect(w, r, "/", http.StatusFound)
-				return
-			}
-
-			switch role.Value {
-			case "admin":
-				http.Redirect(w, r, "/admin", http.StatusFound)
-			case "seller":
-				http.Redirect(w, r, "/seller", http.StatusFound)
-			default:
-				http.Redirect(w, r, "/", http.StatusFound)
-			}
+			http.Redirect(w, r, "/", http.StatusFound)
 
 		} else if r.Method == "GET" || r.Method == "" {
 			websiteModel := model.NewWebsiteModel()
@@ -314,6 +288,10 @@ func ResetPassword() func(w http.ResponseWriter, r *http.Request) {
 
 			websiteModel := model.NewWebsiteModel()
 			settings, err := websiteModel.GetSettings()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
 			data := make(map[string]any)
 			data["Website"] = settings
