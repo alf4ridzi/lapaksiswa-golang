@@ -76,6 +76,15 @@ func Md5(text string) string {
 	return hex.EncodeToString(hash[:])
 }
 
+func (p *UserModel) ChangeRoleUser(Username string, NewRole string) error {
+	query := fmt.Sprintf("UPDATE %s SET role = ? WHERE username = ?", p.table)
+	if _, err := p.DB.Exec(query, NewRole, Username); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *UserModel) CheckDataExist(key, value string) (bool, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", key, p.table, key)
 	row := p.DB.QueryRow(query, value)

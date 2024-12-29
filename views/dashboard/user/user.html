@@ -29,11 +29,13 @@
           >
             <i class="fa-solid fa-user-lock"></i> Ganti Password
           </button>
+          {{ if eq .User.Role "user" }}
           <button id="DaftarSeller"
             class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-md hover:bg-gray-200 text-left"
           >
           <i class="fa-solid fa-store"></i> Daftar Jadi Seller
           </button>
+          {{ end }}
         </div>
       </div>
 

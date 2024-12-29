@@ -107,6 +107,12 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ganti role user
+	if err = userModel.ChangeRoleUser(Username.Value, "seller"); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	response["status"] = true
 	responseJson, err = api.ConvertMapToJson(response)
 	if err != nil {

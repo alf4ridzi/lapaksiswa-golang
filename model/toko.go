@@ -72,11 +72,13 @@ func (t *TokoModel) GetToko(domain string) (*Toko, error) {
 	row := t.DB.QueryRow(query, domain)
 
 	var toko Toko
+	var kategori sql.NullString
+
 	if err := row.Scan(
 		&toko.Username,
 		&toko.Domain,
 		&toko.Nama,
-		&toko.Kategori,
+		&kategori,
 		&toko.Logo,
 		&toko.Deskripsi,
 		&toko.Email,
@@ -88,6 +90,11 @@ func (t *TokoModel) GetToko(domain string) (*Toko, error) {
 		return nil, err
 	}
 
+	if kategori.Valid {
+		toko.Kategori = kategori.String
+	} else {
+		toko.Kategori = ""
+	}
 	return &toko, nil
 }
 
