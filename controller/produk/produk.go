@@ -58,6 +58,13 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		modelTransaksi := model.NewTransaksiModel()
+		ProdukTerjual, err := modelTransaksi.GetTotalProdukTerjual(Toko.Domain)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		data := make(map[string]any)
 
 		data["Produk"] = Produk
@@ -65,6 +72,7 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 		data["Cookies"] = cookie.GetAllCookies(w, r)
 		data["Related"] = Related
 		data["Toko"] = Toko
+		data["Terjual"] = ProdukTerjual
 
 		templates := []string{
 			filepath.Join("views", "templates.html"),

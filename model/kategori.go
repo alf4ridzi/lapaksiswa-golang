@@ -72,6 +72,10 @@ func (k *KategoriModel) GetKategori() ([]Kategori, error) {
 		kategoriS = append(kategoriS, kategori)
 	}
 
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return kategoriS, nil
 }
 

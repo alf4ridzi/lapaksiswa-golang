@@ -15,6 +15,7 @@ type Tambah struct {
 	Varian    string
 	Unit      string
 	Kondisi   string
+	Stok      int64
 	Harga     int64
 }
 
@@ -81,13 +82,13 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
-func (p *ProdukModel) TambahProduk(ProdukID string, Domain string, Slug string, Produk Tambah) (bool, error) {
-	query := fmt.Sprintf("INSERT INTO %s (produk_id, nama, domain, slug, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
-	if _, err := p.DB.Exec(query, ProdukID, Produk.Nama, Domain, Slug, Produk.Deskripsi, Produk.Kategori, Produk.Varian, Produk.Unit, Produk.Kondisi, Produk.Harga); err != nil {
-		return false, err
+func (p *ProdukModel) TambahProduk(ProdukID string, Domain string, Slug string, Produk Tambah) error {
+	query := fmt.Sprintf("INSERT INTO %s (produk_id, stok, nama, domain, slug, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
+	if _, err := p.DB.Exec(query, ProdukID, Produk.Stok, Produk.Nama, Domain, Slug, Produk.Deskripsi, Produk.Kategori, Produk.Varian, Produk.Unit, Produk.Kondisi, Produk.Harga); err != nil {
+		return err
 	}
 
-	return true, nil
+	return nil
 }
 
 func (p *ProdukModel) IsProdukID(ProdukID string) (bool, error) {

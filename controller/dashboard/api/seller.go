@@ -298,6 +298,12 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		Stok, err := strconv.ParseInt(r.FormValue("stok"), 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		Product := model.Tambah{
 			Nama:      r.FormValue("nama"),
 			Deskripsi: r.FormValue("deskripsi"),
@@ -305,6 +311,7 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			Varian:    r.FormValue("varian"),
 			Unit:      r.FormValue("unit"),
 			Kondisi:   r.FormValue("kondisi"),
+			Stok:      Stok,
 			Harga:     Harga,
 		}
 
@@ -326,14 +333,8 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		Slug := GenerateSlug(Product.Nama, ProdukID)
-		tambah, err := produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, Product)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if !tambah {
-			data["result"] = "Gagal tambah gambar"
+		if err = produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, Product); err != nil {
+			data["result"] = "Gagal tambah produk. Internal Server Error"
 			responseJson, err := ConvertMapToJson(data)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

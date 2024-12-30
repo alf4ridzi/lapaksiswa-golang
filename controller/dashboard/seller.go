@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"text/template"
@@ -135,6 +136,15 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		kategoriModel := model.NewKategoriModel()
+		defer kategoriModel.DB.Close()
+
+		Kategori, err := kategoriModel.GetKategori()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		data["Saldo"] = Saldo
 		data["TotalTrx"] = TotalTrx
 		data["OmsetBulanan"] = OmsetBulanan
@@ -143,6 +153,7 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		data["HariIni"] = TrxHariIni
 		data["Website"] = settings
 		data["Toko"] = Toko
+		data["Kategori"] = Kategori
 
 		t := []string{
 			"header", "navbar", "content", "end",
@@ -150,8 +161,8 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 
 		for _, tl := range t {
 			if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(err.Error()))
+				fmt.Println(err.Error())
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
