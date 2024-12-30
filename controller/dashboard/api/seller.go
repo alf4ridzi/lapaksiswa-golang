@@ -108,6 +108,8 @@ func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
 		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -129,6 +131,8 @@ func GetProductToko() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
+
 		Produk, err := produkModel.GetProductToko(Toko.Domain)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -198,6 +202,8 @@ func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) 
 	}
 
 	produkModel := model.NewProdukModel()
+	defer produkModel.DB.Close()
+
 	if err = produkModel.UpdateFotoProduk(ProdukID, filename); err != nil {
 		return err
 	}
@@ -207,6 +213,7 @@ func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) 
 
 func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		if r.Method != "POST" {
 			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte("Post doang oi"))
@@ -264,6 +271,8 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
 		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -301,6 +310,7 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 
 		var ProdukID string
 		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
 
 		for {
 			ProdukID = GenerateProdukID()

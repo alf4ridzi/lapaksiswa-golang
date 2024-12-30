@@ -16,6 +16,8 @@ func Kategori() func(w http.ResponseWriter, r *http.Request) {
 		kategori := vars["kategori"]
 
 		websiteModel := model.NewWebsiteModel()
+		defer websiteModel.DB.Close()
+
 		settings, err := websiteModel.GetSettings()
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -24,6 +26,8 @@ func Kategori() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
+
 		Produk, err := produkModel.GetProdukByKategori(kategori)
 
 		if err != nil {

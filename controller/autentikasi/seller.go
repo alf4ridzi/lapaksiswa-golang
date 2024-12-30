@@ -75,6 +75,8 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userModel := model.NewUserModel()
+	defer userModel.DB.Close()
+
 	isSeller, err := userModel.IsRole(Username.Value, "seller")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -94,6 +96,8 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokoModel := model.NewTokoModel()
+	defer tokoModel.DB.Close()
+
 	if err = tokoModel.DaftarToko(Username.Value, seller); err != nil {
 		response["message"] = err.Error()
 		responseJson, err = api.ConvertMapToJson(response)
@@ -130,6 +134,7 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetDaftarSeller(w http.ResponseWriter, r *http.Request) {
+
 	isLogin, err := r.Cookie("isLogin")
 	if err != nil {
 		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu")
@@ -157,6 +162,8 @@ func HandleGetDaftarSeller(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userModel := model.NewUserModel()
+	defer userModel.DB.Close()
+
 	isSeller, err := userModel.IsRole(Username.Value, "seller")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -171,6 +178,8 @@ func HandleGetDaftarSeller(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]any)
 
 	websiteModel := model.NewWebsiteModel()
+	defer websiteModel.DB.Close()
+
 	settings, err := websiteModel.GetSettings()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

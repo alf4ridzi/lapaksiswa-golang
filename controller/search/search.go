@@ -23,6 +23,8 @@ func Search() func(w http.ResponseWriter, r *http.Request) {
 		MaxPrice, _ := strconv.Atoi(HargaMax)
 
 		WebsiteModel := model.NewWebsiteModel()
+		defer WebsiteModel.DB.Close()
+
 		settings, err := WebsiteModel.GetSettings()
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -31,6 +33,8 @@ func Search() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ProdukModel := model.NewProdukModel()
+		defer ProdukModel.DB.Close()
+
 		Produk, err := ProdukModel.Filter(Keyword, KategoriFilter, MinPrice, MaxPrice, KondisiFilter, Urutan)
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -39,6 +43,8 @@ func Search() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		kategoriModel := model.NewKategoriModel()
+		defer kategoriModel.DB.Close()
+
 		kategoriLike, err := kategoriModel.GetKategoriLike(Keyword)
 		if err != nil {
 			w.Write([]byte(err.Error()))

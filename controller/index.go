@@ -17,14 +17,18 @@ func Index() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		websiteModel := model.NewWebsiteModel()
+		defer websiteModel.DB.Close()
+
 		settings, err := websiteModel.GetSettings()
 
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
 		terlaris, err := produkModel.GetTerlaris()
 
 		if err != nil {

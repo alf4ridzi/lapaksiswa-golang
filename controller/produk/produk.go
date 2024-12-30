@@ -17,6 +17,8 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 		slug := vars["slug"]
 
 		modelProduk := model.NewProdukModel()
+		defer modelProduk.DB.Close()
+
 		Produk, err := modelProduk.GetProduk(slug)
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -30,6 +32,8 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		modelWebsite := model.NewWebsiteModel()
+		defer modelWebsite.DB.Close()
+
 		Website, err := modelWebsite.GetSettings()
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -45,6 +49,8 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		modelToko := model.NewTokoModel()
+		defer modelToko.DB.Close()
+
 		Toko, err := modelToko.GetToko(Produk.Domain)
 		if err != nil {
 			w.Write([]byte(err.Error()))

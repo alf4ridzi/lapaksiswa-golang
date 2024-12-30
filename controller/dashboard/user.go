@@ -126,6 +126,8 @@ func Edit() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			modelWebsite := model.NewWebsiteModel()
+			defer modelWebsite.DB.Close()
+
 			settings, err := modelWebsite.GetSettings()
 			if err != nil {
 				w.Write([]byte(err.Error()))
@@ -134,6 +136,7 @@ func Edit() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			modelUser := model.NewUserModel()
+			defer modelUser.DB.Close()
 			User, err := modelUser.GetUser(username.Value)
 
 			if err != nil {
@@ -208,6 +211,8 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		userModel := model.NewUserModel()
+		defer userModel.DB.Close()
+
 		w.Header().Set("Content-Type", "application/json")
 		// update profile
 		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP); err != nil {
@@ -331,6 +336,7 @@ func UpdateProfile() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		modelUser := model.NewUserModel()
+		defer modelUser.DB.Close()
 
 		// hapus piccture lama
 		query := "SELECT foto FROM user WHERE username = ?"

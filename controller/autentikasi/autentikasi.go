@@ -32,6 +32,7 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if r.Method == "POST" {
+
 			checkLogin, err := r.Cookie("isLogin")
 			if err == nil && checkLogin.Value == "true" {
 				http.Redirect(w, r, "/", http.StatusFound)
@@ -47,6 +48,8 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			userModel := model.NewUserModel()
+			defer userModel.DB.Close()
+
 			isLogin, err := userModel.ValidasiLogin(w, Email, Password)
 
 			if err != nil {
@@ -63,6 +66,8 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 
 		} else if r.Method == "GET" || r.Method == "" {
 			websiteModel := model.NewWebsiteModel()
+			defer websiteModel.DB.Close()
+
 			settings, err := websiteModel.GetSettings()
 
 			if err != nil {
@@ -138,6 +143,8 @@ func Register() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			userModel := model.NewUserModel()
+			defer userModel.DB.Close()
+
 			_, msg := userModel.ValidasiRegister(Username, Nama, Email, NoHP, Password)
 			if msg != "" {
 				cookie.SetFlashCookie(w, "error", msg)
@@ -165,6 +172,7 @@ func Register() func(w http.ResponseWriter, r *http.Request) {
 			data := make(map[string]interface{})
 
 			websiteModel := model.NewWebsiteModel()
+			defer websiteModel.DB.Close()
 			settings, err := websiteModel.GetSettings()
 
 			if err != nil {
@@ -244,6 +252,8 @@ func ResetPassword() func(w http.ResponseWriter, r *http.Request) {
 			pwdEnc := enc.TextToMd5(reset.Password)
 
 			userModel := model.NewUserModel()
+			defer userModel.DB.Close()
+
 			isValid, err := userModel.IsValidPassword(reset.Email, pwdEnc)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -287,6 +297,8 @@ func ResetPassword() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			websiteModel := model.NewWebsiteModel()
+			defer websiteModel.DB.Close()
+
 			settings, err := websiteModel.GetSettings()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

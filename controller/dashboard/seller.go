@@ -52,6 +52,7 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		// 	return
 		// }
 		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
 		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -80,6 +81,8 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]any)
 
 		websiteModel := model.NewWebsiteModel()
+		defer websiteModel.DB.Close()
+
 		settings, err := websiteModel.GetSettings()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -95,6 +98,8 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		orderModel := model.NewOrderModel()
+		defer orderModel.DB.Close()
+
 		TrxHariIni, err := orderModel.GetTransaksiHariIni(Toko.Domain)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
