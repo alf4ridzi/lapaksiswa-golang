@@ -476,13 +476,10 @@
       const checkbox = event.target;
       const row = checkbox.closest("tr");
       const product_id = row.querySelector("input[type='hidden']").value;
+      const initialChecked = checkbox.checked;
 
-      var formData = new FormData();
-      if (checkbox.checked) {
-        formData.append("status", "aktif");
-      } else {
-        formData.append("status", "nonaktif");
-      }
+      var formData = new FormData()
+      formData.append("status", checkbox.checked ? "tersedia" : "nonaktif");
       formData.append("product_id", product_id);
 
       Swal.fire({
@@ -492,39 +489,49 @@
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
+
 
       fetch("/seller/update-status", {
         method: "POST",
         body: formData,
       })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
           Swal.close();
 
           if (data.status) {
             Swal.fire({
-              title: "Success",
-              text: "Status has been updated successfully.",
+              title: "Sukses",
+              text: "Berhasil Update Status Produk",
               icon: "success",
             });
           } else {
             Swal.fire({
               title: "Failed",
-              text: data.message || "Failed to update the status.",
+              text: data.message || "Gagal update status",
               icon: "error",
             });
+            checkbox.checked = initialChecked;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           Swal.close();
           Swal.fire({
-            title: "Error",
-            text: "An error occurred while updating the status. Please try again.",
+            title: "Error!",
+            text: "Server Error",
             icon: "error",
           });
           console.error("Error:", error);
+          checkbox.checked = initialChecked;
+        }).finally(() => {
+          checkbox.checked = initialChecked;
         });
     }
   });

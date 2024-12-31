@@ -82,6 +82,33 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
+func (p *ProdukModel) ChangeStatusProduct(ProdukID string, Domain string, Status string) (bool, error) {
+	query := fmt.Sprintf("UPDATE %s SET status = ? WHERE produk_id = ? AND domain = ?", p.table)
+	result, err := p.DB.Exec(query, Status, ProdukID, Domain)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
+}
+
+func (p *ProdukModel) ValidasiProduk(ProdukID string, Domain string) (bool, error) {
+	query := fmt.Sprintf("SELECT id FROM %s WHERE domain = ? AND produk_id = ?", p.table)
+	row := p.DB.QueryRow(query, Domain, ProdukID)
+
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		return false, nil
+	}
+
+	return id > 0, nil
+}
+
 func (p *ProdukModel) TambahProduk(ProdukID string, Domain string, Slug string, Produk Tambah) error {
 	query := fmt.Sprintf("INSERT INTO %s (produk_id, stok, nama, domain, slug, deskripsi, kategori, varian, unit, kondisi, harga) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", p.table)
 	if _, err := p.DB.Exec(query, ProdukID, Produk.Stok, Produk.Nama, Domain, Slug, Produk.Deskripsi, Produk.Kategori, Produk.Varian, Produk.Unit, Produk.Kondisi, Produk.Harga); err != nil {

@@ -26,6 +26,7 @@ func MapRoutes(server *mux.Router) {
 
 	// dashboard seller
 	server.HandleFunc("/seller", dashboard.Seller()).Methods("GET")
+	server.HandleFunc("/seller/edit-product/{id}", dashboard.EditProduct()).Methods("GET", "POST")
 
 	// kategori
 	server.HandleFunc("/kategori/{kategori}", kategori.Kategori()).Methods("GET")
@@ -46,7 +47,9 @@ func MapRoutes(server *mux.Router) {
 	// seller api
 	server.HandleFunc("/seller/get-product", api.GetProductToko()).Methods("GET")
 	server.HandleFunc("/seller/tambah", api.TambahProduct()).Methods("POST")
+	server.HandleFunc("/seller/update-status", api.UpdateStatusProduct()).Methods("POST")
 
+	// public folder
 	server.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
 	// 404 handler

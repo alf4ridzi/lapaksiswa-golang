@@ -9,6 +9,7 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
+	"github.com/gorilla/mux"
 )
 
 func Seller() func(w http.ResponseWriter, r *http.Request) {
@@ -44,14 +45,6 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// check role
-		// userModel := model.NewUserModel()
-		// isRole, err := userModel.IsRole(Username.Value, "seller")
-		// if err != nil {
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	w.Write([]byte(err.Error()))
-		// 	return
-		// }
 		tokoModel := model.NewTokoModel()
 		defer tokoModel.DB.Close()
 		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
@@ -166,5 +159,92 @@ func Seller() func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+	}
+}
+
+func HandleGetEditProduct(w http.ResponseWriter, r *http.Request) {
+	isLogin, err := r.Cookie("isLogin")
+	if err != nil {
+		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	if isLogin.Value != "true" {
+		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	role, err := r.Cookie("role")
+	if err != nil {
+		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	if role.Value != "seller" {
+		http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+		return
+	}
+
+	Username, err := r.Cookie("username")
+	if err != nil {
+		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	if Username.Value == "" {
+		cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	tokoModel := model.NewTokoModel()
+	defer tokoModel.DB.Close()
+
+	Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if Toko.Domain == "" {
+		cookie.SetFlashCookie(w, "error", "Silahkan login menggunakan akun seller.")
+		http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+		return
+	}
+
+	vars := mux.Vars(r)
+	ProductID := vars["id"]
+
+	produkModel := model.NewProdukModel()
+	defer produkModel.DB.Close()
+
+	if isValid, err := produkModel.ValidasiProduk(ProductID, Toko.Domain); err != nil || !isValid {
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		controller.NotFoundHandler(w, r)
+		return
+	}
+
+}
+
+func HandlePostEditProduct(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func EditProduct() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			HandlePostEditProduct(w, r)
+		} else if r.Method == "GET" || r.Method == "" {
+			HandleGetEditProduct(w, r)
+		}
+
 	}
 }

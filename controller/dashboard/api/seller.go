@@ -370,3 +370,111 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 		w.Write(responseJson)
 	}
 }
+
+func HandleResponseJson(w http.ResponseWriter, data map[string]any, code int) {
+	responseJson, err := ConvertMapToJson(data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(code)
+	w.Write(responseJson)
+}
+
+func UpdateStatusProduct() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := map[string]any{
+			"result":  false,
+			"message": nil,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			data["message"] = "Login dulu cak"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			data["message"] = "Login dulu cak"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		role, err := r.Cookie("role")
+		if err != nil {
+			data["message"] = "Internal server error"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		if role.Value != "seller" {
+			data["message"] = "Khusus seller"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			data["message"] = "Username tidak ditemukan"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		if Username.Value == "" {
+			data["message"] = "Username tidak ditemukan"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		ProductID := strings.TrimSpace(r.FormValue("product_id"))
+		Status := strings.TrimSpace(r.FormValue("status"))
+		if Status != "tersedia" && Status != "nonaktif" {
+			data["message"] = "Invalid status"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+		if err != nil {
+			data["message"] = err.Error()
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		if Toko.Domain == "" {
+			data["message"] = "Toko tidak ditemukan"
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
+
+		if isProduct, err := produkModel.ValidasiProduk(ProductID, Toko.Domain); err != nil || !isProduct {
+			data["message"] = "Produk ID tidak valid / tidak ditemukan"
+			if err != nil {
+				data["message"] = err.Error()
+			}
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		if changeStatus, err := produkModel.ChangeStatusProduct(ProductID, Toko.Domain, Status); err != nil || !changeStatus {
+			data["message"] = "Gagal Update Status Produk"
+			if err != nil {
+				data["message"] = err.Error()
+			}
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		data["status"] = true
+		HandleResponseJson(w, data, http.StatusOK)
+	}
+}
