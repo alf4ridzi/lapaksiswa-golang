@@ -232,6 +232,31 @@ func HandleGetEditProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := make(map[string]any)
+
+	templates := []string{
+		filepath.Join("views", "dashboard", "seller", "edit.html"),
+		filepath.Join("views", "dashboard", "seller", "index.html"),
+		filepath.Join("views", "dashboard", "seller", "templates.html"),
+	}
+
+	tmpl, err := template.ParseFiles(templates...)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tl := []string{
+		"header", "navbar", "edit", "content", "end",
+	}
+
+	for _, t := range tl {
+		if err = tmpl.ExecuteTemplate(w, t, data); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
 }
 
 func HandlePostEditProduct(w http.ResponseWriter, r *http.Request) {
