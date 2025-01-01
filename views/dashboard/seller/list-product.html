@@ -118,6 +118,19 @@
         product.classList.add("hidden");
     }
 
+    document.addEventListener('change', function (event) {
+        if (event.target.classList.contains('product-action')) {
+            const action = event.target.value;
+            if (action === 'edit') {
+                const parentRow = event.target.closest('tr');
+                const productId = parentRow.querySelector('input[type="hidden"]').value;
+                if (productId) {
+                    window.location.href = `/seller/edit-product/${productId}`;
+                }
+            }
+        }
+    });
+
     let currentPage = 1;
     const rowsPerPage = 10;
     let products = [];
@@ -143,6 +156,7 @@
                     dateAdded: product.CreatedAt,
                     status: product.Status,
                     slug: product.Slug,
+                    domain: product.Domain,
                 }));
 
                 paginate();
@@ -165,7 +179,7 @@
         <img src="/img/product/${product.image}" alt="${product.name
                 }" class="w-16 h-16 object-cover rounded-md">
         <div>
-          <a href="/produk/${product.slug}" class="font-medium text-black">${product.name}</a>
+          <a href="/${product.domain}/${product.slug}" class="font-medium text-black">${product.name}</a>
         </div>
       </td>
       <td class="py-3 px-6 text-gray-600 font-medium">
@@ -188,7 +202,7 @@
 </td>
 
       <td class="py-3 px-6 text-gray-600">
-        <select class="border border-gray-300 rounded px-2 py-1">
+        <select class="border border-gray-300 rounded px-2 py-1 product-action">
           <option value="atur">Atur</option>
           <option value="edit">Edit</option>
           <option value="hapus">Hapus</option>

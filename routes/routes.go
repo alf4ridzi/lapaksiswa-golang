@@ -17,9 +17,6 @@ func MapRoutes(server *mux.Router) {
 	// index
 	server.HandleFunc("/", controller.Index()).Methods("GET")
 
-	// produk
-	server.HandleFunc("/{toko}/{slug}", produk.Produk()).Methods("GET")
-
 	// dashboard user
 	server.HandleFunc("/user", dashboard.User()).Methods("GET")
 	server.HandleFunc("/user/edit", dashboard.Edit()).Methods("GET", "POST")
@@ -51,6 +48,8 @@ func MapRoutes(server *mux.Router) {
 	server.HandleFunc("/seller/tambah", api.TambahProduct()).Methods("POST")
 	server.HandleFunc("/seller/update-status", api.UpdateStatusProduct()).Methods("POST")
 
+	// produk
+	server.HandleFunc("/{toko}/{slug}", produk.Produk()).Methods("GET")
 	// public folder
 	server.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 

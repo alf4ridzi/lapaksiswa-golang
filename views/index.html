@@ -70,7 +70,7 @@
         {{ if .Terlaris }}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {{ range $index, $p := .Terlaris}}
-                    <a href="produk/{{ $p.Slug }}"
+                    <a href="/{{ $p.Domain }}/{{ $p.Slug }}"
                         class="block bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                         <div>
                             <img src="img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto"
