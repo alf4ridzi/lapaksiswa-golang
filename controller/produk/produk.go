@@ -15,6 +15,21 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		slug := vars["slug"]
+		toko := vars["toko"]
+
+		modelToko := model.NewTokoModel()
+		defer modelToko.DB.Close()
+
+		// cek toko
+		if isToko, err := modelToko.GetToko(toko); err != nil || isToko.Domain == "" {
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			controller.NotFoundHandler(w, r)
+			return
+		}
 
 		modelProduk := model.NewProdukModel()
 		defer modelProduk.DB.Close()
@@ -31,6 +46,13 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		Toko, err := modelToko.GetToko(Produk.Domain)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		modelWebsite := model.NewWebsiteModel()
 		defer modelWebsite.DB.Close()
 
@@ -42,16 +64,6 @@ func Produk() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		Related, err := modelProduk.GetRelated(Produk)
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		modelToko := model.NewTokoModel()
-		defer modelToko.DB.Close()
-
-		Toko, err := modelToko.GetToko(Produk.Domain)
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)

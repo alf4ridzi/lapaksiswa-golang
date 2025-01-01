@@ -23,7 +23,6 @@ type Produk struct {
 	ProdukID    string
 	Nama        string
 	Domain      string
-	Toko        string
 	Slug        string
 	Terjual     int64
 	Kategori    string
@@ -37,6 +36,7 @@ type Produk struct {
 	Unit        string
 	Foto        string
 	Kondisi     string
+	Toko        string
 	HargaFormat string
 	CreatedAt   string
 }
@@ -73,15 +73,54 @@ func NewProdukModel() *ProdukModel {
 		panic(fmt.Sprintf("Kesalahan database : %v", err))
 	}
 
-	columns := strings.Join(columnsAllowed, ", ")
+	const tableName string = "produk"
 
+	for i, col := range columnsAllowed {
+		columnsAllowed[i] = fmt.Sprintf("%s.%s", tableName, col)
+	}
+
+	columns := strings.Join(columnsAllowed, ", ")
 	return &ProdukModel{
 		DB:      db,
-		table:   "produk",
+		table:   tableName,
 		columns: columns,
 	}
 }
 
+func (p *ProdukModel) GetProductByID(ProductID string, Domain string) (*Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE produk_id = ? AND domain = ?", p.columns, p.table)
+	row := p.DB.QueryRow(query, ProductID, Domain)
+
+	var product Produk
+
+	if err := row.Scan(
+		&product.ProdukID,
+		&product.Nama,
+		&product.Domain,
+		&product.Slug,
+		&product.Terjual,
+		&product.Kategori,
+		&product.Rating,
+		&product.Harga,
+		&product.Stok,
+		&product.Deskripsi,
+		&product.Varian,
+		&product.Diskon,
+		&product.Status,
+		&product.Unit,
+		&product.Foto,
+		&product.Kondisi,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &product, nil
+
+}
 func (p *ProdukModel) ChangeStatusProduct(ProdukID string, Domain string, Status string) (bool, error) {
 	query := fmt.Sprintf("UPDATE %s SET status = ? WHERE produk_id = ? AND domain = ?", p.table)
 	result, err := p.DB.Exec(query, Status, ProdukID, Domain)
@@ -194,34 +233,34 @@ func (p *ProdukModel) GetProductToko(domain string) ([]Produk, error) {
 }
 
 func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int, MaxPrice int, KondisiFilter string, Urutan string) ([]Produk, error) {
-	query := []string{fmt.Sprintf("SELECT %s FROM produk WHERE 1=1", p.columns)}
+	query := []string{fmt.Sprintf("SELECT %s, toko.nama FROM produk INNER JOIN toko ON produk.domain = toko.domain WHERE 1=1", p.columns)}
 	args := []interface{}{}
 
 	if Keyword != "" {
-		query = append(query, "(nama LIKE ? OR kategori LIKE ?)")
+		query = append(query, "(produk.nama LIKE ? OR produk.kategori LIKE ?)")
 		args = append(args, "%"+Keyword+"%", "%"+Keyword+"%")
 	}
 
 	if KategoriFilter != "" {
-		query = append(query, "kategori LIKE ?")
+		query = append(query, "produk.kategori LIKE ?")
 		args = append(args, "%"+KategoriFilter+"%")
 	}
 
 	if MinPrice > 0 && MaxPrice > MinPrice {
-		query = append(query, "harga BETWEEN ? AND ?")
+		query = append(query, "produk.harga BETWEEN ? AND ?")
 		args = append(args, MinPrice, MaxPrice)
 	}
 
 	if KondisiFilter == "baru" || KondisiFilter == "bekas" {
-		query = append(query, "kondisi = ?")
+		query = append(query, "produk.kondisi = ?")
 		args = append(args, KondisiFilter)
 	}
 
 	orderBy := ""
 	if Urutan == "terlama" {
-		orderBy = "ORDER BY created_at ASC"
+		orderBy = "ORDER BY produk.created_at ASC"
 	} else if Urutan == "terbaru" {
-		orderBy = "ORDER BY created_at DESC"
+		orderBy = "ORDER BY produk.created_at DESC"
 	}
 
 	finalQuery := strings.Join(query, " AND ") + " " + orderBy
@@ -252,7 +291,8 @@ func (p *ProdukModel) Filter(Keyword string, KategoriFilter string, MinPrice int
 			&p.Status,
 			&p.Unit,
 			&p.Foto,
-			&p.Kondisi); err != nil {
+			&p.Kondisi,
+			&p.Toko); err != nil {
 			return nil, err
 		}
 
@@ -429,7 +469,8 @@ func (p *ProdukModel) GetProduk(Slug string) (*Produk, error) {
 func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 	const limit int = 8
 
-	query := fmt.Sprintf("SELECT %s FROM %s ORDER BY terjual DESC LIMIT %d", p.columns, p.table, limit)
+	query := fmt.Sprintf("SELECT %s, toko.nama FROM %s INNER JOIN toko ON produk.domain = toko.domain ORDER BY terjual DESC LIMIT %d", p.columns, p.table, limit)
+
 	rows, err := p.DB.Query(query)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -461,6 +502,7 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 			&produk.Unit,
 			&produk.Foto,
 			&produk.Kondisi,
+			&produk.Toko,
 		)
 
 		if err != nil {

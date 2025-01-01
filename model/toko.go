@@ -87,6 +87,9 @@ func (t *TokoModel) GetToko(domain string) (*Toko, error) {
 		&toko.Rating,
 		&toko.Status,
 	); err != nil {
+		if err == sql.ErrNoRows {
+			return &Toko{}, nil
+		}
 		return nil, err
 	}
 

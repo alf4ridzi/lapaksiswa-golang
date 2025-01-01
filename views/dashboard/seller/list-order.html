@@ -1,0 +1,32 @@
+{{ define "content" }}
+<div id="orders" class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">
+    <h2 class="text-3xl font-semibold text-gray-800">Orders</h2>
+    <p class="mt-4 text-gray-600">View and manage your customer orders.</p>
+    <div class="mt-8">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead>
+                <tr>
+                    <th class="py-3 px-6 text-left text-gray-800">Order ID</th>
+                    <th class="py-3 px-6 text-left text-gray-800">Customer</th>
+                    <th class="py-3 px-6 text-left text-gray-800">Total</th>
+                    <th class="py-3 px-6 text-left text-gray-800">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="py-3 px-6 text-gray-600">#1234</td>
+                    <td class="py-3 px-6 text-gray-600">John Doe</td>
+                    <td class="py-3 px-6 text-gray-600">$150</td>
+                    <td class="py-3 px-6 text-gray-600">Shipped</td>
+                </tr>
+                <tr>
+                    <td class="py-3 px-6 text-gray-600">#1235</td>
+                    <td class="py-3 px-6 text-gray-600">Jane Smith</td>
+                    <td class="py-3 px-6 text-gray-600">$80</td>
+                    <td class="py-3 px-6 text-gray-600">Pending</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{{ end }}

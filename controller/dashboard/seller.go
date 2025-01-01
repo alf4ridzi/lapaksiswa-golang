@@ -232,7 +232,25 @@ func HandleGetEditProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Product, err := produkModel.GetProductByID(ProductID, Toko.Domain)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	kategoriModel := model.NewKategoriModel()
+	defer kategoriModel.DB.Close()
+
+	Kategori, err := kategoriModel.GetKategori()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	data := make(map[string]any)
+
+	data["Product"] = Product
+	data["Kategori"] = Kategori
 
 	templates := []string{
 		filepath.Join("views", "dashboard", "seller", "edit.html"),
@@ -247,7 +265,7 @@ func HandleGetEditProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tl := []string{
-		"header", "navbar", "edit", "content", "end",
+		"header", "navbar", "edit", "end",
 	}
 
 	for _, t := range tl {
@@ -271,5 +289,179 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 			HandleGetEditProduct(w, r)
 		}
 
+	}
+}
+
+func ListProductPage() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		role, err := r.Cookie("role")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if role.Value != "seller" {
+			http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if Username.Value == "" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Toko.Domain == "" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login menggunakan akun seller.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		kategoriModel := model.NewKategoriModel()
+		defer kategoriModel.DB.Close()
+
+		Kategori, err := kategoriModel.GetKategori()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data := make(map[string]any)
+		data["Toko"] = Toko
+		data["Kategori"] = Kategori
+
+		templates := []string{
+			filepath.Join("views", "dashboard", "seller", "list-product.html"),
+			filepath.Join("views", "dashboard", "seller", "templates.html"),
+		}
+
+		tmpl, err := template.ParseFiles(templates...)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		t := []string{
+			"header", "navbar", "content", "end",
+		}
+
+		for _, tl := range t {
+			if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+}
+
+func ListOrderPage() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		role, err := r.Cookie("role")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if role.Value != "seller" {
+			http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		if Username.Value == "" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Toko.Domain == "" {
+			cookie.SetFlashCookie(w, "error", "Silahkan login menggunakan akun seller.")
+			http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+			return
+		}
+
+		data := make(map[string]any)
+		data["Toko"] = Toko
+
+		templates := []string{
+			filepath.Join("views", "dashboard", "seller", "list-order.html"),
+			filepath.Join("views", "dashboard", "seller", "templates.html"),
+		}
+
+		tmpl, err := template.ParseFiles(templates...)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		t := []string{
+			"header", "navbar", "content", "end",
+		}
+
+		for _, tl := range t {
+			if err = tmpl.ExecuteTemplate(w, tl, data); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
 	}
 }
