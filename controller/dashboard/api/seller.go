@@ -599,6 +599,7 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// TODO: banyak lah pokoknya
 		Slug := GenerateSlug(Product.Nama, ProdukID)
 
 		if err := HandleImageUpload(ProdukID, w, r); err != nil {
