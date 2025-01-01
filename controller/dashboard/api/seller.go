@@ -225,6 +225,8 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			"result": nil,
 		}
 
+		w.Header().Set("Content-Type", "application/json")
+
 		isLogin, err := r.Cookie("isLogin")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -267,8 +269,6 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 			w.Write(responseJson)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
 
 		tokoModel := model.NewTokoModel()
 		defer tokoModel.DB.Close()
@@ -476,5 +476,152 @@ func UpdateStatusProduct() func(w http.ResponseWriter, r *http.Request) {
 
 		data["status"] = true
 		HandleResponseJson(w, data, http.StatusOK)
+	}
+}
+
+func EditProduct() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := map[string]any{
+			"status": false,
+			"result": nil,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		isLogin, err := r.Cookie("isLogin")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := r.ParseMultipartForm(1024); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if isLogin.Value != "true" {
+			data["result"] = "Login dlu woilah"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		Username, err := r.Cookie("username")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Username.Value == "" {
+			data["result"] = "Login dlu woilah"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
+		Toko, err := tokoModel.GetTokoByUsername(Username.Value)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Toko.Domain == "" {
+			data["result"] = "Toko Tidak Ditemukan"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(responseJson)
+			return
+		}
+
+		Harga, err := strconv.ParseInt(r.FormValue("harga"), 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Stok, err := strconv.ParseInt(r.FormValue("stok"), 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		ProductID, err := strconv.ParseInt(r.FormValue("productid"), 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Product := model.EditProduct{
+			ProductID: ProductID,
+			Nama:      r.FormValue("nama"),
+			Deskripsi: r.FormValue("deskripsi"),
+			Kategori:  r.FormValue("kategori"),
+			Varian:    r.FormValue("varian"),
+			Unit:      r.FormValue("unit"),
+			Kondisi:   r.FormValue("kondisi"),
+			Stok:      Stok,
+			Harga:     Harga,
+		}
+
+		var ProdukID string
+		produkModel := model.NewProdukModel()
+		defer produkModel.DB.Close()
+
+		product, err := produkModel.GetProductByID(Product.ProductID, Toko.Domain)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if product == nil {
+			data["result"] = "Product tidak ditemukan / tidak valid"
+			HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
+
+		Slug := GenerateSlug(Product.Nama, ProdukID)
+
+		if err := HandleImageUpload(ProdukID, w, r); err != nil {
+			data["result"] = "Gagal upload gambar"
+			responseJson, err := ConvertMapToJson(data)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(responseJson)
+			return
+		}
+
+		data["status"] = true
+		responseJson, err := ConvertMapToJson(data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(responseJson)
 	}
 }

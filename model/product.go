@@ -19,6 +19,18 @@ type Tambah struct {
 	Harga     int64
 }
 
+type EditProduct struct {
+	ProductID int64
+	Nama      string
+	Deskripsi string
+	Kategori  string
+	Varian    string
+	Unit      string
+	Kondisi   string
+	Stok      int64
+	Harga     int64
+}
+
 type Produk struct {
 	ProdukID    string
 	Nama        string
@@ -87,7 +99,15 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
-func (p *ProdukModel) GetProductByID(ProductID string, Domain string) (*Produk, error) {
+func (p *ProdukModel) HandleEditProduct(NewSlug string, Domain string, Product EditProduct) (bool, error) {
+	query := fmt.Sprintf("UPDATE %s SET WHERE produk_id = ? AND domain = ?", p.table)
+	if _, err := p.DB.Exec(query, Product.ProductID, Domain); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+func (p *ProdukModel) GetProductByID(ProductID any, Domain string) (*Produk, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE produk_id = ? AND domain = ?", p.columns, p.table)
 	row := p.DB.QueryRow(query, ProductID, Domain)
 

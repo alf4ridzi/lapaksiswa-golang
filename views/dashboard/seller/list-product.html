@@ -100,8 +100,14 @@
                 <input type="number" id="stok" class="w-full p-3 border border-gray-300 rounded-md" required />
             </div>
             <div>
-                <label for="gambarproduk" class="block text-sm font-medium text-gray-700">Gambar Produk</label>
+                <div id="image-preview-container" class="mt-2 hidden">
+                    <img id="image-preview" src="/img/product/{{ .Product.Foto }}" alt="Preview"
+                        class="w-24 h-24 object-cover rounded-md border mb-1" />
+                </div>
+    
+                <label for="gambarproduk" class="block text-sm font-medium text-gray-700">Gambar Product</label>
                 <input type="file" id="gambarproduk" class="w-full p-3 border border-gray-300 rounded-md" required />
+    
             </div>
             <button type="submit" id="tambah" class="w-full py-3 bg-blue-600 text-white rounded-md">
                 Tambah Produk
@@ -117,6 +123,23 @@
         tambah.classList.remove("hidden");
         product.classList.add("hidden");
     }
+
+    document.getElementById("gambarproduk").addEventListener("change", function () {
+        const file = this.files[0];
+        const previewContainer = document.getElementById("image-preview-container");
+        const previewImage = document.getElementById("image-preview");
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                previewImage.src = event.target.result;
+                previewContainer.classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add("hidden");
+        }
+    });
 
     document.addEventListener('change', function (event) {
         if (event.target.classList.contains('product-action')) {
