@@ -565,12 +565,7 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		ProductID, err := strconv.ParseInt(r.FormValue("productid"), 10, 64)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+		ProductID := r.FormValue("productid")
 		Product := model.EditProduct{
 			ProductID: ProductID,
 			Nama:      r.FormValue("nama"),
@@ -587,42 +582,45 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 		produkModel := model.NewProdukModel()
 		defer produkModel.DB.Close()
 
-		product, err := produkModel.GetProductByID(Product.ProductID, Toko.Domain)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if product == nil {
-			data["result"] = "Product tidak ditemukan / tidak valid"
-			HandleResponseJson(w, data, http.StatusBadRequest)
-			return
-		}
-
-		// TODO: banyak lah pokoknya
-		Slug := GenerateSlug(Product.Nama, ProdukID)
-
-		if err := HandleImageUpload(ProdukID, w, r); err != nil {
-			data["result"] = "Gagal upload gambar"
-			responseJson, err := ConvertMapToJson(data)
+		if product, err := produkModel.GetProductByID(ProductID, Toko.Domain); err != nil || product == nil {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(responseJson)
-			return
+			if product == nil {
+				data["result"] = "Product tidak ditemukan / tidak valid"
+				HandleResponseJson(w, data, http.StatusBadRequest)
+				return
+			}
 		}
 
-		data["status"] = true
-		responseJson, err := ConvertMapToJson(data)
-		if err != nil {
+		uploadImage := true
+		if _, _, err := r.FormFile("gambar"); err != nil {
+			if err != http.ErrMissingFile {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if err == http.ErrMissingFile {
+				uploadImage = false
+			}
+		}
+
+		if uploadImage {
+			if err := HandleImageUpload(ProdukID, w, r); err != nil {
+				data["result"] = "Gagal upload gambar"
+				HandleResponseJson(w, data, http.StatusInternalServerError)
+				return
+			}
+		}
+
+		if err := produkModel.HandleEditProduct(Toko.Domain, Product); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		w.Write(responseJson)
+		data["status"] = true
+		HandleResponseJson(w, data, http.StatusOK)
 	}
 }

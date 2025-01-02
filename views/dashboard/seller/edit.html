@@ -2,6 +2,7 @@
 <div class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">
     <div class="space-y-4 max-w-4xl mx-auto my-8 p-6 bg-white shadow-md rounded-md">
         <h2 class="text-2xl font-semibold text-left mb-6">Tambah Produk</h2>
+        <input type="hidden" id="productid" value="{{ .Product.ProdukID }}">
         <div>
             <label for="namaproduk" class="block text-sm font-medium text-gray-700">Nama Produk</label>
             <input type="text" id="namaproduk" class="w-full p-3 border border-gray-300 rounded-md"
@@ -96,6 +97,7 @@
         e.preventDefault();
 
         const formData = new FormData();
+        formData.append("productid", document.getElementById("productid").value)
         formData.append("nama", document.getElementById("namaproduk").value);
         formData.append(
             "deskripsi",
@@ -118,14 +120,14 @@
                 if (data.status) {
                     Swal.fire({
                         title: "Sukses!",
-                        text: "Berhasil ditambah",
+                        text: "Berhasil Edit Product",
                         icon: "success",
                         confirmButtonText: "OK",
                     });
                 } else {
                     Swal.fire({
                         title: "Error!",
-                        text: "Terjadi kesalahan. Coba lagi nanti",
+                        text: data.result || "Terjadi kesalahan. Coba lagi nanti",
                         icon: "error",
                         confirmButtonText: "OK",
                     });
