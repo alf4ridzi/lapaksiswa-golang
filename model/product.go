@@ -3,6 +3,8 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
@@ -106,6 +108,11 @@ func (p *ProdukModel) DeleteProduct(Domain string, ProductID string) (bool, erro
 	}
 
 	FotoProduct := Produk.Foto
+	path := filepath.Join("public", "img", "product", FotoProduct)
+
+	if err := os.Remove(path); err != nil {
+		return false, err
+	}
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE domain = ? AND produk_id = ?", p.table)
 	result, err := p.DB.Exec(query, Domain, ProductID)
