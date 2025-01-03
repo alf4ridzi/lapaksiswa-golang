@@ -105,3 +105,12 @@ func DeleteBulkCookies(w http.ResponseWriter, name []string) {
 		http.SetCookie(w, cookies)
 	}
 }
+
+func GetCookieValue(r *http.Request, key string) (string, error) {
+	value, err := r.Cookie(key)
+	if err != nil {
+		return "", err
+	}
+
+	return value.Value, nil
+}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
+	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 )
 
 type Tambah struct {
@@ -97,6 +98,29 @@ func NewProdukModel() *ProdukModel {
 		table:   tableName,
 		columns: columns,
 	}
+}
+
+func (p *ProdukModel) DeleteProduct(Domain string, ProductID string) (bool, error) {
+	Produk, err := p.GetProductByID(ProductID, Domain)
+	if err != nil {
+		return false, err
+	}
+
+	FotoProduct := Produk.Foto
+	lib.DeletePicture(FotoProduct)
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE domain = ? AND produk_id = ?", p.table)
+	result, err := p.DB.Exec(query, Domain, ProductID)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	return rowsAffected > 0, nil
 }
 
 func (p *ProdukModel) HandleEditProduct(Domain string, Product EditProduct) error {

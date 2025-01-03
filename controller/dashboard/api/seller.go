@@ -12,7 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard"
+	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 )
 
@@ -578,7 +580,6 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 			Harga:     Harga,
 		}
 
-		var ProdukID string
 		produkModel := model.NewProdukModel()
 		defer produkModel.DB.Close()
 
@@ -608,7 +609,7 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if uploadImage {
-			if err := HandleImageUpload(ProdukID, w, r); err != nil {
+			if err := HandleImageUpload(ProductID, w, r); err != nil {
 				data["result"] = "Gagal upload gambar"
 				HandleResponseJson(w, data, http.StatusInternalServerError)
 				return
@@ -617,6 +618,51 @@ func EditProduct() func(w http.ResponseWriter, r *http.Request) {
 
 		if err := produkModel.HandleEditProduct(Toko.Domain, Product); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data["status"] = true
+		HandleResponseJson(w, data, http.StatusOK)
+	}
+}
+
+func DeleteProduct() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := map[string]any{
+			"status": false,
+			"result": nil,
+		}
+
+		ProductID := r.FormValue("productid")
+
+		w.Header().Set("Content-Type", "application/json")
+
+		if isCookie, err := lib.ValidateUserCookies(r, "seller"); err != nil || !isCookie {
+			data["result"] = "Cookie tidak valid"
+			if err != nil {
+				data["result"] = err.Error()
+			}
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		Username, err := cookie.GetCookieValue(r, "username")
+		if err != nil {
+			data["result"] = err.Error()
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+		// get user domain
+		TokoDomain, err := lib.GetUserDomain(Username)
+		if err != nil {
+			data["result"] = err.Error()
+			HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
+
+		if err = lib.DeleteProduct(TokoDomain, ProductID); err != nil {
+			data["result"] = err.Error()
+			HandleResponseJson(w, data, http.StatusBadRequest)
 			return
 		}
 
