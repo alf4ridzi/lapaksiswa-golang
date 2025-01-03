@@ -1,15 +1,20 @@
 package cookie
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // expired dalam 1 hari dalam hitungan detik.
 var CookieMaxAge = 86400
+
+// expired dalam 30 hari
+const CookieMaxAgeMonth = 30 * 24 * 60 * 60
 
 type Cookie struct {
 	Cookies map[string]string
 }
 
-func SetCookie(w http.ResponseWriter, data map[string]string) {
+func SetCookie(w http.ResponseWriter, data map[string]string, expired int) {
 	for name, value := range data {
 		Cookie := &http.Cookie{
 			Name:     name,
@@ -17,7 +22,7 @@ func SetCookie(w http.ResponseWriter, data map[string]string) {
 			Path:     "/",
 			HttpOnly: false,
 			Secure:   false,
-			MaxAge:   CookieMaxAge,
+			MaxAge:   expired,
 		}
 
 		http.SetCookie(w, Cookie)

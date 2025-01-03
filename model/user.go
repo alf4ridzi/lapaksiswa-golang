@@ -111,7 +111,7 @@ func (p *UserModel) IsValidPassword(email string, password string) (bool, error)
 	return pwd == password, nil
 }
 
-func (p *UserModel) ValidasiLogin(w http.ResponseWriter, email, password string) (bool, error) {
+func (p *UserModel) ValidasiLogin(w http.ResponseWriter, email string, password string, remember bool) (bool, error) {
 	password = Md5(password)
 	query := fmt.Sprintf("SELECT username, role FROM %s WHERE email = ? AND password = ?", p.table)
 	row := p.DB.QueryRow(query, email, password)
@@ -131,7 +131,15 @@ func (p *UserModel) ValidasiLogin(w http.ResponseWriter, email, password string)
 		"username": username,
 		"role":     role,
 	}
-	cookie.SetCookie(w, cookieData)
+
+	cookie.SetCookie(w, cookieData, func() int {
+		if remember {
+			return cookie.CookieMaxAgeMonth
+		}
+
+		return cookie.CookieMaxAge
+	}())
+
 	return true, nil
 }
 

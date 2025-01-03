@@ -128,7 +128,7 @@ func HandlePostDaftarSeller(w http.ResponseWriter, r *http.Request) {
 		"role": "seller",
 	}
 
-	cookie.SetCookie(w, cookieNew)
+	cookie.SetCookie(w, cookieNew, cookie.CookieMaxAge)
 	w.WriteHeader(http.StatusOK)
 	w.Write(responseJson)
 }

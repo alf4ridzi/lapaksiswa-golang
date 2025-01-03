@@ -39,8 +39,15 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			if err := r.ParseForm(); err != nil {
+				cookie.SetFlashCookie(w, "error", "Error : "+err.Error())
+				http.Redirect(w, r, "/login", http.StatusPermanentRedirect)
+				return
+			}
+
 			Email := r.FormValue("email")
 			Password := r.FormValue("password")
+			Remember := r.FormValue("remember")
 
 			if len(Email) == 0 || len(Password) == 0 {
 				http.Redirect(w, r, "/login", http.StatusFound)
@@ -50,7 +57,12 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 			userModel := model.NewUserModel()
 			defer userModel.DB.Close()
 
-			isLogin, err := userModel.ValidasiLogin(w, Email, Password)
+			remember := false
+			if Remember != "" {
+				remember = true
+			}
+
+			isLogin, err := userModel.ValidasiLogin(w, Email, Password, remember)
 
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -58,7 +70,7 @@ func Login() func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if !isLogin {
-				http.Redirect(w, r, "/login", http.StatusFound)
+				http.Redirect(w, r, "/login", http.StatusBadRequest)
 				return
 			}
 
