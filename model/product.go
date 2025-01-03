@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/database"
-	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 )
 
 type Tambah struct {
@@ -107,7 +106,6 @@ func (p *ProdukModel) DeleteProduct(Domain string, ProductID string) (bool, erro
 	}
 
 	FotoProduct := Produk.Foto
-	lib.DeletePicture(FotoProduct)
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE domain = ? AND produk_id = ?", p.table)
 	result, err := p.DB.Exec(query, Domain, ProductID)
