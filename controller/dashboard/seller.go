@@ -465,3 +465,9 @@ func ListOrderPage() func(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func ProfilePage() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}

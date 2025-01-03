@@ -28,7 +28,7 @@ func MapRoutes(server *mux.Router) {
 	server.HandleFunc("/seller/edit-product/{id}", dashboard.EditProduct()).Methods("GET")
 	server.HandleFunc("/seller/edit-product", api.EditProduct()).Methods("POST")
 	server.HandleFunc("/seller/delete-product", api.DeleteProduct()).Methods("POST")
-
+	server.HandleFunc("/seller/profile", dashboard.ProfilePage()).Methods("GET")
 	// kategori
 	server.HandleFunc("/kategori/{kategori}", kategori.Kategori()).Methods("GET")
 
