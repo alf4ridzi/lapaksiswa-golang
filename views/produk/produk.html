@@ -33,7 +33,7 @@
 
                 <div class="flex flex-col md:flex-row gap-6">
                     <div class="flex-shrink-0">
-                        <img src="img/product/{{ .Produk.Foto }}" alt="img/product/{{ .Produl.Foto }}"
+                        <img src="/public/img/product/{{ .Produk.Foto }}" alt="img/product/{{ .Produl.Foto }}"
                             class="w-full max-w-sm h-auto object-cover rounded-lg border">
                     </div>
 
@@ -157,7 +157,7 @@
         <div
             class="bg-white shadow rounded-lg p-6 mt-6 flex flex-col md:flex-row items-center border-2 border-blue-500">
             <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                <img src="img/market/{{ .Toko.Logo }}" alt="Logo {{ .Toko.Nama }}"
+                <img src="/public/img/market/{{ .Toko.Logo }}" alt="Logo {{ .Toko.Nama }}"
                     class="w-24 h-24 object-cover rounded-full border-2 border-blue-500">
             </div>
             <div class="flex-grow text-center md:text-left">
@@ -186,9 +186,9 @@
             {{ if .Related }}
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 {{ range $i, $p := .Related }}
-                <a href="/produk/{{ $p.Slug }}"
+                <a href="/{{ $p.Domain }}/{{ $p.Slug }}"
                     class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
-                    <img src="img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto" class="w-full h-40 object-cover">
+                    <img src="/public/img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto" class="w-full h-40 object-cover">
                     <div class="p-4">
                         <h4 class="text-lg font-medium text-gray-800 truncate">
                             {{ $p.Nama }}

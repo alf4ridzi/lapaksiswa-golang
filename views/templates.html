@@ -38,10 +38,10 @@
     />
     <meta name="author" content="{{ .Website.Author }}" />
     <link rel="icon" type="image/x-icon" href="{{ .Website.Icon }}" />
-    <link rel="stylesheet" href="/css/styles.css" type="text/css" />
-    <script src="/js/tailwind.js"></script>
-    <script type="text/javascript" src="/js/jquery.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="/public/css/styles.css" type="text/css" />
+    <script src="/public/js/tailwind.js"></script>
+    <script type="text/javascript" src="/public/js/jquery.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link
       rel="stylesheet"
@@ -302,20 +302,20 @@
           <div class="flex items-center space-x-3 md:mt-0">
             {{ if not .Cookies.isLogin }}
             <a
-              href="login"
+              href="/login"
               class="hidden sm:block px-4 py-2 bg-blue-600 text-white font-semibold rounded-md"
             >
               Login
             </a>
             <a
-              href="register"
+              href="/register"
               class="hidden sm:block px-4 py-2 border border-blue-600 text-blue-500 font-semibold rounded-md"
             >
               Register
             </a>
             {{ else }}
             <a
-              href="user"
+              href="/user"
               class="hidden sm:flex px-4 py-2 text-black border font-semibold rounded-md hover:bg-gray-100 items-center space-x-2"
             >
               <i class="fas fa-user"></i>
@@ -325,7 +325,7 @@
             </a>
 
             <a
-              href="keluar"
+              href="/keluar"
               class="hidden sm:flex px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 items-center space-x-2"
             >
               <i class="fa-solid fa-right-from-bracket"></i>

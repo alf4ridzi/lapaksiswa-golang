@@ -101,7 +101,7 @@
             </div>
             <div>
                 <div id="image-preview-container" class="mt-2 hidden">
-                    <img id="image-preview" src="/img/product/{{ .Product.Foto }}" alt="Preview"
+                    <img id="image-preview" src="/public/img/product/{{ .Product.Foto }}" alt="Preview"
                         class="w-24 h-24 object-cover rounded-md border mb-1" />
                 </div>
     
@@ -199,7 +199,7 @@
             row.innerHTML = `
       <input id="product_id" type="hidden" value="${product.productid}">
       <td class="py-3 px-6 text-gray-600 flex items-center space-x-4">
-        <img src="/img/product/${product.image}" alt="${product.name
+        <img src="/public/img/product/${product.image}" alt="${product.name
                 }" class="w-16 h-16 object-cover rounded-md">
         <div>
           <a href="/${product.domain}/${product.slug}" class="font-medium text-black">${product.name}</a>

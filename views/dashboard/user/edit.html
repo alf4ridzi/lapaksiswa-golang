@@ -16,9 +16,9 @@
           <img
             id="profile_preview"
             {{ if .User.Foto }}
-            src="assets/picture/user/{{ .User.Foto }}"
+            src="/public/assets/picture/user/{{ .User.Foto }}"
             {{ else }}
-            src="assets/picture/user/default.png"
+            src="/public/assets/picture/user/default.png"
             {{ end }}
             alt="Profile Picture"
             class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border border-gray-300"

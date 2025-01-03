@@ -50,8 +50,9 @@ func MapRoutes(server *mux.Router) {
 
 	// produk
 	server.HandleFunc("/{toko}/{slug}", produk.Produk()).Methods("GET")
+
 	// public folder
-	server.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
+	server.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
 
 	// 404 handler
 	server.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -5,7 +5,7 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        background-image: url('assets/background/page.png');
+        background-image: url('/public/assets/background/page.png');
         background-size: 70%;
         background-repeat: no-repeat;
         background-position: center;
@@ -54,7 +54,7 @@
             </div>
         {{ end }}
 
-        <form method="POST" action="login">
+        <form method="POST" action="/login">
             <div class="mb-4">
                 <label for="email" class="block text-sm font-semibold">Email</label>
                 <input type="email" id="email" name="email"
@@ -79,7 +79,7 @@
             <button type="submit" class="btn">Login</button>
         </form>
         <div class="text-center mt-4">
-            <a href="register" class="text-blue-500 hover:underline text-sm">Tidak Punya Akun? Daftar Sekarang</a>
+            <a href="/register" class="text-blue-500 hover:underline text-sm">Tidak Punya Akun? Daftar Sekarang</a>
         </div>
     </div>
 </div>
