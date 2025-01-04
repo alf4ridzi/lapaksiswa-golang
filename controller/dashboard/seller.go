@@ -8,6 +8,7 @@ import (
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
+	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
 	"github.com/gorilla/mux"
 )
@@ -468,6 +469,59 @@ func ListOrderPage() func(w http.ResponseWriter, r *http.Request) {
 
 func ProfilePage() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if isCookie, err := lib.ValidateUserCookies(r, "seller"); err != nil || !isCookie {
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusForbidden)
+			return
+		}
+
+		Username, err := cookie.GetCookieValue(r, "username")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Username == "" {
+			cookie.SetFlashCookie(w, "error", "Login terlebih dahulu!")
+			http.Redirect(w, r, "/login", http.StatusForbidden)
+			return
+		}
+
+		data := make(map[string]any)
+
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
+		Toko, err := tokoModel.GetTokoByUsername(Username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Toko == nil {
+			http.Error(w, "Toko tidak ditemukan", http.StatusBadRequest)
+			return
+		}
+
+		data["Toko"] = Toko
+
+		templates := []string{
+			filepath.Join("views", "dashboard", "seller", "templates.html"),
+			filepath.Join("views", "dashboard", "seller", "profile.html"),
+		}
+
+		t := []string{
+			"header", "navbar", "content", "end",
+		}
+
+		if err := lib.RenderTemplate(w, templates, t, data); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
