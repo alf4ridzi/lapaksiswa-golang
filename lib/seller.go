@@ -91,3 +91,14 @@ func DeleteProduct(Domain string, ProductID string) error {
 
 	return nil
 }
+
+func UpdateToko(Domain string, Toko model.EditToko) error {
+	tokoModel := model.NewTokoModel()
+	defer tokoModel.DB.Close()
+
+	if err := tokoModel.UpdateToko(Domain, Toko); err != nil {
+		return err
+	}
+
+	return nil
+}

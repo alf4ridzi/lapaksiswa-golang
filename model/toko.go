@@ -28,6 +28,16 @@ type TokoModel struct {
 	columns string
 }
 
+type EditToko struct {
+	Nama      string `json:"nama"`
+	Email     string `json:"email"`
+	Phone     string `json:"phone"`
+	Deskripsi string `json:"deskripsi"`
+	Alamat    string `json:"alamat"`
+	Status    string `json:"status"`
+	Kategori  string `json:"kategori"`
+}
+
 type Seller struct {
 	Nama      string `json:"nama"`
 	Username  string `json:"username"`
@@ -65,6 +75,16 @@ func NewTokoModel() *TokoModel {
 		table:   "toko",
 		columns: columns,
 	}
+}
+
+func (t *TokoModel) UpdateToko(Domain string, Toko EditToko) error {
+	query := fmt.Sprintf("UPDATE %s SET nama = ?, email = ?, no_hp = ?, deskripsi = ?, alamat = ?, status = ?, kategori = ? WHERE domain = ?", t.table)
+
+	if _, err := t.DB.Exec(query, Toko.Nama, Toko.Email, Toko.Phone, Toko.Deskripsi, Toko.Alamat, Toko.Status, Toko.Kategori, Domain); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *TokoModel) GetToko(domain string) (*Toko, error) {

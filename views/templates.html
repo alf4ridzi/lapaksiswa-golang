@@ -115,7 +115,7 @@
           >
             <i class="fa-solid fa-bars"></i>
           </button>
-          <img src="{{ .Website.Logo }}" alt="Logo" class="h-10 w-10" />
+          <img src="/public/assets/logo/{{ .Website.Logo }}" alt="Logo" class="h-10 w-10" />
           <a href="/" class="text-blue-500 text-xl font-bold">Lapak Siswa</a>
         </div>
         <div
@@ -346,7 +346,7 @@
         <div class="sm:flex sm:items-center sm:justify-between">
           <a href="#" class="flex items-center mb-4 sm:mb-0 space-x-3">
             <img
-              src="{{ .Website.Logo }}"
+              src="/public/assets/logo/{{ .Website.Logo }}"
               class="h-8"
               alt="Lapak Siswa Logo"
             />
@@ -427,7 +427,7 @@
               {{ range $index, $pembayaran := .Website.Pembayaran }}
               <li>
                 <img
-                  src="{{ $pembayaran.Logo }}"
+                  src="/public/assets/metode/{{ $pembayaran.Logo }}"
                   alt="{{ $pembayaran.Nama }}"
                   class="h-7"
                 />

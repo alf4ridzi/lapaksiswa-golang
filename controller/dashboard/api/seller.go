@@ -673,6 +673,56 @@ func DeleteProduct() func(w http.ResponseWriter, r *http.Request) {
 
 func UpdateToko() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]any{
+			"status": false,
+			"result": nil,
+		}
 
+		if isValid, err := lib.ValidateUserCookies(r, "seller"); err != nil || !isValid {
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !isValid {
+				response["result"] = "Data user tidak valid"
+				HandleResponseJson(w, response, http.StatusBadRequest)
+				return
+			}
+		}
+
+		Username, err := cookie.GetCookieValue(r, "username")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Domain, err := lib.GetUserDomain(Username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if Domain == "" {
+			response["result"] = "Hayo kamu bukan seller ngapain ?"
+			HandleResponseJson(w, response, http.StatusBadRequest)
+			return
+		}
+
+		var Toko model.EditToko
+		if err = json.NewDecoder(r.Body).Decode(&Toko); err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusBadRequest)
+			return
+		}
+
+		if err = lib.UpdateToko(Domain, Toko); err != nil {
+			response["result"] = "Gagal update : " + err.Error()
+			HandleResponseJson(w, response, http.StatusBadRequest)
+			return
+		}
+
+		response["status"] = true
+		HandleResponseJson(w, response, http.StatusOK)
 	}
 }
