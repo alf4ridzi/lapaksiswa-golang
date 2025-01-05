@@ -670,3 +670,9 @@ func DeleteProduct() func(w http.ResponseWriter, r *http.Request) {
 		HandleResponseJson(w, data, http.StatusOK)
 	}
 }
+
+func UpdateToko() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}

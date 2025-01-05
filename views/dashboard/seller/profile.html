@@ -1,12 +1,11 @@
 {{ define "content" }}
-<div id="profile" class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">    
+<div id="profile" class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">
     <h2 class="text-3xl font-semibold text-gray-800">Profile Toko</h2>
     <p class="mt-4 text-gray-600">
         Atur profile toko mu disini!
     </p>
     <div class="mt-8 bg-white shadow rounded-lg p-6">
         <form id="profile-form" class="space-y-6">
-            <!-- Logo Toko -->
             <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
                 <div class="shrink-0 mx-auto md:mx-0">
                     <img id="profile-picture-preview" class="h-24 w-24 object-cover rounded-full border border-gray-300"
@@ -22,15 +21,20 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                 <div>
                     <label class="block text-gray-800">Domain</label>
-                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="{{ .Toko.Domain }}" />
+                    <input type="text" disabled
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2"
+                        value="{{ .Toko.Domain }}" />
                 </div>
                 <div>
                     <label class="block text-gray-800">Rating Toko</label>
-                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="{{ .Toko.Rating }}" />
+                    <input type="text" disabled
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2"
+                        value="{{ .Toko.Rating }}" />
                 </div>
                 <div>
                     <label class="block text-gray-800">Tanggal Pembuatan</label>
-                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="" />
+                    <input type="text" disabled
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="" />
                 </div>
             </div>
 
@@ -85,7 +89,8 @@
                     onclick="resetForm()">
                     Reset
                 </button>
-                <button type="submit" id="save" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700">
+                <button type="submit" id="save"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700">
                     Save
                 </button>
             </div>
@@ -94,16 +99,83 @@
 </div>
 
 <script>
+    document.getElementById('profile-picture').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const previewImage = document.getElementById('profile-picture-preview');
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     function resetForm() {
         document.getElementById("profile-form").reset();
     }
 
-    function saveProfile() {
-        let 
-    }
+    document.getElementById("save").addEventListener("click", function (event) {
+        event.preventDefault();
+        
+        let nama = document.getElementById("name").value
+        let email = document.getElementById("email").value
+        let phone = document.getElementById("phone").value
+        let deskripsi = document.getElementById("deskripsi").value
+        let alamat = document.getElementById("address").value
+        let status = document.getElementById("status").value
+        let kategori = document.getElementById("kategori").value
 
-    document.getElementById("save").addEventListener("click", function () {
-        saveProfile();
+        const formData = {
+            nama: nama,
+            email: email,
+            phone: phone,
+            deskripsi: deskripsi,
+            alamat: alamat,
+            status: status,
+            kategori: kategori
+        };
+
+        fetch("/seller/update-toko", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Response not ok.",
+                        icon: "error"
+                    });
+                    return
+                }
+                return response.json()
+            })
+            .then(data => {
+                if (data.status) {
+                    Swal.fire({
+                        title: "Berhasil!",
+                        text: "Berhasil edit profile.",
+                        icon: "success"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Failed",
+                        text: data.result || "Gagal edit profile",
+                        icon: "error"
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: "Error!",
+                    text: "Network Error",
+                    icon: "error"
+                });
+            });
     });
 </script>
 {{ end }}
