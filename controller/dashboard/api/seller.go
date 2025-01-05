@@ -185,7 +185,7 @@ func HandleImageUpload(ProdukID string, w http.ResponseWriter, r *http.Request) 
 	}
 
 	if !Allowed {
-		return fmt.Errorf("Ext yang di perbolehkan hanya gambar")
+		return fmt.Errorf("ext yang di perbolehkan hanya gambar")
 	}
 
 	fileName := dashboard.GenerateRandomStr()
