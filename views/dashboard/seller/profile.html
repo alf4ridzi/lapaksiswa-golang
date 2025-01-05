@@ -1,11 +1,12 @@
 {{ define "content" }}
-<div id="profile" class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">
+<div id="profile" class="content container lg:ml-60 sm:ml-20 mr-8 ml-10 p-8 transition-all duration-300">    
     <h2 class="text-3xl font-semibold text-gray-800">Profile Toko</h2>
     <p class="mt-4 text-gray-600">
-        Atur profile toko mu disini!.
+        Atur profile toko mu disini!
     </p>
     <div class="mt-8 bg-white shadow rounded-lg p-6">
         <form id="profile-form" class="space-y-6">
+            <!-- Logo Toko -->
             <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
                 <div class="shrink-0 mx-auto md:mx-0">
                     <img id="profile-picture-preview" class="h-24 w-24 object-cover rounded-full border border-gray-300"
@@ -18,26 +19,65 @@
                 </label>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <div>
+                    <label class="block text-gray-800">Domain</label>
+                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="{{ .Toko.Domain }}" />
+                </div>
+                <div>
+                    <label class="block text-gray-800">Rating Toko</label>
+                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="{{ .Toko.Rating }}" />
+                </div>
+                <div>
+                    <label class="block text-gray-800">Tanggal Pembuatan</label>
+                    <input type="text" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 mt-2" value="" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="name" class="block text-gray-800">Nama Toko</label>
                     <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2"
-                        placeholder="Nama Toko" value="{{ .Toko.Nama }}"/>
+                        placeholder="Nama Toko" value="{{ .Toko.Nama }}" />
                 </div>
                 <div>
                     <label for="email" class="block text-gray-800">Email Address</label>
                     <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2"
-                        placeholder="Enter your email" value="{{ .Toko.Email }}"/>
+                        placeholder="Enter your email" value="{{ .Toko.Email }}" />
                 </div>
                 <div>
                     <label for="phone" class="block text-gray-800">Nomor Handphone Toko</label>
                     <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2"
-                        placeholder="Enter your phone number" value="{{ .Toko.NoHP }}"/>
+                        placeholder="Enter your phone number" value="{{ .Toko.NoHP }}" />
                 </div>
                 <div>
+                    <label for="deskripsi" class="block text-gray-800">Deskripsi Toko</label>
+                    <textarea id="deskripsi" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2"
+                        placeholder="Deskripsi Toko">{{ .Toko.Deskripsi }}</textarea>
+                </div>
+                <div class="col-span-2">
                     <label for="address" class="block text-gray-800">Alamat Toko</label>
                     <textarea id="address" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2"
                         placeholder="Enter your address" rows="3">{{ .Toko.Alamat }}</textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="status" class="block text-gray-800">Status Toko</label>
+                    <select id="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2">
+                        <option value="aktif">Aktif</option>
+                        <option value="nonaktif">Nonaktif</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="kategori" class="block text-gray-800">Kategori</label>
+                    <select id="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2">
+                        <option value="fashion">Fashion</option>
+                        <option value="elektronik">Elektronik</option>
+                        <option value="makanan">Makanan</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
                 </div>
             </div>
 
@@ -46,7 +86,7 @@
                     onclick="resetForm()">
                     Reset
                 </button>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700">
+                <button type="submit" id="save" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700">
                     Save
                 </button>
             </div>
@@ -58,5 +98,13 @@
     function resetForm() {
         document.getElementById("profile-form").reset();
     }
+
+    function saveProfile() {
+        let 
+    }
+
+    document.getElementById("save").addEventListener("click", function () {
+        saveProfile();
+    });
 </script>
 {{ end }}
