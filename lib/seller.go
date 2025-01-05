@@ -2,7 +2,9 @@ package lib
 
 import (
 	"errors"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/model"
@@ -97,6 +99,29 @@ func UpdateToko(Domain string, Toko model.EditToko) error {
 	defer tokoModel.DB.Close()
 
 	if err := tokoModel.UpdateToko(Domain, Toko); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GenerateRandomStr(length int) string {
+	charset := "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	var seed = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	randomStr := make([]byte, length)
+	for i := range randomStr {
+		randomStr[i] = charset[seed.Intn(len(charset))]
+	}
+
+	return string(randomStr)
+}
+
+func UpdateLogoToko(Domain string, Filename string) error {
+	tokoModel := model.NewTokoModel()
+	defer tokoModel.DB.Close()
+
+	if err := tokoModel.UpdateLogoToko(Domain, Filename); err != nil {
 		return err
 	}
 

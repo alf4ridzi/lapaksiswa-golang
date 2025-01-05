@@ -77,6 +77,15 @@ func NewTokoModel() *TokoModel {
 	}
 }
 
+func (t *TokoModel) UpdateLogoToko(Domain string, Filename string) error {
+	query := fmt.Sprintf("UPDATE %s SET logo = ? WHERE domain = ?", t.table)
+	if _, err := t.DB.Exec(query, Filename, Domain); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (t *TokoModel) UpdateToko(Domain string, Toko EditToko) error {
 	query := fmt.Sprintf("UPDATE %s SET nama = ?, email = ?, no_hp = ?, deskripsi = ?, alamat = ?, status = ?, kategori = ? WHERE domain = ?", t.table)
 

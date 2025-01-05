@@ -10,11 +10,15 @@
                 <div class="shrink-0 mx-auto md:mx-0">
                     <img id="profile-picture-preview" class="h-24 w-24 object-cover rounded-full border border-gray-300"
                         src="/public/img/market/{{ .Toko.Logo }}" alt="Profile Picture" />
+                    <button type="button" id="change-image-btn"
+                        class="bg-blue-600 text-white text-xs rounded-full px-1 py-2 shadow-lg hover:bg-blue-700 mt-4 md:mt-0">
+                        Ganti Logo Toko
+                    </button>
                 </div>
                 <label class="block w-full md:w-auto mt-4 md:mt-0">
-                    <span class="text-gray-800">Logo Toko</span>
+                    <span id="fileText" class="hidden text-gray-500">Yuk pilih Logo toko yang baru!</span>
                     <input type="file" id="profile-picture" accept="image/*"
-                        class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                        class="hidden mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                 </label>
             </div>
 
@@ -99,6 +103,13 @@
 </div>
 
 <script>
+    document.getElementById('change-image-btn').addEventListener('click', function() {
+        const inputFile = document.getElementById('profile-picture');
+        const textFile = document.getElementById('fileText');
+        textFile.classList.remove('hidden');
+        inputFile.classList.remove('hidden');
+    });
+
     document.getElementById('profile-picture').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
@@ -108,6 +119,48 @@
                 previewImage.src = e.target.result;
             };
             reader.readAsDataURL(file);
+
+            let formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/seller/update-picture', {
+                method: "POST",
+                body: formData,
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Response not ok.",
+                            icon: "error"
+                        });
+                        return
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status) {
+                        Swal.fire({
+                            title: "Berhasil",
+                            text: "Berhasil ganti profile picture!.",
+                            icon: "success"
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Gagal!",
+                            text: data.result || "Gagal update profile picture",
+                            icon: "error"
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Network Error",
+                        icon: "error"
+                    });
+                });
         }
     });
 
@@ -117,7 +170,7 @@
 
     document.getElementById("save").addEventListener("click", function (event) {
         event.preventDefault();
-        
+
         let nama = document.getElementById("name").value
         let email = document.getElementById("email").value
         let phone = document.getElementById("phone").value

@@ -726,3 +726,97 @@ func UpdateToko() func(w http.ResponseWriter, r *http.Request) {
 		HandleResponseJson(w, response, http.StatusOK)
 	}
 }
+
+func UpdateFotoToko() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]any{
+			"status": false,
+			"result": nil,
+		}
+
+		if isValid, err := lib.ValidateUserCookies(r, "seller"); err != nil || !isValid {
+			if err != nil {
+				response["result"] = err.Error()
+				HandleResponseJson(w, response, http.StatusInternalServerError)
+				return
+			}
+
+			response["result"] = "Autentikasi tidak valid."
+			HandleResponseJson(w, response, http.StatusBadRequest)
+			return
+		}
+
+		Username, err := cookie.GetCookieValue(r, "username")
+		if err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		Domain, err := lib.GetUserDomain(Username)
+		if err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		if err := r.ParseMultipartForm(1024); err != nil {
+			response["result"] = "Size terlalu besar"
+			HandleResponseJson(w, response, http.StatusBadRequest)
+			return
+		}
+
+		imageUpload, handler, err := r.FormFile("image")
+		if err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		defer imageUpload.Close()
+
+		dir, err := os.Getwd()
+		if err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		ext := filepath.Ext(handler.Filename)
+
+		if !lib.IsExtAllowed(ext) {
+			response["result"] = "Ext hanya gambar!"
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		randFilename := lib.GenerateRandomStr(10)
+		filename := fmt.Sprintf("%s%s", randFilename, ext)
+
+		fileLocation := filepath.Join(dir, "public", "img", "market", filename)
+
+		targetFile, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		defer targetFile.Close()
+
+		if _, err := io.Copy(targetFile, imageUpload); err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		if err = lib.UpdateLogoToko(Domain, filename); err != nil {
+			response["result"] = err.Error()
+			HandleResponseJson(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		response["status"] = true
+		HandleResponseJson(w, response, http.StatusOK)
+	}
+}
