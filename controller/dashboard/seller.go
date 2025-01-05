@@ -508,6 +508,16 @@ func ProfilePage() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		kategoriModel := model.NewKategoriModel()
+		defer kategoriModel.DB.Close()
+
+		Kategori, err := kategoriModel.GetKategori()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data["Kategori"] = Kategori
 		data["Toko"] = Toko
 
 		templates := []string{

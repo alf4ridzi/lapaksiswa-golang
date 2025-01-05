@@ -71,12 +71,11 @@
                     </select>
                 </div>
                 <div>
-                    <label for="kategori" class="block text-gray-800">Kategori</label>
+                    <label for="kategori" class="block text-gray-800">Kategori Toko</label>
                     <select id="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2">
-                        <option value="fashion">Fashion</option>
-                        <option value="elektronik">Elektronik</option>
-                        <option value="makanan">Makanan</option>
-                        <option value="lainnya">Lainnya</option>
+                        {{ range $i, $k := .Kategori }}
+                        <option value="{{ $k.Slug }}">{{ $k.Nama }}</option>
+                        {{ end }}
                     </select>
                 </div>
             </div>
