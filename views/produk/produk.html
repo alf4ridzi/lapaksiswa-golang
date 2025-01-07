@@ -38,6 +38,7 @@
                     </div>
 
                     <div class="flex-grow">
+                        <input id="productid" type="hidden" value="{{ .Produk.ProdukID }}">
                         {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") }}
                         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-lg">
                             <p class="font-bold">Peringatan</p>
@@ -152,7 +153,7 @@
                     <button class="text-gray-700 hover:text-gray-900">
                         <i class="fas fa-heart mr-2"></i>Wishlist
                     </button>
-                    <button class="text-gray-700 hover:text-gray-900">
+                    <button onclick="shareButton()" class="text-gray-700 hover:text-gray-900">
                         <i class="fas fa-share mr-2"></i>Share
                     </button>
                 </div>
@@ -193,7 +194,8 @@
                 {{ range $i, $p := .Related }}
                 <a href="/{{ $p.Domain }}/{{ $p.Slug }}"
                     class="bg-white shadow rounded-lg overflow-hidden hover:shadow-md transition">
-                    <img src="/public/img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto" class="w-full h-40 object-cover">
+                    <img src="/public/img/product/{{ $p.Foto }}" alt="{{ $p.Nama }} Foto"
+                        class="w-full h-40 object-cover">
                     <div class="p-4">
                         <h4 class="text-lg font-medium text-gray-800 truncate">
                             {{ $p.Nama }}
@@ -216,6 +218,7 @@
     </div>
 </div>
 
+<script src="/public/js/sweetalert.js"></script>
 <script>
     document.getElementById('quantity').addEventListener('input', function () {
         let stok = "{{ .Produk.Stok }}";
@@ -225,6 +228,26 @@
             this.value = stok;
         }
     });
+
+    function shareButton() {
+        var url = "{{ .Website.BaseUrl }}/{{ .Toko.Domain }}/{{ .Produk.Slug }}"
+
+        const shareData = {
+            title: "Lapak Siswa",
+            text: "Yuk beli {{ .Produk.Nama }} di Lapak Siswa",
+            url: url,
+        };
+
+        try {
+            navigator.share(shareData);
+        } catch (err) {
+            Swal.fire({
+                title: "Error",
+                text: "Error saat share",
+                icon: "error"
+            });
+        }
+    }
 
     function validateInput(input) {
         if (parseInt(input.value) < 1) {
