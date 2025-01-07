@@ -90,7 +90,7 @@
                 <div class="mb-6">
                     <label for="quantity" class="block text-gray-700 font-medium">Atur jumlah dan catatan</label>
                     <div class="flex items-center mt-2">
-                        {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") (ne .Toko.Status "nonaktif")}}
+                        {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") (eq .Toko.Status "nonaktif") }}
                         <button id="minus_stok" disabled
                             class="bg-gray-200 text-gray-700 py-2 px-4 rounded-l-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <i class="fas fa-minus"></i>
@@ -115,7 +115,7 @@
                             <i class="fas fa-plus"></i>
                         </button>
                         {{ end }}
-                        {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") }}
+                        {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") (eq .Toko.Status "nonaktif") }}
                         <span class="ml-4 text-gray-700">Stok Total: -</span>
                         {{ else }}
                         <span class="ml-4 text-gray-700">Stok Total: {{ .Produk.Stok }}</span>
@@ -125,14 +125,14 @@
 
                 <div class="mb-6 flex items-center">
                     <p class="text-lg font-bold text-gray-500 mr-2">Subtotal:</p>
-                    {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") }}
+                    {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") (eq .Toko.Status "nonaktif") }}
                     <p id="subtotal" class="text-lg font-bold text-red-500 mr-2">Tidak Dijual</p>
                     {{ else }}
                     <p id="subtotal" class="text-lg font-bold text-black mr-2">Rp {{ .Produk.HargaFormat }}</p>
                     {{ end }}
                 </div>
 
-                {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") }}
+                {{ if or (eq .Produk.Stok 0) (ne .Produk.Status "tersedia") (eq .Toko.Status "nonaktif") }}
 
                 {{ else }}
                 <div class="flex flex-col gap-4">
