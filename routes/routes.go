@@ -55,6 +55,7 @@ func MapRoutes(server *mux.Router) {
 
 	// produk
 	server.HandleFunc("/{toko}/{slug}", produk.Produk()).Methods("GET")
+	server.HandleFunc("/api/tambah-cart", produk.TambahCart()).Methods("POST")
 
 	// public folder
 	server.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
