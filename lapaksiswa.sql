@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 08, 2025 at 01:20 AM
+-- Generation Time: Jan 08, 2025 at 03:12 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -32,10 +32,17 @@ USE `lapaksiswa`;
 DROP TABLE IF EXISTS `cart`;
 CREATE TABLE `cart` (
   `id` int(11) NOT NULL,
-  `produk_id` int(11) NOT NULL,
+  `produk_id` text NOT NULL,
   `username` varchar(255) NOT NULL,
-  `created_at` date NOT NULL DEFAULT current_timestamp()
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`id`, `produk_id`, `username`, `created_at`) VALUES
+(5, 'P129428', 'hanma', '2025-01-08 17:25:38');
 
 -- --------------------------------------------------------
 
@@ -62,6 +69,21 @@ CREATE TABLE `foto_produk` (
   `foto` varchar(255) NOT NULL,
   `produk_id` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoice`
+--
+
+DROP TABLE IF EXISTS `invoice`;
+CREATE TABLE `invoice` (
+  `id` int(11) NOT NULL,
+  `order_id` text NOT NULL,
+  `metode` text NOT NULL,
+  `total` bigint(20) NOT NULL,
+  `status` enum('waiting','sukses','gagal','proses') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -117,6 +139,7 @@ DROP TABLE IF EXISTS `pembayaran`;
 CREATE TABLE `pembayaran` (
   `id` int(11) NOT NULL,
   `nama` varchar(50) NOT NULL,
+  `metode` varchar(255) NOT NULL,
   `logo` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -124,11 +147,11 @@ CREATE TABLE `pembayaran` (
 -- Dumping data for table `pembayaran`
 --
 
-INSERT INTO `pembayaran` (`id`, `nama`, `logo`) VALUES
-(1, 'dana', 'dana.webp'),
-(2, 'bca', 'bca.webp'),
-(3, 'qris', 'qris.webp'),
-(4, 'Shoope Pay', 'shoopepay.webp');
+INSERT INTO `pembayaran` (`id`, `nama`, `metode`, `logo`) VALUES
+(1, 'Dana', 'dana', 'dana.webp'),
+(2, 'BCA', 'bca', 'bca.webp'),
+(3, 'Qris', 'qris', 'qris.webp'),
+(4, 'Shoope Pay', 'shoopepay', 'shoopepay.webp');
 
 -- --------------------------------------------------------
 
@@ -164,18 +187,17 @@ CREATE TABLE `produk` (
 --
 
 INSERT INTO `produk` (`id`, `produk_id`, `nama`, `domain`, `slug`, `terjual`, `kategori`, `rating`, `harga`, `stok`, `deskripsi`, `varian`, `diskon`, `status`, `unit`, `foto`, `kondisi`, `created_at`, `updated_at`) VALUES
-(1, 'P001', 'Buku Tulis Spiral', 'tokobuku', 'buku-tulis-spiral', 50, 'Alat Tulis', 5, 15000, 100, 'Buku tulis spiral ukuran A5, cocok untuk pelajar.', 'Merah,Biru,Hijau', 10, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c', 'baru', '2024-11-24 07:39:08', '2024-11-24 14:52:08'),
-(2, 'P002', 'Kaos Polos Putih', 'lapakkaos', 'kaos-polos-putih', 120, 'pakaian', 5, 45000, 200, 'Kaos polos putih berbahan katun yang nyaman.', 'M,L,XL', 15, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f', 'baru', '2024-11-24 07:39:08', '2024-12-01 18:28:46'),
-(3, 'P003', 'Mouse Wireless', 'tokobuku', 'mouse-wireless', 80, 'Elektronik', 4, 75000, 50, 'Mouse wireless dengan desain ergonomis.', 'Hitam,Abu-abu', 5, 'tersedia', 'pcs', 'https://images.unsplash.com/photo-1517433456452-f9633a875f6f', 'baru', '2024-11-24 07:39:08', '2024-12-24 13:22:58'),
+(1, 'P001', 'Buku Tulis Spiral', 'tokobuku', 'buku-tulis-spiral', 50, 'Alat Tulis', 5, 15000, 100, 'Buku tulis spiral ukuran A5, cocok untuk pelajar.', 'Merah,Biru,Hijau', 10, 'tersedia', 'pcs', 'buku-tulis.jpeg', 'baru', '2024-11-24 07:39:08', '2025-01-08 14:44:11'),
+(2, 'P002', 'Kaos Polos Putih', 'lapakkaos', 'kaos-polos-putih', 120, 'pakaian', 5, 45000, 200, 'Kaos polos putih berbahan katun yang nyaman.', 'M,L,XL', 15, 'tersedia', 'pcs', 'kaos-putih.jpeg', 'baru', '2024-11-24 07:39:08', '2025-01-08 14:49:59'),
+(3, 'P003', 'Mouse Wireless', 'tokobuku', 'mouse-wireless', 80, 'Elektronik', 4, 75000, 50, 'Mouse wireless dengan desain ergonomis.', 'Hitam,Abu-abu', 5, 'tersedia', 'pcs', 'mouse.jpeg', 'baru', '2024-11-24 07:39:08', '2025-01-08 14:43:16'),
 (86, 'P223445', 'alibi', 'tokobuku', 'alibi-P223445', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'tersedia', 'pcs', 'ZBZDPRKNZC.jpg', 'baru', '2024-12-27 02:32:58', '2024-12-27 09:32:58'),
-(87, 'P511989', 'alibi', 'tokobuku', 'alibi-P511989', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'tersedia', 'pcs', 'public/img/product/GUHUUHPNWO.jpg', 'baru', '2024-12-27 02:34:35', '2024-12-27 09:34:35'),
 (88, 'P218164', 'alibi', 'tokobuku', 'alibi-P218164', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'tersedia', 'pcs', 'THEDZINEUH.jpg', 'baru', '2024-12-27 02:34:43', '2024-12-27 09:34:43'),
 (89, 'P997642', 'alibi', 'tokobuku', 'alibi-P997642', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'habis', 'pcs', 'UYPTISQYKN.jpg', 'baru', '2024-12-27 02:35:15', '2024-12-27 09:46:48'),
 (90, 'P022627', 'hello', 'tokokoko123', 'hello-P022627', 0, 'test', 0, 1200, 0, 'Test aja', 'L', 0, 'tersedia', 'pcs', 'WUADWPEICV.jpeg', 'baru', '2024-12-28 17:33:14', '2024-12-29 00:33:14'),
 (93, 'P115032', 'hello', 'tokoapa', 'hello-P115032', 0, 'test', 0, 123, 0, 'Test produk', 'XL', 0, 'tersedia', 'pcs', 'AOHDEJJYBE.jpg', 'baru', '2024-12-30 05:01:16', '2024-12-30 12:01:16'),
 (94, 'P085217', 'Bakso Solo', 'tokoapa', 'bakso-solo-P085217', 0, 'test', 0, 10000, 10, 'Bakso Solo Wuenak cik langsung order', 'XL', 0, 'tersedia', 'pcs', 'CSAIAANYVG.jpeg', 'baru', '2024-12-30 09:54:36', '2024-12-30 16:54:36'),
 (95, 'P795098', 'Loh', 'tokoapa', 'loh-P795098', 0, 'pakaian ', 0, 1200, 1, 'Loh test', 'XL', 0, 'tersedia', 'pcs', 'YJMPNZXNJZ.png', 'baru', '2024-12-30 10:32:59', '2024-12-30 17:32:59'),
-(98, 'P129428', 'Motor CBR Bagus', 'tokokoko', 'motor-cbr-bagus-P129428', 0, 'pakaian ', 0, 1200, 10, 'Motor CBR', 'XL', 0, 'tersedia', 'pcs', 'KCEZFEWPWN.jpg', 'baru', '2025-01-06 02:22:59', '2025-01-06 09:22:59');
+(98, 'P129428', 'Motor CBR Bagus', 'tokokoko', 'motor-cbr-bagus-P129428', 0, 'barang-second', 0, 1200, 10, 'Motor CBR', 'XL', 0, 'tersedia', 'pcs', 'KCEZFEWPWN.jpg', 'bekas', '2025-01-06 02:22:59', '2025-01-08 14:51:22');
 
 -- --------------------------------------------------------
 
@@ -267,7 +289,7 @@ CREATE TABLE `toko` (
 
 INSERT INTO `toko` (`id`, `domain`, `username`, `nama`, `kategori`, `logo`, `deskripsi`, `email`, `no_hp`, `alamat`, `rating`, `status`, `saldo`, `created_at`, `updated_at`) VALUES
 (1, 'tokobuku', 'admin', 'Toko Buku Butun', 'Alat Tulis', 'https://i.pinimg.com/736x/80/c0/f6/80c0f658ab849ed80a74b3539ed72d58.jpg', 'Toko Buku Terpecaya', 'tokobuku@gmail.com', '08589411', 'Jln Butun, Kota Bekasi', 3, 'aktif', 20000, '2024-12-17 13:13:37', '2024-12-24 07:53:44'),
-(8, 'tokokoko', 'hanma', 'Toko Motor Jalil 2', 'makanan', 'S9JE0KBOJE.jpeg', 'Yeah whatsapp gang im nigga', 'jalil2@gmail.com', '81234567890', 'Jln koko surabaya', 0, 'nonaktif', 0, '2024-12-29 14:14:42', '2025-01-06 09:23:39'),
+(8, 'tokokoko', 'hanma', 'Toko Motor Jalil 2', 'makanan', 'S9JE0KBOJE.jpeg', 'Yeah whatsapp gang im nigga', 'jalil2@gmail.com', '81234567890', 'Jln koko surabaya', 0, 'aktif', 0, '2024-12-29 14:14:42', '2025-01-08 14:50:53'),
 (9, 'tokoapa', 'alfa', 'Toko Apa tau', NULL, 'default.png', 'Jual beli apa aja', 'toko@gmail.com', '08123456789', 'Butun ', 0, 'aktif', 0, '2024-12-30 12:00:48', NULL);
 
 -- --------------------------------------------------------
@@ -285,7 +307,7 @@ CREATE TABLE `transaksi` (
   `username` varchar(100) NOT NULL,
   `alamat` varchar(250) DEFAULT NULL,
   `qty` bigint(20) NOT NULL,
-  `status` enum('waiting','proses','sukses') DEFAULT 'waiting',
+  `status` enum('waiting','proses','sukses','gagal') DEFAULT 'waiting',
   `harga` bigint(20) DEFAULT NULL,
   `metode` varchar(50) DEFAULT NULL,
   `note` text DEFAULT NULL,
@@ -299,7 +321,7 @@ CREATE TABLE `transaksi` (
 --
 
 INSERT INTO `transaksi` (`id`, `order_id`, `produk_id`, `domain`, `username`, `alamat`, `qty`, `status`, `harga`, `metode`, `note`, `no_hp`, `created_at`, `updated_at`) VALUES
-(1, 'M123', 'P001', 'tokobuku', 'adminmarket', 'Jln Rawa Bango', 10, 'sukses', 12000, 'DANA', 'Ga tau', '085894110892', '2024-12-23 17:02:46', '2024-12-23 17:08:16');
+(1, 'M123', 'P001', 'tokobuku', 'adminmarket', 'Jln Rawa Bango', 10, 'sukses', 12000, 'dana', 'Ga tau', '085894110892', '2024-12-23 17:02:46', '2025-01-08 20:54:38');
 
 -- --------------------------------------------------------
 
@@ -394,6 +416,12 @@ ALTER TABLE `foto_produk`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `invoice`
+--
+ALTER TABLE `invoice`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `kategori`
 --
 ALTER TABLE `kategori`
@@ -473,7 +501,7 @@ ALTER TABLE `voucher`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `foto_komentar`
@@ -485,6 +513,12 @@ ALTER TABLE `foto_komentar`
 -- AUTO_INCREMENT for table `foto_produk`
 --
 ALTER TABLE `foto_produk`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `invoice`
+--
+ALTER TABLE `invoice`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
