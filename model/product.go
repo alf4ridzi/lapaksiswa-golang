@@ -101,6 +101,11 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
+func IsProductAvailable(ProductID string) (bool, error) {
+	query := fmt.Sprintf("SELECT id FROM %s WHERE produk_id = ? AND status = 'tersedia' AND stok > 0 AND ")
+	return true, nil
+}
+
 func (p *ProdukModel) DeleteProduct(Domain string, ProductID string) (bool, error) {
 	Produk, err := p.GetProductByID(ProductID, Domain)
 	if err != nil {

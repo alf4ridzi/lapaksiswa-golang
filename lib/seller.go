@@ -127,3 +127,15 @@ func UpdateLogoToko(Domain string, Filename string) error {
 
 	return nil
 }
+
+func IsValidProductID(ProductID string) (bool, error) {
+	productModel := model.NewProdukModel()
+	defer productModel.DB.Close()
+
+	isValid, err := productModel.IsProdukID(ProductID)
+	if err != nil {
+		return false, err
+	}
+
+	return isValid, err
+}
