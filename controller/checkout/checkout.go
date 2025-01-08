@@ -1,23 +1,21 @@
 package checkout
 
 import (
+	"html/template"
 	"net/http"
 	"path/filepath"
-
-	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 )
 
 func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		templates := []string{
-			filepath.Join("views", "checkout", "checkout.html"),
+		templates := filepath.Join("views", "checkout", "checkout.html")
+		tmpl, err := template.ParseFiles(templates)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
-		t := []string{
-			"checkout",
-		}
-
-		if err := lib.RenderTemplate(w, templates, t, nil); err != nil {
+		if err := tmpl.Execute(w, nil); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
