@@ -139,3 +139,14 @@ func IsValidProductID(ProductID string) (bool, error) {
 
 	return isValid, err
 }
+
+func InsertIntoCart(Username string, ProductID string) error {
+	cartModel := model.NewCartModel()
+	defer cartModel.DB.Close()
+
+	if err := cartModel.AddToCart(Username, ProductID); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -101,8 +101,27 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
-func IsProductAvailable(ProductID string) (bool, error) {
-	query := fmt.Sprintf("SELECT id FROM %s WHERE produk_id = ? AND status = 'tersedia' AND stok > 0 AND ")
+func (p *ProdukModel) IsProductAvailable(ProductID string) (bool, error) {
+	query := fmt.Sprintf(`
+		SELECT %s.id 
+		INNER JOIN toko
+		ON %s.domain = toko.domain
+		WHERE toko.status = 'aktif' AND
+		%s.status = 'tersedia' AND
+		%s.id = ?
+	`, p.table, p.table, p.table, p.table)
+
+	row := p.DB.QueryRow(query)
+
+	var id int
+	if err := row.Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+
+		return false, err
+	}
+
 	return true, nil
 }
 

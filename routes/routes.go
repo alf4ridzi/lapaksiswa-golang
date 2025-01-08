@@ -5,6 +5,7 @@ import (
 
 	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/autentikasi"
+	"github.com/alf4ridzi/lapaksiswa-golang/controller/checkout"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard/api"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/kategori"
@@ -17,6 +18,8 @@ func MapRoutes(server *mux.Router) {
 	// index
 	server.HandleFunc("/", controller.Index()).Methods("GET")
 
+	// checkout
+	server.HandleFunc("/checkout", checkout.)
 	// dashboard user
 	server.HandleFunc("/user", dashboard.User()).Methods("GET")
 	server.HandleFunc("/user/edit", dashboard.Edit()).Methods("GET", "POST")
@@ -55,7 +58,7 @@ func MapRoutes(server *mux.Router) {
 
 	// produk
 	server.HandleFunc("/{toko}/{slug}", produk.Produk()).Methods("GET")
-	server.HandleFunc("/api/tambah-cart", produk.TambahCart()).Methods("POST")
+	server.HandleFunc("/api/add-cart", produk.TambahCart()).Methods("POST")
 
 	// public folder
 	server.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
