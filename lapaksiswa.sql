@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 01, 2025 at 10:05 AM
+-- Generation Time: Jan 08, 2025 at 01:20 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -22,6 +22,20 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `lapaksiswa`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart`
+--
+
+DROP TABLE IF EXISTS `cart`;
+CREATE TABLE `cart` (
+  `id` int(11) NOT NULL,
+  `produk_id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `created_at` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -111,10 +125,10 @@ CREATE TABLE `pembayaran` (
 --
 
 INSERT INTO `pembayaran` (`id`, `nama`, `logo`) VALUES
-(1, 'dana', 'assets/metode/dana.webp'),
-(2, 'bca', 'assets/metode/bca.webp'),
-(3, 'qris', 'assets/metode/qris.webp'),
-(4, 'Shoope Pay', 'assets/metode/shoopepay.webp');
+(1, 'dana', 'dana.webp'),
+(2, 'bca', 'bca.webp'),
+(3, 'qris', 'qris.webp'),
+(4, 'Shoope Pay', 'shoopepay.webp');
 
 -- --------------------------------------------------------
 
@@ -158,12 +172,10 @@ INSERT INTO `produk` (`id`, `produk_id`, `nama`, `domain`, `slug`, `terjual`, `k
 (88, 'P218164', 'alibi', 'tokobuku', 'alibi-P218164', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'tersedia', 'pcs', 'THEDZINEUH.jpg', 'baru', '2024-12-27 02:34:43', '2024-12-27 09:34:43'),
 (89, 'P997642', 'alibi', 'tokobuku', 'alibi-P997642', 0, 'test', 0, 123, 0, 'asdasd', 'asdas', 0, 'habis', 'pcs', 'UYPTISQYKN.jpg', 'baru', '2024-12-27 02:35:15', '2024-12-27 09:46:48'),
 (90, 'P022627', 'hello', 'tokokoko123', 'hello-P022627', 0, 'test', 0, 1200, 0, 'Test aja', 'L', 0, 'tersedia', 'pcs', 'WUADWPEICV.jpeg', 'baru', '2024-12-28 17:33:14', '2024-12-29 00:33:14'),
-(91, 'P318667', 'bakso kontol', 'tokokoko', 'bakso-kontol-P318667', 0, 'test', 0, 120000, 0, 'bakso enak', 'XL', 0, 'tersedia', 'pcs', 'QQFONPQUKI.jpeg', 'baru', '2024-12-29 07:15:28', '2025-01-01 12:06:24'),
-(92, 'P929211', 'CBR', 'tokokoko', 'cbr-P929211', 0, 'test', 0, 12000, 0, 'Motor CBR', 'XL', 0, 'tersedia', 'pcs', 'UUNMZYUTVN.jpg', 'baru', '2024-12-30 01:50:53', '2024-12-31 14:07:44'),
 (93, 'P115032', 'hello', 'tokoapa', 'hello-P115032', 0, 'test', 0, 123, 0, 'Test produk', 'XL', 0, 'tersedia', 'pcs', 'AOHDEJJYBE.jpg', 'baru', '2024-12-30 05:01:16', '2024-12-30 12:01:16'),
 (94, 'P085217', 'Bakso Solo', 'tokoapa', 'bakso-solo-P085217', 0, 'test', 0, 10000, 10, 'Bakso Solo Wuenak cik langsung order', 'XL', 0, 'tersedia', 'pcs', 'CSAIAANYVG.jpeg', 'baru', '2024-12-30 09:54:36', '2024-12-30 16:54:36'),
 (95, 'P795098', 'Loh', 'tokoapa', 'loh-P795098', 0, 'pakaian ', 0, 1200, 1, 'Loh test', 'XL', 0, 'tersedia', 'pcs', 'YJMPNZXNJZ.png', 'baru', '2024-12-30 10:32:59', '2024-12-30 17:32:59'),
-(96, 'P486883', 'CBR', 'tokokoko', 'cbr-P486883', 0, 'barang-second', 0, 1200, 10, 'Test mang', 'XL', 0, 'tersedia', 'kg', 'USSBRZADZQ.jpeg', 'bekas', '2025-01-01 00:50:52', '2025-01-01 14:26:17');
+(98, 'P129428', 'Motor CBR Bagus', 'tokokoko', 'motor-cbr-bagus-P129428', 0, 'pakaian ', 0, 1200, 10, 'Motor CBR', 'XL', 0, 'tersedia', 'pcs', 'KCEZFEWPWN.jpg', 'baru', '2025-01-06 02:22:59', '2025-01-06 09:22:59');
 
 -- --------------------------------------------------------
 
@@ -222,7 +234,7 @@ CREATE TABLE `settings_web` (
 --
 
 INSERT INTO `settings_web` (`id`, `web_title`, `web_icon`, `web_logo`, `web_author`, `web_keywords`, `web_description`) VALUES
-(1, 'Lapak Siswa', 'favicon.ico', 'assets/logo/logo.png', 'Muhammad Alfaridzi', 'lapaksiswa, jual beli butun', 'Lapak Siswa adalah website jual beli butun');
+(1, 'Lapak Siswa', 'favicon.ico', 'logo.png', 'Muhammad Alfaridzi', 'lapaksiswa, jual beli butun', 'Lapak Siswa adalah website jual beli butun');
 
 -- --------------------------------------------------------
 
@@ -255,7 +267,7 @@ CREATE TABLE `toko` (
 
 INSERT INTO `toko` (`id`, `domain`, `username`, `nama`, `kategori`, `logo`, `deskripsi`, `email`, `no_hp`, `alamat`, `rating`, `status`, `saldo`, `created_at`, `updated_at`) VALUES
 (1, 'tokobuku', 'admin', 'Toko Buku Butun', 'Alat Tulis', 'https://i.pinimg.com/736x/80/c0/f6/80c0f658ab849ed80a74b3539ed72d58.jpg', 'Toko Buku Terpecaya', 'tokobuku@gmail.com', '08589411', 'Jln Butun, Kota Bekasi', 3, 'aktif', 20000, '2024-12-17 13:13:37', '2024-12-24 07:53:44'),
-(8, 'tokokoko', 'hanma', 'Toko Motor Jalil', NULL, 'default.png', 'Yeah whatsapp gang', 'jalil@gmail.com', '08123456789', 'Jln koko jakarta', 0, 'aktif', 0, '2024-12-29 14:14:42', NULL),
+(8, 'tokokoko', 'hanma', 'Toko Motor Jalil 2', 'makanan', 'S9JE0KBOJE.jpeg', 'Yeah whatsapp gang im nigga', 'jalil2@gmail.com', '81234567890', 'Jln koko surabaya', 0, 'nonaktif', 0, '2024-12-29 14:14:42', '2025-01-06 09:23:39'),
 (9, 'tokoapa', 'alfa', 'Toko Apa tau', NULL, 'default.png', 'Jual beli apa aja', 'toko@gmail.com', '08123456789', 'Butun ', 0, 'aktif', 0, '2024-12-30 12:00:48', NULL);
 
 -- --------------------------------------------------------
@@ -323,7 +335,7 @@ INSERT INTO `user` (`id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`,
 (1, 'adminmarket', NULL, NULL, 'aalalfaridzi9@gmail.com', NULL, 'user', NULL, NULL, NULL, 'alfaridzi123', NULL, 'pria', '2024-11-26 07:31:59', NULL, '2024-11-26 07:37:04'),
 (2, 'alfaridzi', 'Muhammad Alfaridzi', NULL, 'nfex.ghost@gmail.com', 85894110892, 'user', 'test123.png', NULL, NULL, '123', NULL, 'pria', '2024-11-26 08:02:48', NULL, '2024-12-15 16:50:06'),
 (3, 'admin', 'admin market 123', '2024-12-05', 'admin@gmail.com', 85894110982, 'seller', 'NFFHQMDWOJ.jpg', '', '', '202cb962ac59075b964b07152d234b70', '', 'pria', '2024-12-15 16:50:51', '2024-12-06 17:42:12', '2024-12-22 17:42:56'),
-(4, 'hanma', 'My Problem', '2024-12-22', 'hanma@gmail.com', 858324532434, 'seller', 'IRENOOLWLN.jpeg', NULL, NULL, '4ea07e448964eea5b6dd649029764848', NULL, 'wanita', '2024-12-28 13:10:55', '2024-12-28 13:10:55', '2024-12-29 21:10:34'),
+(4, 'hanma', 'My Problem Test', '2004-01-22', 'hanma@gmail.com', 858324532434, 'seller', 'UFXFTQPCAZ.jpeg', NULL, NULL, '4ea07e448964eea5b6dd649029764848', NULL, 'pria', '2024-12-28 13:10:55', '2024-12-28 13:10:55', '2025-01-06 10:07:15'),
 (5, 'alfa', 'Muhammad Alfaridzi', '2024-12-18', 'alfa123@gmail.com', 812345678, 'seller', 'RQNHGETQOU.jpeg', NULL, NULL, '5163aece7da6f7d32627682a27062ca5', NULL, 'pria', '2024-12-30 11:59:34', '2024-12-30 11:59:34', '2024-12-30 12:00:48');
 
 -- --------------------------------------------------------
@@ -362,6 +374,12 @@ CREATE TABLE `voucher` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `foto_komentar`
@@ -452,6 +470,12 @@ ALTER TABLE `voucher`
 --
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `foto_komentar`
 --
 ALTER TABLE `foto_komentar`
@@ -485,7 +509,7 @@ ALTER TABLE `pembayaran`
 -- AUTO_INCREMENT for table `produk`
 --
 ALTER TABLE `produk`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT for table `produk_statistik`
