@@ -77,6 +77,12 @@
               </option>
             </select>
           </div>
+          <div class="flex items-center justify-between">
+            <p class="text-gray-700">Alamat</p>
+            
+            <textarea id="alamat" class="border p-2 rounded-md text-gray-700">{{ .User.Alamat }}</textarea>  
+            </select>
+          </div>
         </div>
 
         <h2 class="text-xl font-semibold text-gray-700 mt-6">Ubah Kontak</h2>
@@ -120,6 +126,7 @@
       jenisKelamin: document.getElementById("jenis_kelamin").value,
       email: document.getElementById("email").value,
       noHP: document.getElementById("no_hp").value,
+      alamat: document.getElementById("alamat").value,
     };
 
     try {

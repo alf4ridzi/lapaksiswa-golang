@@ -10,12 +10,33 @@ import (
 )
 
 type Transaksi struct {
+	OrderID   string
+	ProductID string
+	Domain    string
+	Username  string
+	Alamat    string
+	Qty       int64
+	Status    string
+	Harga     int64
+	Metode    string
+	Note      string
+	NoHP      int64
 }
 
 type TransaksiModel struct {
 	DB      *sql.DB
 	table   string
 	columns string
+}
+
+type TambahTransaksi struct {
+	ProductID string `json:"productid"`
+	Domain    string `json:"domain"`
+	Username  string `json:"username"`
+	Alamat    string `json:"alamat"`
+	Qty       string `json:"qty"`
+	Harga     string `json:"harga"`
+	NoHP      string `json:"nohp"`
 }
 
 func NewTransaksiModel() *TransaksiModel {
@@ -63,4 +84,8 @@ func (t *TransaksiModel) GetTotalProdukTerjual(Domain string) (int64, error) {
 	}
 
 	return total, nil
+}
+
+func InsertTransaksi() {
+
 }

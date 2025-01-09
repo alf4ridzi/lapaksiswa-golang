@@ -23,6 +23,7 @@ type Profile struct {
 	JenisKelamin string `json:"jenisKelamin"`
 	Email        string `json:"email"`
 	NoHP         string `json:"noHP"`
+	Alamat       string `json:"alamat"`
 }
 
 func User() func(w http.ResponseWriter, r *http.Request) {
@@ -215,7 +216,7 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		// update profile
-		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP); err != nil {
+		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP, profile.Alamat); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Server Error"))
 			return

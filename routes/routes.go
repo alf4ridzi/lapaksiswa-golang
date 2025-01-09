@@ -19,7 +19,9 @@ func MapRoutes(server *mux.Router) {
 	server.HandleFunc("/", controller.Index()).Methods("GET")
 
 	// checkout
-	server.HandleFunc("/checkout", checkout.PageCheckOut()).Methods("GET")
+	server.HandleFunc("/checkout", checkout.PageCheckOut()).Methods("GET", "POST")
+	server.HandleFunc("/checkout/create", checkout.CreateCheckOutURL()).Methods("POST")
+
 	// dashboard user
 	server.HandleFunc("/user", dashboard.User()).Methods("GET")
 	server.HandleFunc("/user/edit", dashboard.Edit()).Methods("GET", "POST")

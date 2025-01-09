@@ -101,6 +101,41 @@ func NewProdukModel() *ProdukModel {
 	}
 }
 
+func (p *ProdukModel) GetProductByOnlyID(ProductID any) (*Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE produk_id = ?", p.columns, p.table)
+	row := p.DB.QueryRow(query, ProductID, ProductID)
+
+	var product Produk
+
+	if err := row.Scan(
+		&product.ProdukID,
+		&product.Nama,
+		&product.Domain,
+		&product.Slug,
+		&product.Terjual,
+		&product.Kategori,
+		&product.Rating,
+		&product.Harga,
+		&product.Stok,
+		&product.Deskripsi,
+		&product.Varian,
+		&product.Diskon,
+		&product.Status,
+		&product.Unit,
+		&product.Foto,
+		&product.Kondisi,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &product, nil
+
+}
+
 func (p *ProdukModel) IsProductAvailable(ProductID string) (bool, error) {
 	query := fmt.Sprintf(`
 		SELECT %s.id 

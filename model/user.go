@@ -231,9 +231,9 @@ func (p *UserModel) GetUser(username string) (*User, error) {
 	return &user, nil
 }
 
-func (p *UserModel) UpdateProfileUser(username string, nama string, tanggalLahir string, jenisKelamin string, email string, noHP string) error {
-	query := fmt.Sprintf("UPDATE %s SET nama = ?, tanggal_lahir = ?, jenis_kelamin = ?, email = ?, no_hp = ? WHERE username = ?", p.table)
-	if _, err := p.DB.Exec(query, nama, tanggalLahir, jenisKelamin, email, noHP, username); err != nil {
+func (p *UserModel) UpdateProfileUser(username string, nama string, tanggalLahir string, jenisKelamin string, email string, noHP string, alamat string) error {
+	query := fmt.Sprintf("UPDATE %s SET nama = ?, tanggal_lahir = ?, jenis_kelamin = ?, email = ?, no_hp = ?, alamat = ? WHERE username = ?", p.table)
+	if _, err := p.DB.Exec(query, nama, tanggalLahir, jenisKelamin, email, noHP, username, alamat); err != nil {
 		return err
 	}
 
