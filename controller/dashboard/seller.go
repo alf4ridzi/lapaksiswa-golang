@@ -441,6 +441,17 @@ func ListOrderPage() func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		data := make(map[string]any)
+
+		trxModel := model.NewTransaksiModel()
+		defer trxModel.DB.Close()
+
+		trx, err := trxModel.GetAllTransaksi(Toko.Domain)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data["trx"] = trx
 		data["Toko"] = Toko
 
 		templates := []string{

@@ -93,3 +93,25 @@ func (c *CheckoutModel) GetDetailCheckout(CheckoutID string, Username string) (*
 	detail.Total = FormatToIDR(tmpT)
 	return &detail, nil
 }
+
+func (c *CheckoutModel) GetDetailCheckoutAll(CheckoutID string) (*Checkout, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE checkout = ?", c.columns, c.table)
+	row := c.DB.QueryRow(query, CheckoutID)
+
+	var detail Checkout
+	var tmpT int64
+	if err := row.Scan(&detail.ProductID,
+		&detail.CheckoutID,
+		&tmpT,
+		&detail.Username,
+		&detail.Qty); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	detail.Total = FormatToIDR(tmpT)
+	return &detail, nil
+}

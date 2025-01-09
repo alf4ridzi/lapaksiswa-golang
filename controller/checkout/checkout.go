@@ -9,6 +9,7 @@ import (
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard/api"
 	"github.com/alf4ridzi/lapaksiswa-golang/lib"
+	"github.com/alf4ridzi/lapaksiswa-golang/model"
 	"github.com/gorilla/mux"
 )
 
@@ -72,6 +73,15 @@ func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		tokoModel := model.NewTokoModel()
+		defer tokoModel.DB.Close()
+
+		Toko, err := tokoModel.GetTokoByUsername(username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		DetailCheckout, err := lib.GetDetailCheckout(id, username)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -96,6 +106,8 @@ func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 		data["Detail"] = DetailCheckout
 		data["Payment"] = Pembayaran
 		data["Phone"] = Phone
+		data["Toko"] = Toko
+		data["Checkout"] = id
 
 		templates := filepath.Join("views", "checkout", "checkout.html")
 		tmpl, err := template.ParseFiles(templates)

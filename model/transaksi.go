@@ -17,7 +17,7 @@ type Transaksi struct {
 	Alamat    string
 	Qty       int64
 	Status    string
-	Harga     int64
+	Total     int64
 	Metode    string
 	Note      string
 	NoHP      int64
@@ -49,7 +49,7 @@ func NewTransaksiModel() *TransaksiModel {
 		"alamat",
 		"qty",
 		"status",
-		"harga",
+		"total",
 		"metode",
 		"note",
 		"no_hp",
@@ -100,7 +100,7 @@ func (t *TransaksiModel) GetTotalProdukTerjual(Domain string) (int64, error) {
 
 func (t *TransaksiModel) GetAllTransaksi(Domain string) ([]Transaksi, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE domain = ?", t.columns, t.table)
-	rows, err := t.DB.Query(query)
+	rows, err := t.DB.Query(query, Domain)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -122,7 +122,7 @@ func (t *TransaksiModel) GetAllTransaksi(Domain string) ([]Transaksi, error) {
 			&trx.Alamat,
 			&trx.Qty,
 			&trx.Status,
-			&trx.Harga,
+			&trx.Total,
 			&trx.Metode,
 			&trx.Note,
 			&trx.NoHP); err != nil {
@@ -137,4 +137,34 @@ func (t *TransaksiModel) GetAllTransaksi(Domain string) ([]Transaksi, error) {
 	}
 
 	return transaksiS, nil
+}
+
+func (t *TransaksiModel) InsertTrx(OrderID string, CheckoutID string, Alamat string, Metode string) error {
+
+	checkoutModel := NewCheckoutModel()
+	defer NewCheckoutModel().DB.Close()
+
+	checkout, err := checkoutModel.GetDetailCheckoutAll(CheckoutID)
+	if err != nil {
+		return err
+	}
+
+	productModel := NewProdukModel()
+	defer productModel.DB.Close()
+
+	Product, err := productModel.GetProductByOnlyID(checkout.ProductID)
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf(
+		`INSERT INTO %s
+		(order_id, produk_id, domain, username, alamat, qty, status, total, metode, no_hp)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, t.table)
+
+	if _, err := t.DB.Exec(query, OrderID, checkout.ProductID, Product.Domain, checkout.Username, Alamat, checkout.Qty, "sukses", checkout.Total, Metode); err != nil {
+		return err
+	}
+
+	return nil
 }
