@@ -2,6 +2,7 @@
   <head>
     <script src="/public/js/jquery.js"></script>
     <script src="/public/js/tailwind.js"></script>
+    <script src="/public/js/sweetalert.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
@@ -28,14 +29,17 @@
             <p id="alamat" class="text-gray-600">{{ .Alamat }}</p>
             <p id="phone" class="text-gray-600">{{ .Phone }}</p>
             {{ else }}
-            <p class="text-red-500 font-medium">Yuk tambah alamat dulu sebelum belanja! <a href="/user/edit" class="text-gray-500">Disini</a></p>
+            <p class="text-red-500 font-medium">
+              Yuk tambah alamat dulu sebelum belanja!
+              <a href="/user/edit" class="text-gray-500">Disini</a>
+            </p>
             {{ end }}
           </div>
         </div>
 
         <div class="lg:col-span-2 bg-white p-6 shadow rounded-lg">
           <h2 class="text-lg font-semibold text-blue-800">Ringkasan Barang</h2>
-          <input type="hidden" value="{{ .Checkout }}">
+          <input type="hidden" id="checkout" value="{{ .Checkout }}" />
           <div class="mt-4 flex items-center space-x-4 border-b pb-4">
             <img
               src="/public/img/product/{{ .Produk.Foto }}"
@@ -87,13 +91,15 @@
           </div>
 
           {{ if .Alamat }}
-          <button id="beli"
+          <button
+            id="beli"
             class="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
           >
             Bayar Sekarang
           </button>
           {{ else }}
-          <button disabled
+          <button
+            disabled
             class="mt-6 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-700"
           >
             Isi alamat dulu ya!
@@ -107,3 +113,53 @@
     </footer>
   </div>
 </html>
+
+<script>
+  document.getElementById("beli").addEventListener("click", function (event) {
+    event.preventDefault();
+    const checkoutId = document.getElementById("checkout").value;
+    const alamat = document.getElementById("alamat").value;
+    const metode = document.getElementById("metode").value;
+
+    let formData = new FormData();
+    formData.append("checkout", checkoutId);
+    formData.append("alamat", alamat);
+    formData.append("metode", metode);
+
+    fetch("/transaksi", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Terjadi kesalahan dalam pengiriman data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.status) {
+          Swal.fire({
+            title: "Sukses!",
+            text: "Berhasil beli!",
+            icon: "success",
+            confirmButtonText: "Ok",
+          });
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            text: data.result || "Gagal Checkout.",
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: "Gagal!",
+          text: error.message,
+          icon: "error",
+          confirmButtonText: "Tutup",
+        });
+      });
+  });
+</script>

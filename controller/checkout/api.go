@@ -2,6 +2,10 @@ package checkout
 
 import (
 	"net/http"
+	"strconv"
+	"time"
+
+	"math/rand"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard/api"
@@ -45,7 +49,7 @@ func Transaksi() func(w http.ResponseWriter, r *http.Request) {
 		Alamat := r.FormValue("alamat")
 		Metode := r.FormValue("metode")
 
-		OrderID := ""
+		OrderID := GenerateOrderID()
 		trxModel := model.NewTransaksiModel()
 		defer trxModel.DB.Close()
 
@@ -58,4 +62,11 @@ func Transaksi() func(w http.ResponseWriter, r *http.Request) {
 		data["status"] = true
 		api.HandleResponseJson(w, data, http.StatusOK)
 	}
+}
+
+func GenerateOrderID() string {
+	rand.Seed(time.Now().UnixNano())
+	randomNumber := rand.Intn(1000000)
+	orderID := "M" + strconv.Itoa(randomNumber)
+	return orderID
 }

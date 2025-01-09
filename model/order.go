@@ -17,7 +17,7 @@ type Order struct {
 	Alamat   string
 	Qty      int32
 	Status   string
-	Harga    int64
+	Total    int64
 	Metode   string
 	Note     string
 	NoHP     int64
@@ -39,7 +39,7 @@ func NewOrderModel() *OrderModel {
 		"alamat",
 		"qty",
 		"status",
-		"harga",
+		"total",
 		"metode",
 		"note",
 		"no_hp",
@@ -72,7 +72,7 @@ func (o *OrderModel) GetTransaksiHariIni(domain string) (map[string]any, error) 
 		Gagal   int32 = 0
 	)
 
-	query := fmt.Sprintf("SELECT harga, status FROM %s WHERE domain = ? AND DATE(created_at) = CURDATE()", o.table)
+	query := fmt.Sprintf("SELECT total, status FROM %s WHERE domain = ? AND DATE(created_at) = CURDATE()", o.table)
 	rows, err := o.DB.Query(query, domain)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -91,7 +91,7 @@ func (o *OrderModel) GetTransaksiHariIni(domain string) (map[string]any, error) 
 		)
 
 		if err = rows.Scan(
-			&harga,
+			&Total,
 			&status,
 		); err != nil {
 			return nil, err
@@ -135,7 +135,7 @@ func (o *OrderModel) GetTransaksiKemarin(domain string) (map[string]any, error) 
 		Gagal   int32 = 0
 	)
 
-	query := fmt.Sprintf("SELECT harga, status FROM %s WHERE domain = ? AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)", o.table)
+	query := fmt.Sprintf("SELECT total, status FROM %s WHERE domain = ? AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)", o.table)
 	rows, err := o.DB.Query(query, domain)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -154,7 +154,7 @@ func (o *OrderModel) GetTransaksiKemarin(domain string) (map[string]any, error) 
 		)
 
 		if err = rows.Scan(
-			&harga,
+			&Total,
 			&status,
 		); err != nil {
 			return nil, err
@@ -190,7 +190,7 @@ func (o *OrderModel) GetTransaksiKemarin(domain string) (map[string]any, error) 
 }
 
 func (o *OrderModel) GetTotalOmset(domain string) (string, error) {
-	query := fmt.Sprintf("SELECT SUM(harga) FROM %s WHERE domain = ? AND status = 'sukses'", o.table)
+	query := fmt.Sprintf("SELECT SUM(total) FROM %s WHERE domain = ? AND status = 'sukses'", o.table)
 	var omset int64
 	var harga sql.NullString
 
@@ -219,7 +219,7 @@ func (o *OrderModel) GetTotalOmset(domain string) (string, error) {
 }
 
 func (o *OrderModel) GetOmsetBulanan(domain string) (string, error) {
-	query := fmt.Sprintf("SELECT SUM(harga) FROM %s WHERE domain = ? AND status = 'sukses' AND created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND NOW()", o.table)
+	query := fmt.Sprintf("SELECT SUM(total) FROM %s WHERE domain = ? AND status = 'sukses' AND created_at BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND NOW()", o.table)
 	var omset int64
 	var tmp sql.NullString
 

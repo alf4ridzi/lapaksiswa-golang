@@ -157,12 +157,18 @@ func (t *TransaksiModel) InsertTrx(OrderID string, CheckoutID string, Alamat str
 		return err
 	}
 
+	userModel := NewUserModel()
+	user, err := userModel.GetUser(checkout.Username)
+	if err != nil {
+		return err
+	}
+
 	query := fmt.Sprintf(
 		`INSERT INTO %s
 		(order_id, produk_id, domain, username, alamat, qty, status, total, metode, no_hp)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, t.table)
 
-	if _, err := t.DB.Exec(query, OrderID, checkout.ProductID, Product.Domain, checkout.Username, Alamat, checkout.Qty, "sukses", checkout.Total, Metode); err != nil {
+	if _, err := t.DB.Exec(query, OrderID, checkout.ProductID, Product.Domain, checkout.Username, Alamat, checkout.Qty, "sukses", checkout.Total, Metode, user.Username); err != nil {
 		return err
 	}
 
