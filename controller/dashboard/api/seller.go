@@ -336,7 +336,7 @@ func TambahProduct() func(w http.ResponseWriter, r *http.Request) {
 
 		Slug := GenerateSlug(Product.Nama, ProdukID)
 		if err = produkModel.TambahProduk(ProdukID, Toko.Domain, Slug, Product); err != nil {
-			data["result"] = "Gagal tambah produk. Internal Server Error"
+			data["result"] = "Gagal tambah produk. Internal Server Error " + err.Error()
 			responseJson, err := ConvertMapToJson(data)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

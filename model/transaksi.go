@@ -41,7 +41,19 @@ type TambahTransaksi struct {
 
 func NewTransaksiModel() *TransaksiModel {
 	// allowed columns
-	var columnsAllowed = []string{}
+	var columnsAllowed = []string{
+		"order_id",
+		"produk_id",
+		"domain",
+		"username",
+		"alamat",
+		"qty",
+		"status",
+		"harga",
+		"metode",
+		"note",
+		"no_hp",
+	}
 
 	db, err := database.InitDatabase()
 	if err != nil {
@@ -86,6 +98,43 @@ func (t *TransaksiModel) GetTotalProdukTerjual(Domain string) (int64, error) {
 	return total, nil
 }
 
-func InsertTransaksi() {
+func (t *TransaksiModel) GetAllTransaksi(Domain string) ([]Transaksi, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE domain = ?", t.columns, t.table)
+	rows, err := t.DB.Query(query)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var transaksiS []Transaksi
+	for rows.Next() {
+		var trx Transaksi
+		if err := rows.Scan(
+			&trx.OrderID,
+			&trx.ProductID,
+			&trx.Domain,
+			&trx.Username,
+			&trx.Alamat,
+			&trx.Qty,
+			&trx.Status,
+			&trx.Harga,
+			&trx.Metode,
+			&trx.Note,
+			&trx.NoHP); err != nil {
+			return nil, err
+		}
+
+		transaksiS = append(transaksiS, trx)
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	return transaksiS, nil
 }

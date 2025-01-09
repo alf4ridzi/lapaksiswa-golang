@@ -218,7 +218,7 @@ func UpdateData() func(w http.ResponseWriter, r *http.Request) {
 		// update profile
 		if err = userModel.UpdateProfileUser(Username.Value, profile.Nama, profile.TanggalLahir, profile.JenisKelamin, profile.Email, profile.NoHP, profile.Alamat); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Server Error"))
+			w.Write([]byte("Server Error" + err.Error()))
 			return
 		}
 

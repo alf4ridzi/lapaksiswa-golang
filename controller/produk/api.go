@@ -3,6 +3,7 @@ package produk
 import (
 	"net/http"
 
+	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard/api"
 	"github.com/alf4ridzi/lapaksiswa-golang/lib"
 )
@@ -14,33 +15,32 @@ func GetCart() func(w http.ResponseWriter, r *http.Request) {
 			"result": nil,
 		}
 
-		// isLogin, err := cookie.GetCookieValue(r, "isLogin")
-		// if err != nil {
-		// 	data["result"] = err.Error()
-		// 	api.HandleResponseJson(w, data, http.StatusInternalServerError)
-		// 	return
-		// }
+		isLogin, err := cookie.GetCookieValue(r, "isLogin")
+		if err != nil {
+			data["result"] = err.Error()
+			api.HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
 
-		// if isLogin != "true" {
-		// 	data["result"] = "Login terlebih dahulu!"
-		// 	api.HandleResponseJson(w, data, http.StatusBadRequest)
-		// 	return
-		// }
+		if isLogin != "true" {
+			data["result"] = "Login terlebih dahulu!"
+			api.HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
 
-		// username, err := cookie.GetCookieValue(r, "username")
-		// if err != nil {
-		// 	data["result"] = err.Error()
-		// 	api.HandleResponseJson(w, data, http.StatusInternalServerError)
-		// 	return
-		// }
+		username, err := cookie.GetCookieValue(r, "username")
+		if err != nil {
+			data["result"] = err.Error()
+			api.HandleResponseJson(w, data, http.StatusInternalServerError)
+			return
+		}
 
-		// if username == "" {
-		// 	data["result"] = "Login terlebih dahulu!"
-		// 	api.HandleResponseJson(w, data, http.StatusBadRequest)
-		// 	return
-		// }
+		if username == "" {
+			data["result"] = "Login terlebih dahulu!"
+			api.HandleResponseJson(w, data, http.StatusBadRequest)
+			return
+		}
 
-		username := "hanma"
 		listProduct, err := lib.GetUserCart(username)
 		if err != nil {
 			data["result"] = err.Error()

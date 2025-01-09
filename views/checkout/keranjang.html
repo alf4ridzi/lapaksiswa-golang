@@ -1,4 +1,5 @@
 {{ define "cart" }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <main class="bg-gray-100">
   <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Keranjang</h1>
@@ -42,44 +43,44 @@
 
       cartItems.forEach((item) => {
         const itemHTML = `
-          <div class="border rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center">
-            <div class="w-full md:w-3/4">
-              <h2 class="text-lg font-semibold">${item.Toko}</h2>
-              <p class="text-sm font-medium">${item.Nama}</p>
-              <p class="text-sm text-gray-500">${item.Deskripsi}</p>
-              <div class="mt-2">
-                <span class="text-lg font-bold text-blue-500">Rp${item.Harga.toLocaleString()}</span>
-              </div>
-            </div>
-            <div class="w-full md:w-1/4 mt-4 md:mt-0 flex items-center space-x-6">
-              <div class="flex items-center border rounded-lg px-2">
-                <button class="text-gray-600 hover:text-blue-500 px-2" onclick="updateQuantity(${
-                  item.ProdukID
-                }, -1)">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <span id="qty-${
-                  item.ProdukID
-                }" class="text-lg font-medium px-2">1</span>
-                <button class="text-gray-600 hover:text-blue-500 px-2" onclick="updateQuantity(${
-                  item.ProdukID
-                }, 1)">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <button class="text-red-500 hover:text-red-700" onclick="removeItem(${
-                item.ProdukID
-              })">
-                <i class="fas fa-trash text-lg"></i>
-              </button>
-              <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" onclick="checkoutItem(${
-                item.ProdukID
-              })">
-                Checkout
-              </button>
-            </div>
-          </div>
-        `;
+                  <div class="border rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center">
+                    <div class="w-full md:w-3/4">
+                      <h2 class="text-lg font-semibold">${item.Toko}</h2>
+                      <p class="text-sm font-medium">${item.Nama}</p>
+                      <p class="text-sm text-gray-500">${item.Deskripsi}</p>
+                      <div class="mt-2">
+                        <span class="text-lg font-bold text-blue-500">Rp${item.Harga.toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <div class="w-full md:w-1/4 mt-4 md:mt-0 flex items-center space-x-6">
+                      <div class="flex items-center border rounded-lg px-2">
+                        <button class="text-gray-600 hover:text-blue-500 px-2" onclick="updateQuantity(${
+                          item.ProdukID
+                        }, -1)">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                        <span id="qty-${
+                          item.ProdukID
+                        }" class="text-lg font-medium px-2">1</span>
+                        <button class="text-gray-600 hover:text-blue-500 px-2" onclick="updateQuantity(${
+                          item.ProdukID
+                        }, 1)">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </div>
+                      <button class="text-red-500 hover:text-red-700" onclick="removeItem(${
+                        item.ProdukID
+                      })">
+                        <i class="fas fa-trash text-lg"></i>
+                      </button>
+                      <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600" onclick="checkoutItem('${
+                        item.ProdukID
+                      }')">
+                        Checkout
+                      </button>
+                    </div>
+                  </div>
+                `;
         cartContainer.innerHTML += itemHTML;
       });
     }
@@ -101,38 +102,73 @@
       renderCart(cartItems);
     }
 
-    async function checkoutItem(id) {
-      const item = cartItems.find((item) => item.id === id);
-      if (!item) return;
-
-      try {
-        const response = await fetch("/checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(item),
-        });
-
-        if (response.ok) {
-          Swal.fire({
-            icon: "success",
-            title: "Berhasil",
-            text: `Checkout untuk ${item.product} berhasil!`,
-          });
-        } else {
-          throw new Error("Gagal melakukan checkout");
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Gagal",
-          text: error.message,
-        });
-      }
-    }
-
     fetchCartItems();
+
+    function checkoutItem(productid) {
+      const qty = 1;
+
+      let formData = new FormData();
+      formData.append("productid", productid);
+      formData.append("qty", qty);
+
+      Swal.fire({
+        title: "Processing...",
+        text: "Please wait while we process your transaction.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      sleep(1000)
+        .then(() => {
+          const api = "/create-checkout";
+          return fetch(api, {
+            method: "POST",
+            body: formData,
+          });
+        })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Gagal proses");
+          }
+          return res.json();
+        })
+        .then((result) => {
+          Swal.close();
+          if (result.status) {
+            Swal.fire({
+              title: "Success!",
+              text: "Berhasil checkout!",
+              icon: "success",
+            });
+
+            return sleep(1000).then(() => {
+              window.location.href = "/checkout/" + result.result;
+            });
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              text: result.result || "Gagal checkout!",
+              icon: "error",
+            });
+            return;
+          }
+        })
+        .catch((error) => {
+          Swal.close();
+          Swal.fire({
+            title: "Error",
+            text: "Server error",
+            icon: "error",
+          });
+          console.error("Error:", error);
+        });
+    }
   </script>
 </main>
 {{ end }}

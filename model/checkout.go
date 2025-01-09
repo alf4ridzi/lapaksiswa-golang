@@ -77,10 +77,10 @@ func (c *CheckoutModel) GetDetailCheckout(CheckoutID string, Username string) (*
 	row := c.DB.QueryRow(query, CheckoutID, Username)
 
 	var detail Checkout
-
+	var tmpT int64
 	if err := row.Scan(&detail.ProductID,
 		&detail.CheckoutID,
-		&detail.Total,
+		&tmpT,
 		&detail.Username,
 		&detail.Qty); err != nil {
 		if err == sql.ErrNoRows {
@@ -90,5 +90,6 @@ func (c *CheckoutModel) GetDetailCheckout(CheckoutID string, Username string) (*
 		return nil, err
 	}
 
+	detail.Total = FormatToIDR(tmpT)
 	return &detail, nil
 }

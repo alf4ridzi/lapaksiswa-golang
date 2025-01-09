@@ -10,6 +10,7 @@
                     <th class="py-3 px-6 text-left text-gray-800">Customer</th>
                     <th class="py-3 px-6 text-left text-gray-800">Total</th>
                     <th class="py-3 px-6 text-left text-gray-800">Status</th>
+                    <th class="py-3 px-6 text-center text-gray-800">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,15 +19,24 @@
                     <td class="py-3 px-6 text-gray-600">John Doe</td>
                     <td class="py-3 px-6 text-gray-600">$150</td>
                     <td class="py-3 px-6 text-gray-600">Shipped</td>
+                    <td class="py-3 px-6 text-center">
+                        <button class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600">Selesai</button>
+                        <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 ml-2">Gagal</button>
+                    </td>
                 </tr>
                 <tr>
                     <td class="py-3 px-6 text-gray-600">#1235</td>
                     <td class="py-3 px-6 text-gray-600">Jane Smith</td>
                     <td class="py-3 px-6 text-gray-600">$80</td>
                     <td class="py-3 px-6 text-gray-600">Pending</td>
+                    <td class="py-3 px-6 text-center">
+                        <button class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600">Selesai</button>
+                        <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 ml-2">Gagal</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+
 {{ end }}
