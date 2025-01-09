@@ -9,8 +9,9 @@ import (
 )
 
 type Pembayaran struct {
-	Nama string
-	Logo string
+	Nama   string
+	Metode string
+	Logo   string
 }
 
 type PembayaranModel struct {
@@ -22,6 +23,7 @@ type PembayaranModel struct {
 func NewPembayaranModel() *PembayaranModel {
 	var columnsAllowed = []string{
 		"nama",
+		"metode",
 		"logo",
 	}
 
@@ -52,7 +54,7 @@ func (p *PembayaranModel) GetPembayaran() ([]Pembayaran, error) {
 	var pembayaranS []Pembayaran
 	for rows.Next() {
 		var pembayaran Pembayaran
-		err = rows.Scan(&pembayaran.Nama, &pembayaran.Logo)
+		err = rows.Scan(&pembayaran.Nama, &pembayaran.Metode, &pembayaran.Logo)
 		if err != nil {
 			return nil, err
 		}

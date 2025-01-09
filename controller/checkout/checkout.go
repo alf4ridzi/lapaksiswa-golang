@@ -1,25 +1,19 @@
 package checkout
 
 import (
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"path/filepath"
 	"strconv"
 
 	"github.com/alf4ridzi/lapaksiswa-golang/config/cookie"
-	"github.com/alf4ridzi/lapaksiswa-golang/controller"
 	"github.com/alf4ridzi/lapaksiswa-golang/controller/dashboard/api"
 	"github.com/alf4ridzi/lapaksiswa-golang/lib"
-	"github.com/alf4ridzi/lapaksiswa-golang/model"
+	"github.com/gorilla/mux"
 )
 
 func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			controller.NotFoundHandler(w, r)
-			return
-		}
 
 		isLogin, err := cookie.GetCookieValue(r, "isLogin")
 		if err != nil {
@@ -45,12 +39,63 @@ func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var product model.TambahTransaksi
+		vars := mux.Vars(r)
+		id := vars["checkout"]
 
-		if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		if isValid, err := lib.IsValidCheckout(id, username); err != nil || !isValid {
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			http.Error(w, "Checkout tidak valid", http.StatusBadRequest)
+			return
+		}
+
+		data := make(map[string]any)
+
+		Alamat, err := lib.GetUserSpec(username, "alamat")
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		Nama, err := lib.GetUserSpec(username, "nama")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Phone, err := lib.GetUserSpec(username, "no_hp")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		DetailCheckout, err := lib.GetDetailCheckout(id, username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Produk, err := lib.GetProduct(DetailCheckout.ProductID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Pembayaran, err := lib.GetMetodePembayaran()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data["Alamat"] = Alamat
+		data["Nama"] = Nama
+		data["Produk"] = Produk
+		data["Detail"] = DetailCheckout
+		data["Payment"] = Pembayaran
+		data["Phone"] = Phone
 
 		templates := filepath.Join("views", "checkout", "checkout.html")
 		tmpl, err := template.ParseFiles(templates)
@@ -59,7 +104,7 @@ func PageCheckOut() func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := tmpl.Execute(w, nil); err != nil {
+		if err := tmpl.Execute(w, data); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -125,7 +170,7 @@ func CreateCheckOutURL() func(w http.ResponseWriter, r *http.Request) {
 		TotalHarga := Product.Harga * Qty
 		RandCheckout := lib.GenerateRandomStr(16)
 
-		if err := lib.CreateCheckout(ProductID, RandCheckout, TotalHarga, username); err != nil {
+		if err := lib.CreateCheckout(ProductID, RandCheckout, TotalHarga, username, Qty); err != nil {
 			data["result"] = "3" + err.Error()
 			api.HandleResponseJson(w, data, http.StatusInternalServerError)
 			return

@@ -76,6 +76,22 @@ func Md5(text string) string {
 	return hex.EncodeToString(hash[:])
 }
 
+func (p *UserModel) GetUserSpec(Username string, Col string) (string, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE username = ?", Col, p.table)
+	row := p.DB.QueryRow(query, Username)
+
+	var value string
+	if err := row.Scan(&value); err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+
+		return "", err
+	}
+
+	return value, nil
+}
+
 func (p *UserModel) ChangeRoleUser(Username string, NewRole string) error {
 	query := fmt.Sprintf("UPDATE %s SET role = ? WHERE username = ?", p.table)
 	if _, err := p.DB.Exec(query, NewRole, Username); err != nil {
@@ -232,8 +248,9 @@ func (p *UserModel) GetUser(username string) (*User, error) {
 }
 
 func (p *UserModel) UpdateProfileUser(username string, nama string, tanggalLahir string, jenisKelamin string, email string, noHP string, alamat string) error {
+	fmt.Println(alamat)
 	query := fmt.Sprintf("UPDATE %s SET nama = ?, tanggal_lahir = ?, jenis_kelamin = ?, email = ?, no_hp = ?, alamat = ? WHERE username = ?", p.table)
-	if _, err := p.DB.Exec(query, nama, tanggalLahir, jenisKelamin, email, noHP, username, alamat); err != nil {
+	if _, err := p.DB.Exec(query, nama, tanggalLahir, jenisKelamin, email, noHP, alamat, username); err != nil {
 		return err
 	}
 

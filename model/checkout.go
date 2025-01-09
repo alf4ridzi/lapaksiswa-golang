@@ -9,6 +9,11 @@ import (
 )
 
 type Checkout struct {
+	ProductID  string
+	CheckoutID string
+	Total      string
+	Username   string
+	Qty        int64
 }
 
 type CheckoutModel struct {
@@ -19,7 +24,13 @@ type CheckoutModel struct {
 
 func NewCheckoutModel() *CheckoutModel {
 	// allowed columns
-	var columnsAllowed = []string{}
+	var columnsAllowed = []string{
+		"produk_id",
+		"checkout",
+		"total",
+		"username",
+		"qty",
+	}
 
 	db, err := database.InitDatabase()
 	if err != nil {
@@ -35,11 +46,49 @@ func NewCheckoutModel() *CheckoutModel {
 	}
 }
 
-func (c *CheckoutModel) InsertCheckout(ProductID string, checkout string, total int64, username string) error {
-	query := fmt.Sprintf("INSERT INTO %s (produk_id, checkout, total, username) VALUES (?, ?, ?, ?)", c.table)
-	if _, err := c.DB.Exec(query, ProductID, checkout, total, username); err != nil {
+func (c *CheckoutModel) IsValidCheckout(CheckoutID string, Username string) (bool, error) {
+	query := fmt.Sprintf("SELECT id FROM %s WHERE checkout = ? AND username = ?", c.table)
+	row := c.DB.QueryRow(query, CheckoutID, Username)
+
+	var id int
+
+	if err := row.Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return id > 0, nil
+}
+
+func (c *CheckoutModel) InsertCheckout(ProductID string, checkout string, total int64, username string, Qty int64) error {
+	query := fmt.Sprintf("INSERT INTO %s (produk_id, checkout, total, username, qty) VALUES (?, ?, ?, ?, ?)", c.table)
+	if _, err := c.DB.Exec(query, ProductID, checkout, total, username, Qty); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (c *CheckoutModel) GetDetailCheckout(CheckoutID string, Username string) (*Checkout, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE checkout = ? AND username = ?", c.columns, c.table)
+	row := c.DB.QueryRow(query, CheckoutID, Username)
+
+	var detail Checkout
+
+	if err := row.Scan(&detail.ProductID,
+		&detail.CheckoutID,
+		&detail.Total,
+		&detail.Username,
+		&detail.Qty); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &detail, nil
 }

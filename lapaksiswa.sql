@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `lapaksiswa`
 --
-CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `lapaksiswa`;
 
 -- --------------------------------------------------------
@@ -60,7 +60,7 @@ CREATE TABLE `checkout` (
   `checkout` text NOT NULL,
   `total` bigint NOT NULL,
   `username` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `checkout`

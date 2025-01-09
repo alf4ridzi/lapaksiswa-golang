@@ -361,7 +361,7 @@
       try {
         await sleep(1000);
 
-        const api = "/checkout/create";
+        const api = "/create-checkout";
         const response = await fetch(api, {
           method: "POST",
           body: formData,
@@ -376,10 +376,11 @@
         Swal.close();
         Swal.fire({
           title: "Success!",
-          text: "Transaction completed successfully.",
+          text: "Berhasil checkout!",
           icon: "success",
         });
-        console.log("Response:", result);
+        await sleep(1000)
+        window.location.href = "/checkout/" + result.result;
       } catch (error) {
         Swal.close();
         Swal.fire({

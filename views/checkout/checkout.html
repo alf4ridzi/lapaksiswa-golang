@@ -23,13 +23,9 @@
         <div class="lg:col-span-2 bg-white p-6 shadow rounded-lg">
           <h2 class="text-lg font-semibold text-blue-800">Alamat Pengiriman</h2>
           <div class="mt-4 border rounded-lg p-4">
-            <p class="text-gray-800 font-medium">Rumah - Muhammad Alfaridzi</p>
-            <p class="text-gray-600">
-              Griya Alam Sentosa, Blok H12/11 RT 08/08, Cileungsi, Kab. Bogor,
-              Jawa Barat
-            </p>
-            <p class="text-gray-600">6285894110892</p>
-            <button class="mt-2 text-blue-600 underline">Ganti Alamat</button>
+            <p class="text-gray-800 font-medium">{{ .Nama }}</p>
+            <p class="text-gray-600">{{ .Alamat }}</p>
+            <p class="text-gray-600">{{ .Phone }}</p>
           </div>
         </div>
 
@@ -37,39 +33,33 @@
           <h2 class="text-lg font-semibold text-blue-800">Ringkasan Barang</h2>
           <div class="mt-4 flex items-center space-x-4 border-b pb-4">
             <img
-              src="/public/img/sample-product.jpg"
+              src="/public/img/product/{{ .Produk.Foto }}"
               alt="Produk"
               class="w-16 h-16 rounded border"
             />
             <div class="flex-1">
-              <p class="text-gray-800 font-medium">Gelang Nori Trixie</p>
-              <p class="text-gray-600 text-sm">Emas asli 375 8k polos 1 gram</p>
+              <p class="text-gray-800 font-medium">{{ .Toko.Nama }}</p>
+              <p class="text-gray-600 text-sm">{{ .Produk.Nama }}</p>
             </div>
-            <p class="text-gray-800 font-medium">Rp780.000</p>
+            <p class="text-gray-800 font-medium">{{ .Detail.Total }}</p>
           </div>
         </div>
 
         <div class="bg-white p-6 shadow rounded-lg">
           <h2 class="text-lg font-semibold text-blue-800">Metode Pembayaran</h2>
           <div class="mt-4 space-y-2">
+            {{ range $i, $p := .Payment }}
             <label class="flex items-center space-x-2">
               <input
                 type="radio"
                 name="payment-method"
-                value="bca"
+                value="{{ $p.Metode }}"
                 class="form-radio text-blue-600"
               />
-              <span>BCA Virtual Account</span>
+              <span>{{ $p.Nama }}</span>
             </label>
-            <label class="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="payment-method"
-                value="alfamart"
-                class="form-radio text-blue-600"
-              />
-              <span>Alfamart / Alfamidi / Lawson</span>
             </label>
+            {{ end }}
           </div>
 
           <h2 class="text-lg font-semibold text-blue-800 mt-6">
@@ -77,20 +67,12 @@
           </h2>
           <div class="mt-4 space-y-2">
             <div class="flex justify-between text-gray-800">
-              <span>Total Harga (1 Barang)</span>
-              <span>Rp780.000</span>
-            </div>
-            <div class="flex justify-between text-gray-800">
-              <span>Total Ongkos Kirim</span>
-              <span>Rp7.500</span>
-            </div>
-            <div class="flex justify-between text-gray-800">
-              <span>Total Asuransi Pengiriman</span>
-              <span>Rp4.800</span>
+              <span>Total Harga ({{ .Detail.Qty }} Barang)</span>
+              <span>Rp. {{ .Detail.Total }}</span>
             </div>
             <div class="flex justify-between text-gray-800 font-bold">
               <span>Total Tagihan</span>
-              <span>Rp794.300</span>
+              <span>Rp. {{ .Detail.Total }}</span>
             </div>
           </div>
 
