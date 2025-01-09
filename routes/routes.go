@@ -22,6 +22,10 @@ func MapRoutes(server *mux.Router) {
 	server.HandleFunc("/checkout", checkout.PageCheckOut()).Methods("GET", "POST")
 	server.HandleFunc("/checkout/create", checkout.CreateCheckOutURL()).Methods("POST")
 
+	// cart
+	server.HandleFunc("/cart", produk.PageCart()).Methods("GET")
+	server.HandleFunc("/api/get-cart", produk.GetCart()).Methods("POST")
+
 	// dashboard user
 	server.HandleFunc("/user", dashboard.User()).Methods("GET")
 	server.HandleFunc("/user/edit", dashboard.Edit()).Methods("GET", "POST")

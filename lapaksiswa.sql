@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jan 08, 2025 at 03:12 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: localhost:3306
+-- Generation Time: Jan 09, 2025 at 03:10 AM
+-- Server version: 8.0.31
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `lapaksiswa`
 --
-CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `lapaksiswa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `lapaksiswa`;
 
 -- --------------------------------------------------------
@@ -31,10 +31,10 @@ USE `lapaksiswa`;
 
 DROP TABLE IF EXISTS `cart`;
 CREATE TABLE `cart` (
-  `id` int(11) NOT NULL,
-  `produk_id` text NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+  `id` int NOT NULL,
+  `produk_id` text COLLATE utf8mb4_general_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -42,7 +42,34 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`id`, `produk_id`, `username`, `created_at`) VALUES
-(5, 'P129428', 'hanma', '2025-01-08 17:25:38');
+(5, 'P129428', 'hanma', '2025-01-08 17:25:38'),
+(6, 'P129428', 'hanma', '2025-01-09 07:25:09'),
+(7, 'P085217', 'hanma', '2025-01-09 08:19:05'),
+(8, 'P001', 'hanma', '2025-01-09 09:08:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `checkout`
+--
+
+DROP TABLE IF EXISTS `checkout`;
+CREATE TABLE `checkout` (
+  `id` int NOT NULL,
+  `produk_id` text NOT NULL,
+  `checkout` text NOT NULL,
+  `total` bigint NOT NULL,
+  `username` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `checkout`
+--
+
+INSERT INTO `checkout` (`id`, `produk_id`, `checkout`, `total`, `username`) VALUES
+(1, 'P085217', 'SA99892DF4US10M3', 30000, 'hanma'),
+(2, 'P085217', 'QFP83YDUM1E0CZRE', 30000, 'hanma'),
+(3, 'P085217', 'YCREUW4X4I6D92ES', 30000, 'hanma');
 
 -- --------------------------------------------------------
 
@@ -52,10 +79,10 @@ INSERT INTO `cart` (`id`, `produk_id`, `username`, `created_at`) VALUES
 
 DROP TABLE IF EXISTS `foto_komentar`;
 CREATE TABLE `foto_komentar` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
   `foto` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -65,10 +92,10 @@ CREATE TABLE `foto_komentar` (
 
 DROP TABLE IF EXISTS `foto_produk`;
 CREATE TABLE `foto_produk` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `foto` varchar(255) NOT NULL,
   `produk_id` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -78,11 +105,11 @@ CREATE TABLE `foto_produk` (
 
 DROP TABLE IF EXISTS `invoice`;
 CREATE TABLE `invoice` (
-  `id` int(11) NOT NULL,
-  `order_id` text NOT NULL,
-  `metode` text NOT NULL,
-  `total` bigint(20) NOT NULL,
-  `status` enum('waiting','sukses','gagal','proses') NOT NULL
+  `id` int NOT NULL,
+  `order_id` text COLLATE utf8mb4_general_ci NOT NULL,
+  `metode` text COLLATE utf8mb4_general_ci NOT NULL,
+  `total` bigint NOT NULL,
+  `status` enum('waiting','sukses','gagal','proses') COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -93,11 +120,11 @@ CREATE TABLE `invoice` (
 
 DROP TABLE IF EXISTS `kategori`;
 CREATE TABLE `kategori` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `kategori` varchar(100) DEFAULT NULL,
   `deskripsi` varchar(255) NOT NULL,
   `slug` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `kategori`
@@ -116,18 +143,18 @@ INSERT INTO `kategori` (`id`, `kategori`, `deskripsi`, `slug`) VALUES
 
 DROP TABLE IF EXISTS `komentar`;
 CREATE TABLE `komentar` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
   `produk_id` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `komentar` text NOT NULL,
-  `rating` tinyint(4) DEFAULT NULL,
+  `rating` tinyint DEFAULT NULL,
   `tipe` enum('diskusi','ulasan') DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `edit` enum('yes','no') DEFAULT 'no',
   `anonymous` enum('yes','no') DEFAULT 'no'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -137,11 +164,11 @@ CREATE TABLE `komentar` (
 
 DROP TABLE IF EXISTS `pembayaran`;
 CREATE TABLE `pembayaran` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `nama` varchar(50) NOT NULL,
   `metode` varchar(255) NOT NULL,
   `logo` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `pembayaran`
@@ -161,26 +188,26 @@ INSERT INTO `pembayaran` (`id`, `nama`, `metode`, `logo`) VALUES
 
 DROP TABLE IF EXISTS `produk`;
 CREATE TABLE `produk` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `produk_id` varchar(50) NOT NULL,
   `nama` varchar(100) NOT NULL,
   `domain` varchar(255) NOT NULL,
   `slug` varchar(100) NOT NULL,
-  `terjual` int(11) DEFAULT 0,
+  `terjual` int DEFAULT '0',
   `kategori` varchar(100) DEFAULT NULL,
-  `rating` float DEFAULT 0,
-  `harga` bigint(20) NOT NULL,
-  `stok` int(11) DEFAULT 0,
+  `rating` float DEFAULT '0',
+  `harga` bigint NOT NULL,
+  `stok` int DEFAULT '0',
   `deskripsi` varchar(255) DEFAULT NULL,
   `varian` varchar(255) DEFAULT NULL,
-  `diskon` decimal(10,0) DEFAULT 0,
+  `diskon` decimal(10,0) DEFAULT '0',
   `status` enum('tersedia','habis','nonaktif') DEFAULT 'tersedia',
   `unit` enum('pcs','kg','liter') DEFAULT NULL,
   `foto` varchar(255) NOT NULL DEFAULT 'default.png',
   `kondisi` enum('baru','bekas') NOT NULL DEFAULT 'baru',
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `produk`
@@ -207,12 +234,12 @@ INSERT INTO `produk` (`id`, `produk_id`, `nama`, `domain`, `slug`, `terjual`, `k
 
 DROP TABLE IF EXISTS `produk_statistik`;
 CREATE TABLE `produk_statistik` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `produk_id` varchar(50) NOT NULL,
-  `dilihat` int(11) DEFAULT 0,
-  `disukai` int(11) DEFAULT 0,
+  `dilihat` int DEFAULT '0',
+  `disukai` int DEFAULT '0',
   `tanggal` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -222,17 +249,17 @@ CREATE TABLE `produk_statistik` (
 
 DROP TABLE IF EXISTS `replies`;
 CREATE TABLE `replies` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `komentar_id` varchar(50) NOT NULL,
   `produk_id` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `komentar` text NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `nama_toko` varchar(100) DEFAULT NULL,
   `edit` enum('yes','no') DEFAULT 'no',
   `anonymous` enum('yes','no') DEFAULT 'no',
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -242,14 +269,14 @@ CREATE TABLE `replies` (
 
 DROP TABLE IF EXISTS `settings_web`;
 CREATE TABLE `settings_web` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `web_title` varchar(255) NOT NULL,
   `web_icon` varchar(255) NOT NULL,
   `web_logo` varchar(255) NOT NULL,
   `web_author` varchar(255) NOT NULL,
   `web_keywords` varchar(255) NOT NULL,
   `web_description` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `settings_web`
@@ -266,22 +293,22 @@ INSERT INTO `settings_web` (`id`, `web_title`, `web_icon`, `web_logo`, `web_auth
 
 DROP TABLE IF EXISTS `toko`;
 CREATE TABLE `toko` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `domain` varchar(100) NOT NULL,
   `username` varchar(50) NOT NULL,
   `nama` varchar(100) NOT NULL,
   `kategori` varchar(100) DEFAULT NULL,
   `logo` varchar(255) DEFAULT 'default.png',
-  `deskripsi` text DEFAULT NULL,
+  `deskripsi` text,
   `email` varchar(100) DEFAULT NULL,
   `no_hp` varchar(15) DEFAULT NULL,
-  `alamat` text DEFAULT NULL,
-  `rating` tinyint(4) DEFAULT 0,
+  `alamat` text,
+  `rating` tinyint DEFAULT '0',
   `status` enum('aktif','nonaktif') DEFAULT 'aktif',
-  `saldo` bigint(20) NOT NULL DEFAULT 0,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `saldo` bigint NOT NULL DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `toko`
@@ -300,21 +327,21 @@ INSERT INTO `toko` (`id`, `domain`, `username`, `nama`, `kategori`, `logo`, `des
 
 DROP TABLE IF EXISTS `transaksi`;
 CREATE TABLE `transaksi` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `order_id` varchar(50) NOT NULL,
   `produk_id` varchar(100) DEFAULT NULL,
   `domain` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
   `alamat` varchar(250) DEFAULT NULL,
-  `qty` bigint(20) NOT NULL,
+  `qty` bigint NOT NULL,
   `status` enum('waiting','proses','sukses','gagal') DEFAULT 'waiting',
-  `harga` bigint(20) DEFAULT NULL,
+  `harga` bigint DEFAULT NULL,
   `metode` varchar(50) DEFAULT NULL,
-  `note` text DEFAULT NULL,
+  `note` text,
   `no_hp` varchar(15) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `transaksi`
@@ -331,23 +358,23 @@ INSERT INTO `transaksi` (`id`, `order_id`, `produk_id`, `domain`, `username`, `a
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `username` varchar(50) NOT NULL,
   `nama` varchar(100) DEFAULT NULL,
   `tanggal_lahir` date DEFAULT NULL,
   `email` varchar(100) NOT NULL,
-  `no_hp` bigint(20) DEFAULT NULL,
+  `no_hp` bigint DEFAULT NULL,
   `role` enum('admin','user','seller') DEFAULT 'user',
   `foto` varchar(255) DEFAULT 'default.png',
-  `alamat` text DEFAULT NULL,
+  `alamat` text,
   `kelas` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `token_reset_password` varchar(255) DEFAULT NULL,
   `jenis_kelamin` enum('pria','wanita') NOT NULL DEFAULT 'pria',
-  `created_at` datetime DEFAULT current_timestamp(),
-  `last_online` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_online` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `user`
@@ -368,12 +395,12 @@ INSERT INTO `user` (`id`, `username`, `nama`, `tanggal_lahir`, `email`, `no_hp`,
 
 DROP TABLE IF EXISTS `user_login`;
 CREATE TABLE `user_login` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `user_id` varchar(50) NOT NULL,
   `ip_address` varchar(50) DEFAULT NULL,
   `device` varchar(100) DEFAULT NULL,
-  `waktu_login` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `waktu_login` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -383,15 +410,15 @@ CREATE TABLE `user_login` (
 
 DROP TABLE IF EXISTS `voucher`;
 CREATE TABLE `voucher` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `toko_id` varchar(50) NOT NULL,
   `kode` varchar(50) DEFAULT NULL,
   `potongan` decimal(5,2) DEFAULT NULL,
-  `stock` int(11) DEFAULT 0,
+  `stock` int DEFAULT '0',
   `max_potongan` decimal(5,2) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Indexes for dumped tables
@@ -401,6 +428,12 @@ CREATE TABLE `voucher` (
 -- Indexes for table `cart`
 --
 ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `checkout`
+--
+ALTER TABLE `checkout`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -501,97 +534,103 @@ ALTER TABLE `voucher`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `checkout`
+--
+ALTER TABLE `checkout`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `foto_komentar`
 --
 ALTER TABLE `foto_komentar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `foto_produk`
 --
 ALTER TABLE `foto_produk`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `komentar`
 --
 ALTER TABLE `komentar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `produk`
 --
 ALTER TABLE `produk`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT for table `produk_statistik`
 --
 ALTER TABLE `produk_statistik`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `replies`
 --
 ALTER TABLE `replies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `settings_web`
 --
 ALTER TABLE `settings_web`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `toko`
 --
 ALTER TABLE `toko`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_login`
 --
 ALTER TABLE `user_login`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `voucher`
 --
 ALTER TABLE `voucher`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

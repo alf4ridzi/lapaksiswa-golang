@@ -105,7 +105,7 @@ func CreateCheckOutURL() func(w http.ResponseWriter, r *http.Request) {
 
 		if isValid, err := lib.IsValidProductID(ProductID); err != nil || !isValid {
 			if err != nil {
-				data["result"] = err.Error()
+				data["result"] = "1" + err.Error()
 				api.HandleResponseJson(w, data, http.StatusInternalServerError)
 				return
 			}
@@ -117,7 +117,7 @@ func CreateCheckOutURL() func(w http.ResponseWriter, r *http.Request) {
 
 		Product, err := lib.GetProduct(ProductID)
 		if err != nil {
-			data["result"] = err.Error()
+			data["result"] = "2" + err.Error()
 			api.HandleResponseJson(w, data, http.StatusInternalServerError)
 			return
 		}
@@ -126,7 +126,7 @@ func CreateCheckOutURL() func(w http.ResponseWriter, r *http.Request) {
 		RandCheckout := lib.GenerateRandomStr(16)
 
 		if err := lib.CreateCheckout(ProductID, RandCheckout, TotalHarga, username); err != nil {
-			data["result"] = err.Error()
+			data["result"] = "3" + err.Error()
 			api.HandleResponseJson(w, data, http.StatusInternalServerError)
 			return
 		}
@@ -137,6 +137,7 @@ func CreateCheckOutURL() func(w http.ResponseWriter, r *http.Request) {
 
 		cookie.SetCookie(w, DataCookie, cookie.CookieMaxAge)
 		data["status"] = true
+		data["result"] = RandCheckout
 		api.HandleResponseJson(w, data, http.StatusOK)
 		return
 	}

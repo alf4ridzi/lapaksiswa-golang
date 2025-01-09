@@ -103,7 +103,7 @@ func NewProdukModel() *ProdukModel {
 
 func (p *ProdukModel) GetProductByOnlyID(ProductID any) (*Produk, error) {
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE produk_id = ?", p.columns, p.table)
-	row := p.DB.QueryRow(query, ProductID, ProductID)
+	row := p.DB.QueryRow(query, ProductID)
 
 	var product Produk
 
@@ -642,4 +642,64 @@ func (p *ProdukModel) GetTerlaris() ([]Produk, error) {
 	}
 
 	return produkS, nil
+}
+
+func (p *ProdukModel) GetUserCart(Username string) ([]Produk, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s LEFT JOIN cart ON produk.produk_id = cart.produk_id WHERE cart.username = ?", p.columns, p.table)
+	rows, err := p.DB.Query(query, Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	modelToko := NewTokoModel()
+	defer modelToko.DB.Close()
+
+	var productS []Produk
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var produk Produk
+		err = rows.Scan(
+			&produk.ProdukID,
+			&produk.Nama,
+			&produk.Domain,
+			&produk.Slug,
+			&produk.Terjual,
+			&produk.Kategori,
+			&produk.Rating,
+			&produk.Harga,
+			&produk.Stok,
+			&produk.Deskripsi,
+			&produk.Varian,
+			&produk.Diskon,
+			&produk.Status,
+			&produk.Unit,
+			&produk.Foto,
+			&produk.Kondisi,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		Toko, err := modelToko.GetToko(produk.Domain)
+		if err != nil {
+			return nil, err
+		}
+
+		produk.Toko = Toko.Nama
+		productS = append(productS, produk)
+	}
+
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	return productS, nil
+
 }

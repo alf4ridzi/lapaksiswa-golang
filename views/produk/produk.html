@@ -285,71 +285,6 @@
 
 <script src="/public/js/sweetalert.js"></script>
 <script>
-  document
-    .getElementById("beli")
-    .addEventListener("click", async function (event) {
-      event.preventDefault(); // Mencegah aksi default tombol
-
-      // Mengambil nilai input
-      const productid = document.getElementById("productid");
-      const qty = document.getElementById("quantity");
-
-      // Data yang akan dikirim
-      const data = {
-        productid: productid.value,
-        qty: qty.value,
-      };
-
-      // Tampilkan loading dengan SweetAlert
-      Swal.fire({
-        title: "Processing...",
-        text: "Please wait while we process your transaction.",
-        icon: "info",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-      try {
-        await sleep(1000);
-
-        const api = "/checkout";
-        const response = await fetch(api, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to process transaction");
-        }
-
-        const result = await response.json();
-
-        Swal.close();
-        Swal.fire({
-          title: "Success!",
-          text: "Transaction completed successfully.",
-          icon: "success",
-        });
-        console.log("Response:", result);
-      } catch (error) {
-        Swal.close();
-        Swal.fire({
-          title: "Error",
-          text: "There was an error processing your transaction.",
-          icon: "error",
-        });
-        console.error("Error:", error);
-      }
-    });
-
   document.getElementById("cart").addEventListener("click", function (event) {
     event.preventDefault();
 
@@ -366,8 +301,8 @@
         if (!response.ok) {
           Swal.fire({
             title: "Network Error!",
-            text: data.result || "Internal server error",
-            icon: "success",
+            text: "Internal server error",
+            icon: "error",
           });
           return;
         }
@@ -393,10 +328,68 @@
         Swal.fire({
           title: "Network Error!",
           text: data.result || "Internal server error",
-          icon: "success",
+          icon: "error",
         });
       });
   });
+
+  document
+    .getElementById("beli")
+    .addEventListener("click", async function (event) {
+      event.preventDefault();
+
+      const productid = document.getElementById("productid");
+      const qty = document.getElementById("quantity");
+
+      let formData = new FormData();
+      formData.append('productid', productid.value)
+      formData.append('qty', qty.value)
+
+      Swal.fire({
+        title: "Processing...",
+        text: "Please wait while we process your transaction.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      try {
+        await sleep(1000);
+
+        const api = "/checkout/create";
+        const response = await fetch(api, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to process transaction");
+        }
+
+        const result = await response.json();
+
+        Swal.close();
+        Swal.fire({
+          title: "Success!",
+          text: "Transaction completed successfully.",
+          icon: "success",
+        });
+        console.log("Response:", result);
+      } catch (error) {
+        Swal.close();
+        Swal.fire({
+          title: "Error",
+          text: "There was an error processing your transaction.",
+          icon: "error",
+        });
+        console.error("Error:", error);
+      }
+    });
 
   document.getElementById("quantity").addEventListener("input", function () {
     let stok = "{{ .Produk.Stok }}";

@@ -41,7 +41,23 @@ func NewCartModel() *CartModel {
 }
 
 func (c *CartModel) AddToCart(Username string, ProductID string) error {
-	query := fmt.Sprintf("INSERT INTO %s (produk_id, username) VALUES (?, ?)", c.table)
+	// check if already in cart
+	query := fmt.Sprintf("SELECT id FROM %s WHERE produk_id = ? AND username = ?", c.table)
+
+	var id int
+
+	row := c.DB.QueryRow(query, ProductID, Username)
+	if err := row.Scan(&id); err != nil {
+		if err != sql.ErrNoRows {
+			return err
+		}
+	}
+
+	if id > 0 {
+		return fmt.Errorf("Barang sudah ada di keranjang!")
+	}
+
+	query = fmt.Sprintf("INSERT INTO %s (produk_id, username) VALUES (?, ?)", c.table)
 	if _, err := c.DB.Exec(query, ProductID, Username); err != nil {
 		return err
 	}
